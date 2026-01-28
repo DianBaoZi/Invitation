@@ -66,21 +66,64 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[5.25rem] font-semibold text-gray-900 tracking-[-0.02em] leading-[0.95] mb-5"
+          className="text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[5.25rem] font-semibold text-gray-900 tracking-[-0.02em] leading-[1.1] mb-5"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
           Impress your
           <br />
-          <span
-            className="italic font-medium"
-            style={{
-              fontFamily: "'Dancing Script', cursive",
-              fontSize: "1.15em",
-              background: "linear-gradient(135deg, #e11d48, #f43f5e, #fb7185)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            date
+          <span className="relative inline-block">
+            <span
+              className="italic font-medium relative z-10"
+              style={{
+                fontFamily: "'Dancing Script', cursive",
+                fontSize: "1.15em",
+                background: "linear-gradient(135deg, #e11d48, #f43f5e, #fb7185)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                lineHeight: 1.4,
+                display: "inline-block",
+                paddingBottom: "0.05em",
+              }}
+            >
+              date
+            </span>
+            {/* Decorative swash underline */}
+            <motion.svg
+              viewBox="0 0 200 12"
+              className="absolute -bottom-1 left-0 w-full"
+              style={{ height: "0.25em" }}
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 1.2, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.path
+                d="M8 8 C 40 2, 80 2, 100 6 S 160 12, 192 6"
+                fill="none"
+                stroke="url(#swash-grad)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1.2, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              />
+              <defs>
+                <linearGradient id="swash-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#e11d48" stopOpacity="0.7" />
+                  <stop offset="50%" stopColor="#f43f5e" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="#fb7185" stopOpacity="0.5" />
+                </linearGradient>
+              </defs>
+            </motion.svg>
+            {/* Sparkle accent */}
+            <motion.span
+              className="absolute -top-2 -right-5 sm:-top-3 sm:-right-7 text-rose-300 pointer-events-none"
+              style={{ fontSize: "0.3em" }}
+              initial={{ opacity: 0, scale: 0, rotate: -30 }}
+              animate={{ opacity: [0, 1, 0.7], scale: [0, 1.2, 1], rotate: [-30, 0, 0] }}
+              transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }}
+            >
+              ✦
+            </motion.span>
           </span>
         </motion.h1>
 
