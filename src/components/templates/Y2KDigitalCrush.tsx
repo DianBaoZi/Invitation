@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 
@@ -10,424 +10,674 @@ interface Y2KDigitalCrushProps {
   imageUrl?: string;
 }
 
-const ERROR_MESSAGES = [
-  "ERROR: 'No' is not a valid response",
-  "FATAL: crush.exe cannot process rejection",
-  "BSOD: Blue Screen of Denial detected",
-  "WARNING: Heart overflow exception",
-  "CRITICAL: love.dll failed to unload",
-  "ERR_CONNECTION_REFUSED: feelings.sys",
-  "0x80004005: Unspecified heartbreak error",
-  "KERNEL PANIC: romance module corrupted",
-  "ACCESS DENIED: rejection.exe blocked",
-  "SEGFAULT: emotional core dumped",
-  "ERR: Cannot read property 'no' of undefined",
-  "FATAL: Stack overflow in feelings.js",
+// ─── Win95 Style Constants ───────────────────────────────────────────────────
+
+const WIN_COLORS = {
+  desktop: "#008080",
+  windowBg: "#c0c0c0",
+  titleBar: "#000080",
+  titleBarActive: "#000080",
+  borderLight: "#dfdfdf",
+  borderDark: "#404040",
+  borderDarkest: "#000000",
+  buttonFace: "#c0c0c0",
+  insetLight: "#808080",
+  white: "#ffffff",
+  black: "#000000",
+};
+
+const FONT_SYSTEM = "'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif";
+const FONT_MONO = "'Courier New', Courier, monospace";
+
+// ─── Desktop Icon Data ──────────────────────────────────────────────────────
+
+interface DesktopIcon {
+  id: string;
+  label: string;
+  emoji: string;
+}
+
+const DESKTOP_ICONS: DesktopIcon[] = [
+  { id: "mycomputer", label: "My Computer", emoji: "🖥️" },
+  { id: "recyclebin", label: "Recycle Bin", emoji: "🗑️" },
+  { id: "loveexe", label: "love.exe", emoji: "💾" },
+  { id: "readme", label: "README.txt", emoji: "📄" },
 ];
 
-export function Y2KDigitalCrush({ message, senderName = "Someone Special", imageUrl }: Y2KDigitalCrushProps) {
-  const [noClickCount, setNoClickCount] = useState(0);
-  const [errorMessages, setErrorMessages] = useState<string[]>([]);
-  const [glitchIntensity, setGlitchIntensity] = useState(0);
-  const [isGlitching, setIsGlitching] = useState(false);
+// ─── Terminal Lines ─────────────────────────────────────────────────────────
+
+function getTerminalLines(senderName: string, message: string): string[] {
+  return [
+    "C:\\> Loading love.exe...",
+    "C:\\> Scanning heart database... FOUND: 1 match",
+    `C:\\> Recipient: ${senderName}`,
+    `C:\\> Message: ${message}`,
+    "C:\\> Generating invitation...",
+  ];
+}
+
+// ─── Main Component ─────────────────────────────────────────────────────────
+
+export function Y2KDigitalCrush({
+  message,
+  senderName = "Someone Special",
+  imageUrl,
+}: Y2KDigitalCrushProps) {
+  // Phase: "desktop" | "terminal" | "invitation"
+  const [phase, setPhase] = useState<"desktop" | "terminal" | "invitation">("desktop");
+
+  // Desktop dialog windows
+  const [openDialogs, setOpenDialogs] = useState<
+    { id: string; title: string; content: string }[]
+  >([]);
+
+  // Terminal state
+  const [terminalLines, setTerminalLines] = useState<string[]>([]);
+  const [terminalDone, setTerminalDone] = useState(false);
+  const [progressPercent, setProgressPercent] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
+  const terminalIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Auto-spawn errors that get faster as clicks increase
-  useEffect(() => {
-    if (noClickCount < 3) return;
+  // Invitation (RSVP) state
+  const [noClickCount, setNoClickCount] = useState(0);
+  const [errorDialogs, setErrorDialogs] = useState<string[]>([]);
+  const [noDeprecated, setNoDeprecated] = useState(false);
+  const [accepted, setAccepted] = useState(false);
 
-    const speed = Math.max(300, 900 - noClickCount * 100);
-    const interval = setInterval(() => {
-      setErrorMessages((prev) => {
-        const msg = ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)];
-        return [...prev, msg].slice(-6);
+  // ── Desktop icon click handler ──────────────────────────────────────────
+
+  const handleIconClick = useCallback(
+    (iconId: string) => {
+      if (iconId === "loveexe") {
+        setPhase("terminal");
+        return;
+      }
+
+      const dialogContent: Record<string, { title: string; content: string }> = {
+        mycomputer: {
+          title: "My Computer",
+          content: "No drives found...\nyour heart took all the space. 💕",
+        },
+        recyclebin: {
+          title: "Recycle Bin",
+          content: "Cannot delete feelings.exe\n\nAccess denied: file is in use by heart.sys",
+        },
+        readme: {
+          title: "README.txt - Notepad",
+          content: 'Hint: try love.exe 😉\n\nDouble-click "love.exe" on the desktop to continue.',
+        },
+      };
+
+      const info = dialogContent[iconId];
+      if (!info) return;
+
+      // Stack dialog on top (avoid duplicates by id)
+      setOpenDialogs((prev) => {
+        const filtered = prev.filter((d) => d.id !== iconId);
+        return [...filtered, { id: iconId, ...info }];
       });
-    }, speed);
+    },
+    []
+  );
 
-    return () => clearInterval(interval);
-  }, [noClickCount]);
+  const closeDialog = useCallback((id: string) => {
+    setOpenDialogs((prev) => prev.filter((d) => d.id !== id));
+  }, []);
 
-  // Continuous glitch flicker at high intensity
+  // ── Terminal typewriter effect ──────────────────────────────────────────
+
   useEffect(() => {
-    if (glitchIntensity < 0.5) return;
+    if (phase !== "terminal") return;
 
-    const interval = setInterval(() => {
-      setIsGlitching(true);
-      setTimeout(() => setIsGlitching(false), 50 + Math.random() * 100);
-    }, 200 + Math.random() * 400);
+    const lines = getTerminalLines(senderName, message);
+    let lineIndex = 0;
 
-    return () => clearInterval(interval);
-  }, [glitchIntensity]);
+    const typeNextLine = () => {
+      if (lineIndex < lines.length) {
+        setTerminalLines((prev) => [...prev, lines[lineIndex]]);
+        lineIndex++;
+        terminalIntervalRef.current = setTimeout(typeNextLine, 600);
+      } else {
+        // Start progress bar
+        let progress = 0;
+        progressIntervalRef.current = setInterval(() => {
+          progress += Math.random() * 15 + 5;
+          if (progress >= 100) {
+            progress = 100;
+            setProgressPercent(100);
+            if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+            setTerminalDone(true);
+            // Auto-advance after a short pause
+            setTimeout(() => setPhase("invitation"), 1200);
+          } else {
+            setProgressPercent(Math.floor(progress));
+          }
+        }, 200);
+      }
+    };
+
+    terminalIntervalRef.current = setTimeout(typeNextLine, 400);
+
+    return () => {
+      if (terminalIntervalRef.current) clearTimeout(terminalIntervalRef.current);
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    };
+  }, [phase, senderName, message]);
+
+  // ── RSVP handlers ─────────────────────────────────────────────────────
+
+  const handleYesClick = useCallback(() => {
+    setAccepted(true);
+    confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+    setTimeout(() => {
+      confetti({ particleCount: 100, spread: 120, origin: { y: 0.4 } });
+    }, 300);
+  }, []);
 
   const handleNoClick = useCallback(() => {
-    const newCount = noClickCount + 1;
-    setNoClickCount(newCount);
+    const count = noClickCount + 1;
+    setNoClickCount(count);
 
-    // Trigger glitch flash
-    setIsGlitching(true);
-    setTimeout(() => setIsGlitching(false), 150 + newCount * 50);
+    if (count >= 5) {
+      // Deprecate "No"
+      setErrorDialogs([]);
+      setNoDeprecated(true);
+      return;
+    }
 
-    // Escalate glitch intensity (0-1 scale)
-    setGlitchIntensity(Math.min(1, newCount * 0.15));
+    const errors = [
+      "ERROR: 'No' is not a valid input. love.exe requires YES.",
+      "WARNING: Rejection module not found in registry.",
+      "FATAL: heart.dll refuses to unload feelings.",
+      "CRITICAL: 'No' caused an access violation at 0x00000LOVE.",
+      "BSOD: Blue Screen of Devotion triggered.",
+    ];
 
-    // Add an error message
-    const msg = ERROR_MESSAGES[Math.min(newCount - 1, ERROR_MESSAGES.length - 1)];
-    setErrorMessages((prev) => [...prev, msg].slice(-6));
+    setErrorDialogs((prev) => [...prev, errors[count - 1]]);
   }, [noClickCount]);
 
-  const handleYesClick = () => {
-    setShowSuccess(true);
-    setGlitchIntensity(0);
-    setErrorMessages([]);
-    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-    setTimeout(() => {
-      confetti({ particleCount: 100, spread: 100, origin: { y: 0.5 } });
-    }, 200);
-  };
+  const closeErrorDialog = useCallback((index: number) => {
+    setErrorDialogs((prev) => prev.filter((_, i) => i !== index));
+  }, []);
 
-  if (showSuccess) {
+  // ── Render ────────────────────────────────────────────────────────────
+
+  // Success screen (after accepting)
+  if (accepted) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "#0d0d1a" }}>
+      <div
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ background: WIN_COLORS.desktop }}
+      >
         <ScanLines />
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="text-center p-8 relative z-10"
-          style={{
-            background: "#1a1a2e",
-            border: "3px solid #00ff88",
-            boxShadow: "0 0 20px rgba(0,255,136,0.3), inset 0 0 20px rgba(0,255,136,0.05)",
-            fontFamily: "'Courier New', monospace",
-          }}
+          transition={{ type: "spring", stiffness: 200 }}
         >
-          <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 0.5, repeat: Infinity }}
-            className="text-6xl mb-4"
-          >
-            💕
-          </motion.div>
-          <h2 className="text-2xl font-bold mb-2" style={{ color: "#00ff88" }}>
-            SYSTEM_RESPONSE: YES!!!
-          </h2>
-          <p className="text-cyan-300 text-sm">crush.exe completed successfully ✓</p>
+          <Win95Window title="love.exe — Connected" width="360px">
+            <div className="text-center p-6">
+              <motion.div
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 0.8, repeat: Infinity }}
+                className="text-6xl mb-4"
+              >
+                💕
+              </motion.div>
+              <h2
+                className="text-xl font-bold mb-2"
+                style={{ fontFamily: FONT_MONO, color: "#000080" }}
+              >
+                CONNECTION ESTABLISHED
+              </h2>
+              <p
+                className="text-sm mb-4"
+                style={{ fontFamily: FONT_MONO, color: "#333" }}
+              >
+                See you there!
+              </p>
+              {imageUrl && (
+                <div className="flex justify-center mb-3">
+                  <div
+                    style={{
+                      border: `2px inset ${WIN_COLORS.insetLight}`,
+                      padding: "4px",
+                      background: WIN_COLORS.white,
+                    }}
+                  >
+                    <img
+                      src={imageUrl}
+                      alt="Valentine"
+                      className="w-24 h-24 object-cover"
+                      style={{ imageRendering: "auto" }}
+                    />
+                  </div>
+                </div>
+              )}
+              <p
+                className="text-xs"
+                style={{ fontFamily: FONT_MONO, color: "#008000" }}
+              >
+                love.exe completed successfully ✓
+              </p>
+            </div>
+          </Win95Window>
         </motion.div>
+        <Taskbar />
       </div>
     );
   }
 
-  // Glitch CSS filter based on intensity
-  const glitchFilter = isGlitching
-    ? `hue-rotate(${90 + glitchIntensity * 180}deg) saturate(${1 + glitchIntensity * 3}) brightness(${1 + glitchIntensity * 0.5})`
-    : glitchIntensity > 0.3
-    ? `hue-rotate(${glitchIntensity * 20}deg) saturate(${1 + glitchIntensity})`
-    : "none";
-
-  const glitchTransform = isGlitching
-    ? `translate(${(Math.random() - 0.5) * glitchIntensity * 12}px, ${(Math.random() - 0.5) * glitchIntensity * 8}px) skewX(${(Math.random() - 0.5) * glitchIntensity * 5}deg)`
-    : "none";
-
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: "#0d0d1a" }}>
+    <div
+      className="min-h-screen relative overflow-hidden select-none"
+      style={{ background: WIN_COLORS.desktop }}
+    >
       <ScanLines />
 
-      {/* Pixelated background grid */}
+      {/* Desktop grid pattern */}
       <div
-        className="absolute inset-0 opacity-[0.04]"
+        className="absolute inset-0 opacity-[0.06] pointer-events-none"
         style={{
-          backgroundImage: "linear-gradient(#ff69b4 1px, transparent 1px), linear-gradient(90deg, #00ffff 1px, transparent 1px)",
-          backgroundSize: "20px 20px",
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: "32px 32px",
         }}
       />
 
-      {/* Glitch color bands - appear at high intensity */}
-      {glitchIntensity > 0.4 && (
-        <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
-          {Array.from({ length: Math.floor(glitchIntensity * 6) }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute left-0 right-0"
-              style={{
-                height: `${2 + Math.random() * 4}px`,
-                top: `${Math.random() * 100}%`,
-                background: i % 2 === 0 ? "rgba(255,0,0,0.15)" : "rgba(0,255,255,0.1)",
-                mixBlendMode: "screen",
-              }}
-              animate={{
-                opacity: [0, 1, 0],
-                x: [(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20],
-              }}
-              transition={{
-                duration: 0.1 + Math.random() * 0.3,
-                repeat: Infinity,
-                repeatDelay: Math.random() * 0.5,
-              }}
-            />
-          ))}
-        </div>
+      {/* ─── Phase 1: Desktop ─────────────────────────────────────────── */}
+      {phase === "desktop" && (
+        <>
+          {/* Desktop Icons */}
+          <div
+            className="absolute top-4 left-4 flex flex-col gap-4 sm:gap-5 z-10"
+            style={{ fontFamily: FONT_SYSTEM }}
+          >
+            {DESKTOP_ICONS.map((icon) => (
+              <DesktopIconButton
+                key={icon.id}
+                icon={icon}
+                onClick={() => handleIconClick(icon.id)}
+              />
+            ))}
+          </div>
+
+          {/* Dialogs */}
+          <AnimatePresence>
+            {openDialogs.map((dialog, i) => (
+              <motion.div
+                key={dialog.id}
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                className="absolute z-20"
+                style={{
+                  top: `${120 + i * 30}px`,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  maxWidth: "calc(100vw - 32px)",
+                }}
+              >
+                <Win95Window
+                  title={dialog.title}
+                  width="340px"
+                  onClose={() => closeDialog(dialog.id)}
+                >
+                  <div className="p-4">
+                    <p
+                      className="text-sm whitespace-pre-line mb-4"
+                      style={{ fontFamily: FONT_SYSTEM, color: "#000" }}
+                    >
+                      {dialog.content}
+                    </p>
+                    <div className="flex justify-center">
+                      <Win95Button onClick={() => closeDialog(dialog.id)}>
+                        OK
+                      </Win95Button>
+                    </div>
+                  </div>
+                </Win95Window>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </>
       )}
 
-      {/* Main card with glitch effect */}
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="relative z-10 w-full max-w-sm"
-        style={{
-          filter: glitchFilter,
-          transform: glitchTransform,
-        }}
-      >
-        {/* Window title bar */}
+      {/* ─── Phase 2: Terminal ────────────────────────────────────────── */}
+      {phase === "terminal" && (
         <div
-          className="flex items-center gap-2 px-3 py-1.5"
-          style={{
-            background: "linear-gradient(90deg, #000080, #1084d0)",
-            borderTop: "2px solid #dfdfdf",
-            borderLeft: "2px solid #dfdfdf",
-            borderRight: "2px solid #404040",
-          }}
+          className="absolute inset-0 flex items-center justify-center p-4 z-20"
         >
-          <span className="text-xs font-bold text-white" style={{ fontFamily: "'Courier New', monospace" }}>
-            💕 crush.exe {noClickCount > 0 ? `[${noClickCount} error${noClickCount > 1 ? "s" : ""}]` : ""}
-          </span>
-          <div className="ml-auto flex gap-1">
-            <Win95Button size="sm">_</Win95Button>
-            <Win95Button size="sm">□</Win95Button>
-            <Win95Button size="sm">×</Win95Button>
-          </div>
-        </div>
-
-        {/* Window body */}
-        <div
-          className="p-6"
-          style={{
-            background: "#c0c0c0",
-            borderLeft: "2px solid #dfdfdf",
-            borderRight: "2px solid #404040",
-            borderBottom: "2px solid #404040",
-          }}
-        >
-          {/* Title */}
-          <motion.h1
-            className="text-center text-2xl font-bold mb-4 tracking-wider"
-            style={{
-              fontFamily: "'Courier New', monospace",
-              color: "#ff1493",
-              textShadow: "2px 2px 0 #00ffff, -1px -1px 0 #ff69b4",
-            }}
-            animate={{
-              textShadow: [
-                "2px 2px 0 #00ffff, -1px -1px 0 #ff69b4",
-                "3px 1px 0 #00ffff, -2px 0px 0 #ff69b4",
-                "2px 2px 0 #00ffff, -1px -1px 0 #ff69b4",
-              ],
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 250, damping: 22 }}
+            className="w-full max-w-lg"
           >
-            Y2K Digital Crush
-          </motion.h1>
-
-          {/* Pixel heart photo frame */}
-          <div className="flex justify-center mb-4">
-            <div className="relative">
-              <PixelHeartFrame />
+            <Win95Window title="C:\WINDOWS\love.exe" width="100%">
               <div
-                className="absolute inset-0 flex items-center justify-center"
-                style={{ top: "18px", left: "18px", right: "18px", bottom: "22px" }}
+                className="p-4"
+                style={{
+                  background: "#000",
+                  minHeight: "260px",
+                  border: `2px inset ${WIN_COLORS.insetLight}`,
+                  fontFamily: FONT_MONO,
+                  fontSize: "13px",
+                  color: "#33ff33",
+                  lineHeight: "1.6",
+                }}
               >
-                {imageUrl ? (
-                  <img src={imageUrl} alt="Crush" className="w-16 h-16 object-cover" style={{ imageRendering: "pixelated" }} />
-                ) : (
-                  <div className="w-16 h-16 flex items-center justify-center text-3xl" style={{ background: "#ff69b4" }}>
-                    💖
+                {terminalLines.map((line, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    {line}
+                  </motion.div>
+                ))}
+
+                {/* Progress bar */}
+                {terminalLines.length >= getTerminalLines(senderName, message).length && (
+                  <div className="mt-2">
+                    <span style={{ color: "#33ff33" }}>
+                      {"["}
+                      {"█".repeat(Math.floor(progressPercent / 8))}
+                      {"░".repeat(Math.max(0, 12 - Math.floor(progressPercent / 8)))}
+                      {"]"} {progressPercent}%
+                    </span>
                   </div>
                 )}
-              </div>
-            </div>
-          </div>
 
-          {/* Sender name */}
-          <p className="text-center text-xs mb-1" style={{ fontFamily: "'Courier New', monospace", color: "#666" }}>
-            C:\Users\{senderName}\sent_with_love.txt
-          </p>
+                {/* Success message */}
+                {terminalDone && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-2 font-bold"
+                    style={{ color: "#00ff88" }}
+                  >
+                    INVITATION LOADED SUCCESSFULLY
+                  </motion.div>
+                )}
 
-          {/* Message */}
-          <div
-            className="p-3 mb-4 text-center"
-            style={{
-              background: "white",
-              border: "2px inset #808080",
-              fontFamily: "'Courier New', monospace",
-              fontSize: "14px",
-            }}
-          >
-            {message}
-          </div>
-
-          {/* Error messages console */}
-          <AnimatePresence>
-            {errorMessages.length > 0 && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                className="mb-4 overflow-hidden"
-              >
-                <div
-                  className="p-2 text-left overflow-hidden"
-                  style={{
-                    background: "#000",
-                    border: "2px inset #808080",
-                    maxHeight: "120px",
-                  }}
-                >
-                  {errorMessages.map((msg, i) => (
-                    <motion.p
-                      key={`${msg}-${i}`}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="text-[11px] leading-tight mb-0.5"
-                      style={{
-                        fontFamily: "'Courier New', monospace",
-                        color: i === errorMessages.length - 1 ? "#ff4444" : "#cc0000",
-                        textShadow: i === errorMessages.length - 1 ? "0 0 4px #ff0000" : "none",
-                      }}
-                    >
-                      &gt; {msg}
-                    </motion.p>
-                  ))}
+                {/* Blinking cursor */}
+                {!terminalDone && (
                   <motion.span
                     animate={{ opacity: [1, 0] }}
                     transition={{ duration: 0.6, repeat: Infinity }}
-                    className="text-[11px]"
-                    style={{ fontFamily: "'Courier New', monospace", color: "#ff4444" }}
+                    style={{ color: "#33ff33" }}
                   >
                     _
                   </motion.span>
+                )}
+              </div>
+            </Win95Window>
+          </motion.div>
+        </div>
+      )}
+
+      {/* ─── Phase 3: Invitation / RSVP ──────────────────────────────── */}
+      {phase === "invitation" && (
+        <div className="absolute inset-0 flex items-center justify-center p-4 z-20">
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 250, damping: 22 }}
+            className="w-full max-w-md"
+          >
+            <Win95Window title="love.exe — Invitation" width="100%">
+              <div className="p-5">
+                {/* Optional image */}
+                {imageUrl && (
+                  <div className="flex justify-center mb-4">
+                    <div
+                      style={{
+                        border: `2px inset ${WIN_COLORS.insetLight}`,
+                        padding: "4px",
+                        background: WIN_COLORS.white,
+                      }}
+                    >
+                      <img
+                        src={imageUrl}
+                        alt="Valentine"
+                        className="w-28 h-28 object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Sender */}
+                <p
+                  className="text-xs text-center mb-1"
+                  style={{ fontFamily: FONT_MONO, color: "#666" }}
+                >
+                  From: {senderName}
+                </p>
+
+                {/* Message */}
+                <div
+                  className="p-3 mb-5"
+                  style={{
+                    background: WIN_COLORS.white,
+                    border: `2px inset ${WIN_COLORS.insetLight}`,
+                    fontFamily: FONT_MONO,
+                    fontSize: "14px",
+                    textAlign: "center",
+                    color: "#000",
+                    lineHeight: "1.6",
+                  }}
+                >
+                  {message}
                 </div>
+
+                {/* Accept label */}
+                <p
+                  className="text-sm text-center mb-3 font-bold"
+                  style={{ fontFamily: FONT_SYSTEM, color: "#000" }}
+                >
+                  {noDeprecated
+                    ? 'love.exe: "No" has been deprecated.'
+                    : "Accept?"}
+                </p>
+
+                {/* Buttons */}
+                <div className="flex items-center justify-center gap-4">
+                  <motion.div
+                    animate={
+                      noDeprecated
+                        ? {
+                            scale: [1, 1.06, 1],
+                          }
+                        : {}
+                    }
+                    transition={{ duration: 1, repeat: Infinity }}
+                  >
+                    <Win95Button onClick={handleYesClick} variant="primary">
+                      YES
+                    </Win95Button>
+                  </motion.div>
+
+                  {!noDeprecated && (
+                    <Win95Button onClick={handleNoClick}>NO</Win95Button>
+                  )}
+                </div>
+              </div>
+            </Win95Window>
+          </motion.div>
+
+          {/* Error dialogs stacked on top */}
+          <AnimatePresence>
+            {errorDialogs.map((errMsg, i) => (
+              <motion.div
+                key={`err-${i}`}
+                initial={{ scale: 0.9, opacity: 0, y: 30 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.85, opacity: 0, y: 20 }}
+                transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                className="absolute z-30"
+                style={{
+                  top: `${140 + i * 35}px`,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  maxWidth: "calc(100vw - 32px)",
+                }}
+              >
+                <Win95Window
+                  title="love.exe — Error"
+                  width="320px"
+                  onClose={() => closeErrorDialog(i)}
+                >
+                  <div className="p-4 flex gap-3 items-start">
+                    <span className="text-2xl flex-shrink-0">⚠️</span>
+                    <div>
+                      <p
+                        className="text-sm mb-3"
+                        style={{ fontFamily: FONT_SYSTEM, color: "#000" }}
+                      >
+                        {errMsg}
+                      </p>
+                      <Win95Button onClick={() => closeErrorDialog(i)}>
+                        OK
+                      </Win95Button>
+                    </div>
+                  </div>
+                </Win95Window>
               </motion.div>
-            )}
+            ))}
           </AnimatePresence>
-
-          {/* Buttons */}
-          <div className="flex items-center justify-center gap-4 relative min-h-[60px]">
-            <motion.div
-              animate={
-                noClickCount >= 4
-                  ? {
-                      scale: [1, 1.05, 1],
-                      boxShadow: [
-                        "0 0 0px rgba(0,255,136,0)",
-                        "0 0 15px rgba(0,255,136,0.4)",
-                        "0 0 0px rgba(0,255,136,0)",
-                      ],
-                    }
-                  : {}
-              }
-              transition={{ duration: 1, repeat: Infinity }}
-            >
-              <Win95Button onClick={handleYesClick} variant="primary">
-                YES PLS 💕
-              </Win95Button>
-            </motion.div>
-
-            {/* No button - always visible but increasingly glitchy */}
-            <motion.div
-              animate={
-                isGlitching && noClickCount > 0
-                  ? {
-                      x: (Math.random() - 0.5) * Math.min(noClickCount * 4, 20),
-                      y: (Math.random() - 0.5) * Math.min(noClickCount * 3, 15),
-                    }
-                  : {}
-              }
-              transition={{ type: "spring", stiffness: 500, damping: 10 }}
-            >
-              <Win95Button onClick={handleNoClick}>
-                {noClickCount >= 5
-                  ? "N̸̛͝ö̶́"
-                  : noClickCount >= 3
-                  ? "N̷o̷"
-                  : "No"}
-              </Win95Button>
-            </motion.div>
-          </div>
-
-          {noClickCount > 0 && noClickCount < 3 && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center mt-3 text-xs"
-              style={{ fontFamily: "'Courier New', monospace", color: "#ff0000" }}
-            >
-              ⚠ WARNING: &quot;No&quot; is not a valid response
-            </motion.p>
-          )}
-
-          {noClickCount >= 3 && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 0.8, repeat: Infinity }}
-              className="text-center mt-3 text-xs font-bold"
-              style={{ fontFamily: "'Courier New', monospace", color: "#ff0000", textShadow: "0 0 6px #ff0000" }}
-            >
-              ⚠ SYSTEM UNSTABLE — CLICK YES TO RESTORE ⚠
-            </motion.p>
-          )}
         </div>
+      )}
 
-        {/* Taskbar */}
-        <div
-          className="flex items-center px-2 py-1"
-          style={{
-            background: "#c0c0c0",
-            borderTop: "2px solid #dfdfdf",
-            borderBottom: "2px solid #404040",
-          }}
-        >
-          <span className="text-[10px]" style={{ fontFamily: "'Courier New', monospace", color: noClickCount >= 3 ? "#ff0000" : "#666" }}>
-            {noClickCount >= 3 ? "NOT RESPONDING" : "Ready"}
-          </span>
-          <span className="ml-auto text-[10px]" style={{ fontFamily: "'Courier New', monospace", color: "#666" }}>
-            💕 {new Date().toLocaleDateString("en-US")}
-          </span>
-        </div>
-      </motion.div>
+      {/* Taskbar (always visible) */}
+      <Taskbar />
     </div>
   );
 }
 
-// Win95-style button
+// ─── Win95 Window Component ─────────────────────────────────────────────────
+
+function Win95Window({
+  title,
+  children,
+  width = "auto",
+  onClose,
+}: {
+  title: string;
+  children: React.ReactNode;
+  width?: string;
+  onClose?: () => void;
+}) {
+  return (
+    <div
+      style={{
+        width,
+        maxWidth: "100%",
+        background: WIN_COLORS.windowBg,
+        borderTop: `2px solid ${WIN_COLORS.borderLight}`,
+        borderLeft: `2px solid ${WIN_COLORS.borderLight}`,
+        borderRight: `2px solid ${WIN_COLORS.borderDarkest}`,
+        borderBottom: `2px solid ${WIN_COLORS.borderDarkest}`,
+        boxShadow: `inset -1px -1px 0 ${WIN_COLORS.borderDark}, inset 1px 1px 0 ${WIN_COLORS.white}`,
+      }}
+    >
+      {/* Title bar */}
+      <div
+        className="flex items-center px-2 py-1"
+        style={{
+          background: `linear-gradient(90deg, ${WIN_COLORS.titleBar}, #1084d0)`,
+          margin: "2px",
+        }}
+      >
+        <span
+          className="text-xs font-bold truncate"
+          style={{ fontFamily: FONT_SYSTEM, color: WIN_COLORS.white }}
+        >
+          {title}
+        </span>
+        <div className="ml-auto flex gap-0.5 flex-shrink-0">
+          <TitleBarButton label="_" />
+          <TitleBarButton label="□" />
+          <TitleBarButton label="×" onClick={onClose} />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ margin: "0 2px 2px 2px" }}>{children}</div>
+    </div>
+  );
+}
+
+// ─── Title Bar Button ───────────────────────────────────────────────────────
+
+function TitleBarButton({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center justify-center"
+      style={{
+        width: "16px",
+        height: "14px",
+        background: WIN_COLORS.buttonFace,
+        borderTop: `1px solid ${WIN_COLORS.borderLight}`,
+        borderLeft: `1px solid ${WIN_COLORS.borderLight}`,
+        borderRight: `1px solid ${WIN_COLORS.borderDark}`,
+        borderBottom: `1px solid ${WIN_COLORS.borderDark}`,
+        fontFamily: FONT_SYSTEM,
+        fontSize: "10px",
+        fontWeight: "bold",
+        lineHeight: 1,
+        cursor: onClick ? "pointer" : "default",
+        color: "#000",
+        padding: 0,
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+// ─── Win95 Button ───────────────────────────────────────────────────────────
+
 function Win95Button({
   children,
   onClick,
   variant = "default",
-  size = "md",
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   variant?: "default" | "primary";
-  size?: "sm" | "md";
 }) {
-  const baseStyle = {
-    fontFamily: "'Courier New', monospace",
-    borderTop: "2px solid #dfdfdf",
-    borderLeft: "2px solid #dfdfdf",
-    borderRight: "2px solid #404040",
-    borderBottom: "2px solid #404040",
-    background: "#c0c0c0",
-    cursor: "pointer",
-  };
-
   return (
     <button
       onClick={onClick}
-      className={`font-bold active:translate-y-px ${
-        size === "sm" ? "px-1.5 py-0.5 text-[10px]" : "px-6 py-2 text-sm"
-      }`}
+      className="active:translate-y-px"
       style={{
-        ...baseStyle,
-        color: variant === "primary" ? "#000080" : "#000",
+        fontFamily: FONT_SYSTEM,
+        fontSize: "12px",
+        fontWeight: "bold",
+        padding: "4px 24px",
+        background: WIN_COLORS.buttonFace,
+        borderTop: `2px solid ${WIN_COLORS.borderLight}`,
+        borderLeft: `2px solid ${WIN_COLORS.borderLight}`,
+        borderRight: `2px solid ${WIN_COLORS.borderDark}`,
+        borderBottom: `2px solid ${WIN_COLORS.borderDark}`,
+        cursor: "pointer",
+        color: variant === "primary" ? WIN_COLORS.titleBar : WIN_COLORS.black,
+        outline: variant === "primary" ? `1px dotted ${WIN_COLORS.black}` : "none",
+        outlineOffset: "-4px",
+        minWidth: "75px",
       }}
     >
       {children}
@@ -435,49 +685,124 @@ function Win95Button({
   );
 }
 
-// Scan lines overlay
-function ScanLines() {
+// ─── Desktop Icon Button ────────────────────────────────────────────────────
+
+function DesktopIconButton({
+  icon,
+  onClick,
+}: {
+  icon: DesktopIcon;
+  onClick: () => void;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <div
-      className="fixed inset-0 pointer-events-none z-50 opacity-[0.03]"
+    <button
+      onClick={onClick}
+      onDoubleClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="flex flex-col items-center gap-1 p-1 rounded-sm cursor-pointer"
       style={{
-        backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 1px, #000 1px, #000 2px)",
-        backgroundSize: "100% 3px",
+        width: "72px",
+        background: isHovered ? "rgba(0,0,128,0.3)" : "transparent",
+        border: isHovered ? "1px dotted rgba(255,255,255,0.6)" : "1px solid transparent",
       }}
-    />
+    >
+      <span className="text-3xl leading-none" style={{ filter: "drop-shadow(1px 1px 0 rgba(0,0,0,0.3))" }}>
+        {icon.emoji}
+      </span>
+      <span
+        className="text-center leading-tight"
+        style={{
+          fontFamily: FONT_SYSTEM,
+          fontSize: "11px",
+          color: WIN_COLORS.white,
+          textShadow: "1px 1px 1px rgba(0,0,0,0.8)",
+          wordBreak: "break-word",
+        }}
+      >
+        {icon.label}
+      </span>
+    </button>
   );
 }
 
-// Pixel heart border (CSS art)
-function PixelHeartFrame() {
+// ─── Taskbar ────────────────────────────────────────────────────────────────
+
+function Taskbar() {
   return (
-    <div className="relative" style={{ width: "100px", height: "100px" }}>
-      <svg viewBox="0 0 100 100" className="w-full h-full">
-        {/* Pixel heart outline */}
-        <rect x="20" y="10" width="10" height="10" fill="#ff1493" />
-        <rect x="30" y="10" width="10" height="10" fill="#ff1493" />
-        <rect x="50" y="10" width="10" height="10" fill="#ff1493" />
-        <rect x="60" y="10" width="10" height="10" fill="#ff1493" />
-        <rect x="10" y="20" width="10" height="10" fill="#ff1493" />
-        <rect x="40" y="20" width="10" height="10" fill="#ff1493" />
-        <rect x="70" y="20" width="10" height="10" fill="#ff1493" />
-        <rect x="10" y="30" width="10" height="10" fill="#ff1493" />
-        <rect x="70" y="30" width="10" height="10" fill="#ff1493" />
-        <rect x="10" y="40" width="10" height="10" fill="#ff1493" />
-        <rect x="70" y="40" width="10" height="10" fill="#ff1493" />
-        <rect x="20" y="50" width="10" height="10" fill="#ff1493" />
-        <rect x="60" y="50" width="10" height="10" fill="#ff1493" />
-        <rect x="30" y="60" width="10" height="10" fill="#ff1493" />
-        <rect x="50" y="60" width="10" height="10" fill="#ff1493" />
-        <rect x="40" y="70" width="10" height="10" fill="#ff1493" />
-        {/* Inner fill */}
-        <rect x="20" y="20" width="20" height="10" fill="#ff69b4" opacity="0.3" />
-        <rect x="50" y="20" width="20" height="10" fill="#ff69b4" opacity="0.3" />
-        <rect x="20" y="30" width="50" height="10" fill="#ff69b4" opacity="0.3" />
-        <rect x="20" y="40" width="50" height="10" fill="#ff69b4" opacity="0.3" />
-        <rect x="30" y="50" width="30" height="10" fill="#ff69b4" opacity="0.3" />
-        <rect x="40" y="60" width="10" height="10" fill="#ff69b4" opacity="0.3" />
-      </svg>
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50 flex items-center px-1"
+      style={{
+        height: "28px",
+        background: WIN_COLORS.windowBg,
+        borderTop: `2px solid ${WIN_COLORS.borderLight}`,
+      }}
+    >
+      {/* Start button */}
+      <button
+        className="flex items-center gap-1 h-5 px-2 mr-2"
+        style={{
+          fontFamily: FONT_SYSTEM,
+          fontSize: "11px",
+          fontWeight: "bold",
+          background: WIN_COLORS.buttonFace,
+          borderTop: `2px solid ${WIN_COLORS.borderLight}`,
+          borderLeft: `2px solid ${WIN_COLORS.borderLight}`,
+          borderRight: `2px solid ${WIN_COLORS.borderDark}`,
+          borderBottom: `2px solid ${WIN_COLORS.borderDark}`,
+          cursor: "pointer",
+          color: "#000",
+        }}
+      >
+        <span
+          style={{
+            background: "linear-gradient(180deg, #ff0000, #ffff00, #00ff00, #0000ff)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontWeight: 900,
+            fontSize: "12px",
+          }}
+        >
+          ■
+        </span>
+        Start
+      </button>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Clock */}
+      <div
+        className="flex items-center h-5 px-2"
+        style={{
+          fontFamily: FONT_SYSTEM,
+          fontSize: "11px",
+          color: "#000",
+          borderTop: `1px solid ${WIN_COLORS.borderDark}`,
+          borderLeft: `1px solid ${WIN_COLORS.borderDark}`,
+          borderRight: `1px solid ${WIN_COLORS.borderLight}`,
+          borderBottom: `1px solid ${WIN_COLORS.borderLight}`,
+        }}
+      >
+        💕 14:02
+      </div>
     </div>
+  );
+}
+
+// ─── Scan Lines Overlay ─────────────────────────────────────────────────────
+
+function ScanLines() {
+  return (
+    <div
+      className="fixed inset-0 pointer-events-none z-[60] opacity-[0.03]"
+      style={{
+        backgroundImage:
+          "repeating-linear-gradient(0deg, transparent, transparent 1px, #000 1px, #000 2px)",
+        backgroundSize: "100% 3px",
+      }}
+    />
   );
 }
