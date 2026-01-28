@@ -364,7 +364,7 @@ function AskScene({
 
   return (
     <motion.div
-      className="fixed inset-0 flex flex-col items-center justify-center z-10 cursor-pointer px-8"
+      className="fixed inset-0 flex flex-col items-center justify-center z-10 cursor-pointer px-4 md:px-8"
       onClick={showContinue ? onAdvance : undefined}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -400,7 +400,7 @@ function AskScene({
         }}
       />
 
-      <div className="relative z-10 max-w-lg text-center">
+      <div className="relative z-10 max-w-[280px] md:max-w-lg text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 0.4, y: 0 }}
@@ -536,7 +536,7 @@ function DetailsScene({
       </motion.div>
 
       {/* Star cards */}
-      <div className="flex flex-col gap-5 w-full max-w-sm">
+      <div className="flex flex-col gap-5 w-full max-w-[260px] md:max-w-sm">
         {details.map((d, i) => (
           <motion.div
             key={d.label}
@@ -665,7 +665,7 @@ function LetterScene({
 
   return (
     <motion.div
-      className="fixed inset-0 flex flex-col items-center justify-center z-10 cursor-pointer px-8"
+      className="fixed inset-0 flex flex-col items-center justify-center z-10 cursor-pointer px-4 md:px-8"
       onClick={ready ? onAdvance : undefined}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -737,7 +737,7 @@ function LetterScene({
             initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-10 max-w-md text-center"
+            className="relative z-10 max-w-[280px] md:max-w-md text-center"
           >
             {/* Decorative quotes */}
             <motion.span
@@ -852,7 +852,7 @@ function FinaleScene({
 
   return (
     <motion.div
-      className="fixed inset-0 flex flex-col items-center justify-center z-10 px-8"
+      className="fixed inset-0 flex flex-col items-center justify-center z-10 px-4 md:px-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
@@ -880,7 +880,7 @@ function FinaleScene({
         {!accepted ? (
           <motion.div
             key="buttons"
-            className="flex flex-col items-center gap-8 relative z-10"
+            className="flex flex-col items-center gap-4 md:gap-8 relative z-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, filter: "blur(10px)" }}
@@ -922,7 +922,7 @@ function FinaleScene({
             <div className="flex items-center gap-5">
               <motion.button
                 onClick={onAccept}
-                className="relative overflow-hidden rounded-full px-12 py-4"
+                className="relative overflow-hidden rounded-full px-6 md:px-12 py-4"
                 style={{
                   background: `linear-gradient(135deg, ${PALETTE.purple}, ${PALETTE.pink})`,
                   border: `1px solid rgba(255,255,255,0.2)`,
@@ -962,7 +962,7 @@ function FinaleScene({
                   <motion.button
                     key={`no-${noCount}`}
                     onClick={handleNo}
-                    className="relative overflow-hidden rounded-full px-8 py-4"
+                    className="relative overflow-hidden rounded-full px-4 md:px-8 py-4"
                     style={{
                       background: "rgba(255,255,255,0.06)",
                       border: "1px solid rgba(255,255,255,0.15)",
@@ -985,7 +985,6 @@ function FinaleScene({
                       type: "spring",
                       stiffness: 200,
                       damping: 15,
-                      exit: { duration: 0.6, ease: "easeIn" },
                     }}
                     whileHover={{ scale: Math.max(0.5, 1 - noCount * 0.15 - 0.05) }}
                     whileTap={{ scale: 0.8 }}

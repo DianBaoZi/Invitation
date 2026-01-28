@@ -7,7 +7,6 @@ import {
   Invite,
   RunawayButtonConfig,
   ScratchRevealConfig,
-  SpinWheelConfig,
 } from "@/lib/supabase/types";
 
 interface InviteViewerProps {
@@ -29,11 +28,7 @@ export function InviteViewer({ invite }: InviteViewerProps) {
             config={invite.configuration as ScratchRevealConfig}
           />
         )}
-        {invite.template_id === "spin-wheel" && (
-          <SpinWheelInteraction
-            config={invite.configuration as SpinWheelConfig}
-          />
-        )}
+
       </div>
     </div>
   );
@@ -214,136 +209,6 @@ function ScratchRevealInteraction({ config }: { config: ScratchRevealConfig }) {
           🎉 Surprise revealed!
         </motion.p>
       )}
-    </motion.div>
-  );
-}
-
-// ============================================
-// SPIN WHEEL INTERACTION
-// ============================================
-
-function SpinWheelInteraction({ config }: { config: SpinWheelConfig }) {
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [rotation, setRotation] = useState(0);
-  const [result, setResult] = useState<string | null>(null);
-
-  const colors = [
-    "#7C3AED",
-    "#EC4899",
-    "#F59E0B",
-    "#10B981",
-    "#3B82F6",
-    "#EF4444",
-  ];
-  const segmentAngle = 360 / config.wheelOptions.length;
-
-  const handleSpin = () => {
-    if (isSpinning) return;
-
-    setIsSpinning(true);
-    setResult(null);
-
-    // Random spins (3-5 full rotations) plus random segment
-    const spins = 3 + Math.random() * 2;
-    const randomSegment = Math.floor(Math.random() * config.wheelOptions.length);
-    const finalRotation = spins * 360 + randomSegment * segmentAngle;
-
-    setRotation((prev) => prev + finalRotation);
-
-    // Show result after spin
-    setTimeout(() => {
-      setIsSpinning(false);
-      const winningIndex =
-        (config.wheelOptions.length -
-          Math.floor(((rotation + finalRotation) % 360) / segmentAngle)) %
-        config.wheelOptions.length;
-      setResult(config.wheelOptions[winningIndex] || config.wheelOptions[0]);
-
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.7 },
-      });
-    }, 4000);
-  };
-
-  return (
-    <motion.div
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="text-center p-8 bg-white rounded-3xl shadow-2xl"
-    >
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
-        {config.titleText}
-      </h2>
-
-      <div className="relative w-64 h-64 mx-auto mb-6">
-        {/* Wheel */}
-        <motion.div
-          className="w-full h-full rounded-full border-4 border-gray-200 shadow-xl overflow-hidden"
-          animate={{ rotate: rotation }}
-          transition={{ duration: 4, ease: [0.17, 0.67, 0.12, 0.99] }}
-        >
-          {config.wheelOptions.map((option, i) => {
-            const angle = segmentAngle * i;
-            return (
-              <div
-                key={i}
-                className="absolute w-full h-full flex items-center justify-center"
-                style={{
-                  background: `conic-gradient(from ${angle}deg, ${colors[i % colors.length]} 0deg, ${colors[i % colors.length]} ${segmentAngle}deg, transparent ${segmentAngle}deg)`,
-                }}
-              />
-            );
-          })}
-          {/* Center */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-12 h-12 rounded-full bg-white shadow-lg" />
-          </div>
-        </motion.div>
-
-        {/* Pointer */}
-        <div
-          className="absolute -top-2 left-1/2 -translate-x-1/2 z-10"
-          style={{
-            width: 0,
-            height: 0,
-            borderLeft: "15px solid transparent",
-            borderRight: "15px solid transparent",
-            borderTop: "25px solid #1F2937",
-          }}
-        />
-      </div>
-
-      {/* Spin button */}
-      <motion.button
-        onClick={handleSpin}
-        disabled={isSpinning}
-        className={`px-8 py-4 rounded-xl text-white text-lg font-bold shadow-lg ${
-          isSpinning
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-xl"
-        }`}
-        whileHover={!isSpinning ? { scale: 1.05 } : {}}
-        whileTap={!isSpinning ? { scale: 0.95 } : {}}
-      >
-        {isSpinning ? "Spinning..." : "🎯 SPIN!"}
-      </motion.button>
-
-      {/* Result */}
-      <AnimatePresence>
-        {result && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="mt-6 p-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl"
-          >
-            <p className="text-sm text-gray-600">You got:</p>
-            <p className="text-xl font-bold text-gray-900">{result}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }
