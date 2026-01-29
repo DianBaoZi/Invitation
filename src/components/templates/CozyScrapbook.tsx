@@ -369,10 +369,11 @@ export function CozyScrapbook({
                   <div
                     style={{
                       flex: 1,
+                      minWidth: 110,
                       background: "#fff",
                       border: "2px dashed #e0d4c4",
                       borderRadius: 8,
-                      padding: "10px 14px",
+                      padding: "10px 16px",
                       position: "relative",
                     }}
                   >
