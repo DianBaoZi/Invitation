@@ -3,11 +3,13 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Sparkles, AlertCircle, ArrowLeft, ArrowRight, Calendar, Clock, MapPin, PenLine, Eye, MessageSquare } from "lucide-react";
+import { Heart, Sparkles, AlertCircle, ArrowLeft, ArrowRight, Calendar, Clock, MapPin, PenLine, Eye, MessageSquare, ImagePlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getTemplateById } from "@/lib/supabase/templates";
+import { CozyScrapbook } from "@/components/templates/CozyScrapbook";
+import { OceanDreams } from "@/components/templates/OceanDreams";
 
 // Format date from YYYY-MM-DD to readable format
 function formatDate(dateStr: string): string {
@@ -434,6 +436,64 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
         ],
       };
 
+    case "ocean-dreams":
+      return {
+        sectionTitle: "Elegant Invitation Details",
+        sectionIcon: "heart",
+        accentColor: "rose",
+        fields: [
+          {
+            key: "message",
+            label: "Main Question",
+            placeholder: "Will you be my Valentine?",
+            icon: "heart",
+            type: "input",
+            maxLength: CHAR_LIMITS.message,
+            hint: "The elegant question displayed in the invitation",
+          },
+          {
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "Every moment with you feels like a beautiful story unfolding.",
+            icon: "penline",
+            type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
+            hint: "A heartfelt note in the message card",
+            textareaStyle: {
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontStyle: "italic",
+              fontSize: "15px",
+              lineHeight: 1.7,
+              color: "#b76e79",
+            },
+          },
+          {
+            key: "date",
+            label: "Date",
+            placeholder: "",
+            icon: "calendar",
+            type: "input",
+            inputType: "date",
+          },
+          {
+            key: "time",
+            label: "Time",
+            placeholder: "",
+            icon: "clock",
+            type: "input",
+            inputType: "time",
+          },
+          {
+            key: "location",
+            label: "Location",
+            placeholder: "Our special place",
+            icon: "mappin",
+            type: "input",
+            maxLength: CHAR_LIMITS.location,
+          },
+        ],
+      };
+
     case "runaway-button":
       return {
         sectionTitle: "Invitation Details",
@@ -522,6 +582,13 @@ function getAccentClasses(accent: string) {
       bg: "bg-green-50",
       bgGradient: "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600",
     },
+    rose: {
+      border: "focus:border-rose-300",
+      ring: "focus:ring-rose-200",
+      text: "text-rose-700",
+      bg: "bg-rose-50",
+      bgGradient: "bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500",
+    },
   };
   return map[accent] || map.pink;
 }
@@ -563,6 +630,8 @@ function getPageBackground(templateId: string): string {
       return "bg-gradient-to-br from-pink-50 via-rose-50 to-red-50";
     case "forest-adventure":
       return "bg-gradient-to-br from-emerald-50 via-green-50 to-lime-50";
+    case "ocean-dreams":
+      return "bg-gradient-to-br from-rose-50 via-pink-50 to-amber-50";
     default:
       return "bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50";
   }
@@ -578,6 +647,7 @@ function getHeaderBorder(templateId: string): string {
     case "cozy-scrapbook": return "border-amber-100";
     case "avocado-valentine": return "border-green-100";
     case "forest-adventure": return "border-emerald-100";
+    case "ocean-dreams": return "border-rose-100";
     default: return "border-gray-100";
   }
 }
@@ -594,17 +664,42 @@ function CustomizePageContent() {
   const fieldConfig = getTemplateFields(templateId);
   const accent = getAccentClasses(fieldConfig.accentColor);
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState("invitely");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [photoUrl1, setPhotoUrl1] = useState<string>(""); // First photo - splash/cover
+  const [photoUrl2, setPhotoUrl2] = useState<string>(""); // Second photo - inside scrapbook
+  const [photoUrl3, setPhotoUrl3] = useState<string>(""); // Third photo - for ocean-dreams
 
-  // Template-specific field values
+  // Template-specific field values with defaults
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({
     message: "",
     personalMessage: "",
-    date: "",
-    time: "",
+    date: "2025-02-14", // 14 February
+    time: "19:00", // 7:00 PM
     location: "",
   });
+
+  // Handle photo upload - can be used for either photo slot
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        alert("Please select an image file");
+        return;
+      }
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image must be less than 5MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setter(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const updateField = (key: string, value: string) => {
     setFieldValues((prev) => ({ ...prev, [key]: value }));
@@ -629,7 +724,7 @@ function CustomizePageContent() {
       if (fieldValues.date.trim()) params.set("eventDate", fieldValues.date.trim());
       if (fieldValues.time.trim()) params.set("eventTime", fieldValues.time.trim());
       if (fieldValues.location.trim()) params.set("eventLocation", fieldValues.location.trim());
-    } else if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure") {
+    } else if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure" || templateId === "ocean-dreams") {
       if (fieldValues.message.trim()) params.set("message", fieldValues.message.trim());
       if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
       if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
@@ -696,7 +791,7 @@ function CustomizePageContent() {
       if (fieldValues.time.trim()) params.set("eventTime", fieldValues.time.trim());
       if (fieldValues.location.trim()) params.set("eventLocation", fieldValues.location.trim());
     }
-    if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure") {
+    if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure" || templateId === "ocean-dreams") {
       if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
       if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
       if (fieldValues.time.trim()) params.set("time", fieldValues.time.trim());
@@ -749,12 +844,43 @@ function CustomizePageContent() {
             </div>
           </motion.div>
 
-          <FullPreview
-            previewUrl={buildPreviewUrl(true)}
-            onBack={() => setStep(step - 1)}
-            onGenerate={handleSubmit}
-            accentGradient={accent.bgGradient}
-          />
+          {/* For templates with photos, render directly to pass photos; others use iframe */}
+          {templateId === "cozy-scrapbook" ? (
+            <CozyScrapbookFullPreview
+              message={fieldValues.message || "Will you be my Valentine?"}
+              senderName={name}
+              eventDate={fieldValues.date}
+              eventTime={fieldValues.time}
+              eventLocation={fieldValues.location}
+              photoUrl1={photoUrl1}
+              photoUrl2={photoUrl2}
+              onBack={() => setStep(step - 1)}
+              onGenerate={handleSubmit}
+              accentGradient={accent.bgGradient}
+            />
+          ) : templateId === "ocean-dreams" ? (
+            <OceanDreamsFullPreview
+              senderName={name}
+              message={fieldValues.message || "Will you be my Valentine?"}
+              personalMessage={fieldValues.personalMessage}
+              date={fieldValues.date}
+              time={fieldValues.time}
+              location={fieldValues.location}
+              photo1Url={photoUrl1}
+              photo2Url={photoUrl2}
+              photo3Url={photoUrl3}
+              onBack={() => setStep(step - 1)}
+              onGenerate={handleSubmit}
+              accentGradient={accent.bgGradient}
+            />
+          ) : (
+            <FullPreview
+              previewUrl={buildPreviewUrl(true)}
+              onBack={() => setStep(step - 1)}
+              onGenerate={handleSubmit}
+              accentGradient={accent.bgGradient}
+            />
+          )}
 
           {/* Confirmation Modal */}
           <AnimatePresence>
@@ -847,6 +973,206 @@ function CustomizePageContent() {
                       className="h-12 text-lg rounded-xl border-gray-200 focus:border-pink-300 focus:ring-pink-200"
                     />
                   </div>
+
+                  {/* Photo uploads for cozy-scrapbook - 2 photos */}
+                  {templateId === "cozy-scrapbook" && (
+                    <div className="space-y-4">
+                      {/* Photo 1 - Splash/Cover */}
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 font-medium flex items-center gap-1.5">
+                          <ImagePlus className="w-4 h-4 text-gray-400" />
+                          Cover Photo (optional)
+                        </Label>
+                        <p className="text-xs text-gray-500">This appears on the splash screen and cover</p>
+
+                        {photoUrl1 ? (
+                          <div className="relative inline-block">
+                            <img
+                              src={photoUrl1}
+                              alt="Cover Preview"
+                              className="w-24 h-24 object-cover rounded-lg border-2 border-amber-200 shadow-sm"
+                            />
+                            <button
+                              onClick={() => setPhotoUrl1("")}
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-md"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <label className="flex items-center justify-center w-full h-20 border-2 border-dashed border-amber-200 rounded-xl cursor-pointer hover:border-amber-300 hover:bg-amber-50/50 transition-all">
+                            <div className="text-center">
+                              <ImagePlus className="w-6 h-6 mx-auto text-amber-400 mb-1" />
+                              <span className="text-xs text-amber-600">Upload cover photo</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handlePhotoUpload(e, setPhotoUrl1)}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
+                      </div>
+
+                      {/* Photo 2 - Inside scrapbook */}
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 font-medium flex items-center gap-1.5">
+                          <ImagePlus className="w-4 h-4 text-gray-400" />
+                          Inside Photo (optional)
+                        </Label>
+                        <p className="text-xs text-gray-500">This appears inside the unfolded scrapbook</p>
+
+                        {photoUrl2 ? (
+                          <div className="relative inline-block">
+                            <img
+                              src={photoUrl2}
+                              alt="Inside Preview"
+                              className="w-24 h-24 object-cover rounded-lg border-2 border-orange-200 shadow-sm"
+                            />
+                            <button
+                              onClick={() => setPhotoUrl2("")}
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-md"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <label className="flex items-center justify-center w-full h-20 border-2 border-dashed border-orange-200 rounded-xl cursor-pointer hover:border-orange-300 hover:bg-orange-50/50 transition-all">
+                            <div className="text-center">
+                              <ImagePlus className="w-6 h-6 mx-auto text-orange-400 mb-1" />
+                              <span className="text-xs text-orange-600">Upload inside photo</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handlePhotoUpload(e, setPhotoUrl2)}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Photo uploads for ocean-dreams (Elegant Invitation) - 3 photos */}
+                  {templateId === "ocean-dreams" && (
+                    <div className="space-y-4">
+                      {/* Photo 1 - First frame */}
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 font-medium flex items-center gap-1.5">
+                          <ImagePlus className="w-4 h-4 text-gray-400" />
+                          Photo 1 (optional)
+                        </Label>
+                        <p className="text-xs text-gray-500">First photo frame - &quot;Where it all began&quot;</p>
+
+                        {photoUrl1 ? (
+                          <div className="relative inline-block">
+                            <img
+                              src={photoUrl1}
+                              alt="Photo 1 Preview"
+                              className="w-24 h-24 object-cover rounded-lg border-2 border-rose-200 shadow-sm"
+                            />
+                            <button
+                              onClick={() => setPhotoUrl1("")}
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-md"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <label className="flex items-center justify-center w-full h-20 border-2 border-dashed border-rose-200 rounded-xl cursor-pointer hover:border-rose-300 hover:bg-rose-50/50 transition-all">
+                            <div className="text-center">
+                              <ImagePlus className="w-6 h-6 mx-auto text-rose-400 mb-1" />
+                              <span className="text-xs text-rose-600">Upload photo 1</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handlePhotoUpload(e, setPhotoUrl1)}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
+                      </div>
+
+                      {/* Photo 2 - Second frame (polaroid) */}
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 font-medium flex items-center gap-1.5">
+                          <ImagePlus className="w-4 h-4 text-gray-400" />
+                          Photo 2 (optional)
+                        </Label>
+                        <p className="text-xs text-gray-500">Second photo frame - &quot;A moment I&apos;ll never forget&quot;</p>
+
+                        {photoUrl2 ? (
+                          <div className="relative inline-block">
+                            <img
+                              src={photoUrl2}
+                              alt="Photo 2 Preview"
+                              className="w-24 h-24 object-cover rounded-lg border-2 border-pink-200 shadow-sm"
+                            />
+                            <button
+                              onClick={() => setPhotoUrl2("")}
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-md"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <label className="flex items-center justify-center w-full h-20 border-2 border-dashed border-pink-200 rounded-xl cursor-pointer hover:border-pink-300 hover:bg-pink-50/50 transition-all">
+                            <div className="text-center">
+                              <ImagePlus className="w-6 h-6 mx-auto text-pink-400 mb-1" />
+                              <span className="text-xs text-pink-600">Upload photo 2</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handlePhotoUpload(e, setPhotoUrl2)}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
+                      </div>
+
+                      {/* Photo 3 - Third frame (ornate) */}
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 font-medium flex items-center gap-1.5">
+                          <ImagePlus className="w-4 h-4 text-gray-400" />
+                          Photo 3 (optional)
+                        </Label>
+                        <p className="text-xs text-gray-500">Third photo frame - &quot;Here&apos;s to many more&quot;</p>
+
+                        {photoUrl3 ? (
+                          <div className="relative inline-block">
+                            <img
+                              src={photoUrl3}
+                              alt="Photo 3 Preview"
+                              className="w-24 h-24 object-cover rounded-lg border-2 border-amber-200 shadow-sm"
+                            />
+                            <button
+                              onClick={() => setPhotoUrl3("")}
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-md"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <label className="flex items-center justify-center w-full h-20 border-2 border-dashed border-amber-200 rounded-xl cursor-pointer hover:border-amber-300 hover:bg-amber-50/50 transition-all">
+                            <div className="text-center">
+                              <ImagePlus className="w-6 h-6 mx-auto text-amber-400 mb-1" />
+                              <span className="text-xs text-amber-600">Upload photo 3</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handlePhotoUpload(e, setPhotoUrl3)}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Next button */}
                   <Button
@@ -1018,7 +1344,7 @@ function CustomizePageContent() {
 
               <AnimatePresence mode="wait">
                 {step === 1 ? (
-                  <SplashPreview key="splash" name={name} templateId={templateId} />
+                  <SplashPreview key="splash" name={name} templateId={templateId} photoUrl1={templateId === "cozy-scrapbook" ? photoUrl1 : undefined} />
                 ) : (
                   <DetailsPreview
                     key="details"
@@ -1027,6 +1353,8 @@ function CustomizePageContent() {
                     fieldValues={fieldValues}
                     fieldConfig={fieldConfig}
                     accentColor={fieldConfig.accentColor}
+                    photoUrl1={templateId === "cozy-scrapbook" ? photoUrl1 : undefined}
+                    photoUrl2={templateId === "cozy-scrapbook" ? photoUrl2 : undefined}
                   />
                 )}
               </AnimatePresence>
@@ -1048,9 +1376,9 @@ function CustomizePageContent() {
           <div className="w-14 h-20 bg-gray-900 rounded-lg overflow-hidden flex-shrink-0 relative">
             <div className="absolute inset-0 border border-gray-700 rounded-lg pointer-events-none z-10" />
             {step === 1 ? (
-              <MiniSplashPreview name={name} templateId={templateId} />
+              <MiniSplashPreview name={name} templateId={templateId} photoUrl1={templateId === "cozy-scrapbook" ? photoUrl1 : undefined} />
             ) : (
-              <MiniDetailsPreview templateId={templateId} name={name} fieldValues={fieldValues} />
+              <MiniDetailsPreview templateId={templateId} name={name} fieldValues={fieldValues} photoUrl1={templateId === "cozy-scrapbook" ? photoUrl1 : undefined} photoUrl2={templateId === "cozy-scrapbook" ? photoUrl2 : undefined} />
             )}
           </div>
           {/* Status text */}
@@ -1098,12 +1426,16 @@ function DetailsPreview({
   fieldValues,
   fieldConfig,
   accentColor,
+  photoUrl1,
+  photoUrl2,
 }: {
   templateId: string;
   name: string;
   fieldValues: Record<string, string>;
   fieldConfig: TemplateFieldConfig;
   accentColor: string;
+  photoUrl1?: string;
+  photoUrl2?: string;
 }) {
   const accent = getAccentClasses(accentColor);
 
@@ -1118,6 +1450,7 @@ function DetailsPreview({
       case "cozy-scrapbook": return "linear-gradient(180deg, #f5ebe0 0%, #eddcd2 50%, #e3d5ca 100%)";
       case "avocado-valentine": return "linear-gradient(180deg, #f0fdf4 0%, #dcfce7 50%, #f0fdf4 100%)";
       case "forest-adventure": return "linear-gradient(180deg, #1a3c1a 0%, #2d5a2d 50%, #1a3c1a 100%)";
+      case "ocean-dreams": return "linear-gradient(180deg, #fdfbf7 0%, #f8e8e4 50%, #fdfbf7 100%)";
       default: return "linear-gradient(180deg, #fce4ec 0%, #f8bbd0 100%)";
     }
   };
@@ -1140,6 +1473,7 @@ function DetailsPreview({
       case "avocado-valentine": return "🥑";
       case "runaway-button": return "💕";
       case "forest-adventure": return "🌲";
+      case "ocean-dreams": return "💐";
       default: return "💌";
     }
   };
@@ -1153,15 +1487,48 @@ function DetailsPreview({
       style={{ background: getBg() }}
     >
       <div className="flex flex-col items-center gap-4 px-5 py-8">
-        {/* Template icon */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 15 }}
-          className="text-4xl mb-1"
-        >
-          {getEmoji()}
-        </motion.div>
+        {/* Template icon or photo for cozy-scrapbook - show both photos if available */}
+        {templateId === "cozy-scrapbook" && (photoUrl1 || photoUrl2) ? (
+          <div className="flex gap-2 mb-1">
+            {photoUrl1 && (
+              <motion.div
+                initial={{ scale: 0, rotate: -10 }}
+                animate={{ scale: 1, rotate: -3 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                className="bg-white p-1 pb-4 rounded shadow-lg"
+              >
+                <img
+                  src={photoUrl1}
+                  alt="Cover"
+                  className="w-12 h-12 object-cover rounded-sm"
+                />
+              </motion.div>
+            )}
+            {photoUrl2 && (
+              <motion.div
+                initial={{ scale: 0, rotate: 10 }}
+                animate={{ scale: 1, rotate: 3 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.1 }}
+                className="bg-white p-1 pb-4 rounded shadow-lg"
+              >
+                <img
+                  src={photoUrl2}
+                  alt="Inside"
+                  className="w-12 h-12 object-cover rounded-sm"
+                />
+              </motion.div>
+            )}
+          </div>
+        ) : (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            className="text-4xl mb-1"
+          >
+            {getEmoji()}
+          </motion.div>
+        )}
 
         {/* From name */}
         <motion.p
@@ -1298,10 +1665,150 @@ function FullPreview({
 }
 
 // ============================================
+// COZY SCRAPBOOK FULL PREVIEW (renders directly with photos)
+// ============================================
+
+function CozyScrapbookFullPreview({
+  message,
+  senderName,
+  eventDate,
+  eventTime,
+  eventLocation,
+  photoUrl1,
+  photoUrl2,
+  onBack,
+  onGenerate,
+  accentGradient,
+}: {
+  message: string;
+  senderName: string;
+  eventDate?: string;
+  eventTime?: string;
+  eventLocation?: string;
+  photoUrl1?: string;
+  photoUrl2?: string;
+  onBack: () => void;
+  onGenerate: () => void;
+  accentGradient: string;
+}) {
+  return (
+    <div className="fixed inset-0 z-40" style={{ top: 0 }}>
+      {/* Render actual CozyScrapbook with photos */}
+      <CozyScrapbook
+        message={message}
+        senderName={senderName}
+        eventDate={eventDate}
+        eventTime={eventTime}
+        eventLocation={eventLocation}
+        photoUrl1={photoUrl1}
+        photoUrl2={photoUrl2}
+      />
+
+      {/* Floating toolbar */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-4 py-3 border border-gray-200"
+      >
+        <Button
+          onClick={onBack}
+          variant="outline"
+          className="h-11 px-5 rounded-xl font-semibold"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to edit
+        </Button>
+        <Button
+          onClick={onGenerate}
+          className={`h-11 px-5 rounded-xl font-semibold ${accentGradient} text-white`}
+        >
+          <Heart className="w-4 h-4 mr-2" />
+          Generate my link
+        </Button>
+      </motion.div>
+    </div>
+  );
+}
+
+// ============================================
+// OCEAN DREAMS FULL PREVIEW (renders directly with photos)
+// ============================================
+
+function OceanDreamsFullPreview({
+  senderName,
+  message,
+  personalMessage,
+  date,
+  time,
+  location,
+  photo1Url,
+  photo2Url,
+  photo3Url,
+  onBack,
+  onGenerate,
+  accentGradient,
+}: {
+  senderName: string;
+  message?: string;
+  personalMessage?: string;
+  date?: string;
+  time?: string;
+  location?: string;
+  photo1Url?: string;
+  photo2Url?: string;
+  photo3Url?: string;
+  onBack: () => void;
+  onGenerate: () => void;
+  accentGradient: string;
+}) {
+  return (
+    <div className="fixed inset-0 z-40" style={{ top: 0 }}>
+      {/* Render actual OceanDreams with photos */}
+      <OceanDreams
+        senderName={senderName}
+        message={message}
+        personalMessage={personalMessage}
+        date={date}
+        time={time}
+        location={location}
+        photo1Url={photo1Url}
+        photo2Url={photo2Url}
+        photo3Url={photo3Url}
+      />
+
+      {/* Floating toolbar */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-4 py-3 border border-gray-200"
+      >
+        <Button
+          onClick={onBack}
+          variant="outline"
+          className="h-11 px-5 rounded-xl font-semibold"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to edit
+        </Button>
+        <Button
+          onClick={onGenerate}
+          className={`h-11 px-5 rounded-xl font-semibold ${accentGradient} text-white`}
+        >
+          <Heart className="w-4 h-4 mr-2" />
+          Generate my link
+        </Button>
+      </motion.div>
+    </div>
+  );
+}
+
+// ============================================
 // SPLASH PREVIEW
 // ============================================
 
-function SplashPreview({ name, templateId }: { name: string; templateId: string }) {
+function SplashPreview({ name, templateId, photoUrl1 }: { name: string; templateId: string; photoUrl1?: string }) {
   // Theme the splash preview to match the template
   const getBg = () => {
     switch (templateId) {
@@ -1312,6 +1819,7 @@ function SplashPreview({ name, templateId }: { name: string; templateId: string 
       case "cozy-scrapbook": return "bg-[#f5ebe0]";
       case "avocado-valentine": return "bg-white";
       case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] via-[#2d5a2d] to-[#1a3c1a]";
+      case "ocean-dreams": return "bg-[#fdfbf7]";
       default: return "bg-gradient-to-br from-rose-100 via-pink-50 to-purple-100";
     }
   };
@@ -1324,6 +1832,8 @@ function SplashPreview({ name, templateId }: { name: string; templateId: string 
       case "y2k-digital-crush":
       case "forest-adventure":
         return "text-white/60";
+      case "ocean-dreams":
+        return "text-[#7a6f6f]";
       default:
         return "text-gray-600";
     }
@@ -1338,9 +1848,50 @@ function SplashPreview({ name, templateId }: { name: string; templateId: string 
       case "cozy-scrapbook": return "from-amber-700 to-orange-600";
       case "avocado-valentine": return "from-green-500 to-emerald-500";
       case "forest-adventure": return "from-emerald-400 to-lime-300";
+      case "ocean-dreams": return "from-[#b76e79] to-[#d4a5a5]";
       default: return "from-pink-500 to-purple-500";
     }
   };
+
+  // Cozy Scrapbook with photo - special layout
+  if (templateId === "cozy-scrapbook" && photoUrl1) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 flex items-center justify-center bg-[#f5ebe0]"
+        style={{
+          backgroundImage: `url(${photoUrl1})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 bg-[#f5ebe0]/60" />
+
+        <div className="text-center px-6 relative z-10">
+          {/* Polaroid-style frame */}
+          <motion.div
+            initial={{ scale: 0.8, rotate: -5 }}
+            animate={{ scale: 1, rotate: -3 }}
+            className="bg-white p-2 pb-8 rounded shadow-lg mb-4 inline-block"
+          >
+            <img
+              src={photoUrl1}
+              alt="Memory"
+              className="w-20 h-20 object-cover rounded-sm"
+            />
+          </motion.div>
+
+          <p className="text-[#6b5240]/70 mb-1 text-sm">Wholeheartedly made by</p>
+          <h2 className={`text-2xl font-bold bg-gradient-to-r ${getNameColor()} bg-clip-text text-transparent`}>
+            {name || "Your Name"}
+          </h2>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -1375,7 +1926,7 @@ function SplashPreview({ name, templateId }: { name: string; templateId: string 
 // MINI SPLASH PREVIEW (for mobile floating bar)
 // ============================================
 
-function MiniSplashPreview({ name, templateId }: { name: string; templateId: string }) {
+function MiniSplashPreview({ name, templateId, photoUrl1 }: { name: string; templateId: string; photoUrl1?: string }) {
   const getBg = () => {
     switch (templateId) {
       case "stargazer": return "bg-gradient-to-br from-[#0a0a2e] to-[#1a1a4e]";
@@ -1385,17 +1936,40 @@ function MiniSplashPreview({ name, templateId }: { name: string; templateId: str
       case "cozy-scrapbook": return "bg-[#f5ebe0]";
       case "avocado-valentine": return "bg-white";
       case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] to-[#2d5a2d]";
+      case "ocean-dreams": return "bg-[#fdfbf7]";
       default: return "bg-gradient-to-br from-rose-100 to-pink-100";
     }
   };
 
   const isDark = ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush", "forest-adventure"].includes(templateId);
+  const isOceanDreams = templateId === "ocean-dreams";
+
+  // Cozy scrapbook with photo
+  if (templateId === "cozy-scrapbook" && photoUrl1) {
+    return (
+      <div
+        className="absolute inset-0 flex items-center justify-center"
+        style={{
+          backgroundImage: `url(${photoUrl1})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-[#f5ebe0]/50" />
+        <div className="text-center relative z-10">
+          <p className="text-[6px] truncate max-w-[50px] text-[#6b5240]">
+            {name || "Name"}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`absolute inset-0 flex items-center justify-center ${getBg()}`}>
       <div className="text-center">
-        <Heart className={`w-4 h-4 mx-auto mb-1 ${isDark ? "text-white/80 fill-white/80" : "text-pink-500 fill-pink-500"}`} />
-        <p className={`text-[6px] truncate max-w-[50px] ${isDark ? "text-white/70" : "text-gray-700"}`}>
+        <Heart className={`w-4 h-4 mx-auto mb-1 ${isDark ? "text-white/80 fill-white/80" : isOceanDreams ? "text-[#b76e79] fill-[#b76e79]" : "text-pink-500 fill-pink-500"}`} />
+        <p className={`text-[6px] truncate max-w-[50px] ${isDark ? "text-white/70" : isOceanDreams ? "text-[#7a6f6f]" : "text-gray-700"}`}>
           {name || "Name"}
         </p>
       </div>
@@ -1411,10 +1985,14 @@ function MiniDetailsPreview({
   templateId,
   name,
   fieldValues,
+  photoUrl1,
+  photoUrl2,
 }: {
   templateId: string;
   name: string;
   fieldValues: Record<string, string>;
+  photoUrl1?: string;
+  photoUrl2?: string;
 }) {
   const getBg = () => {
     switch (templateId) {
@@ -1426,16 +2004,18 @@ function MiniDetailsPreview({
       case "cozy-scrapbook": return "bg-[#f5ebe0]";
       case "avocado-valentine": return "bg-green-50";
       case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] to-[#2d5a2d]";
+      case "ocean-dreams": return "bg-[#fdfbf7]";
       default: return "bg-gradient-to-br from-pink-100 to-rose-100";
     }
   };
 
   const isDark = ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush", "forest-adventure"].includes(templateId);
+  const isOceanDreams = templateId === "ocean-dreams";
 
   return (
     <div className={`absolute inset-0 flex flex-col items-center justify-center p-1 ${getBg()}`}>
       {fieldValues.message && (
-        <p className={`text-[5px] text-center leading-tight line-clamp-2 ${isDark ? "text-white/80" : "text-gray-700"}`}>
+        <p className={`text-[5px] text-center leading-tight line-clamp-2 ${isDark ? "text-white/80" : isOceanDreams ? "text-[#b76e79]" : "text-gray-700"}`}>
           {fieldValues.message}
         </p>
       )}

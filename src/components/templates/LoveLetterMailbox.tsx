@@ -28,6 +28,15 @@ export function LoveLetterMailbox({
   const [screen, setScreen] = useState<Screen>("mailbox");
   const [mailboxOpen, setMailboxOpen] = useState(false);
 
+  // Prevent double scrollbar by hiding body overflow
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
   const handleMailboxTap = () => {
     if (mailboxOpen) return;
     setMailboxOpen(true);
@@ -36,8 +45,11 @@ export function LoveLetterMailbox({
 
   return (
     <div
-      className="min-h-screen relative overflow-x-hidden"
-      style={{ background: "linear-gradient(180deg, #fce4ec 0%, #f8bbd0 30%, #f5d6d6 100%)" }}
+      className="min-h-screen h-screen relative overflow-x-hidden overflow-y-auto"
+      style={{
+        background: "linear-gradient(180deg, #fce4ec 0%, #f8bbd0 30%, #f5d6d6 100%)",
+        WebkitOverflowScrolling: "touch",
+      }}
     >
       {/* Scattered hearts bg */}
       <ScatteredHearts />
@@ -114,30 +126,30 @@ function MailboxScreen({ isOpen, onTap }: { isOpen: boolean; onTap: () => void }
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        <div className="relative" style={{ width: "220px", height: "160px" }}>
+        <div className="relative overflow-visible" style={{ width: "220px", height: "160px" }}>
           {/* Envelope body */}
           <div
-            className="absolute inset-0 rounded-xl"
+            className="absolute inset-0 rounded-xl overflow-hidden"
             style={{
               background: "linear-gradient(160deg, #fffafa 0%, #fff0f3 30%, #fce4ec 100%)",
               boxShadow: "0 20px 60px rgba(136,14,79,0.12), 0 8px 20px rgba(0,0,0,0.06)",
               border: "1px solid rgba(244,143,177,0.2)",
             }}
-          />
-
-          {/* Inner envelope texture */}
-          <div
-            className="absolute inset-0 rounded-xl overflow-hidden"
-            style={{
-              background: `repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 28px,
-                rgba(244,143,177,0.06) 28px,
-                rgba(244,143,177,0.06) 29px
-              )`,
-            }}
-          />
+          >
+            {/* Inner envelope texture */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `repeating-linear-gradient(
+                  0deg,
+                  transparent,
+                  transparent 28px,
+                  rgba(244,143,177,0.06) 28px,
+                  rgba(244,143,177,0.06) 29px
+                )`,
+              }}
+            />
+          </div>
 
           {/* Envelope flap with opening animation */}
           <motion.div
@@ -180,11 +192,11 @@ function MailboxScreen({ isOpen, onTap }: { isOpen: boolean; onTap: () => void }
             <span style={{ fontSize: "22px", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))", color: "#ffcdd2" }}>♥</span>
           </motion.div>
 
-          {/* Peeking letter when opening */}
+          {/* Peeking letter when opening - positioned outside envelope to avoid clipping */}
           <motion.div
             className="absolute left-3 right-3 rounded-t-lg"
             style={{
-              bottom: "20px",
+              top: "60px",
               height: "80px",
               background: "linear-gradient(180deg, #fff 0%, #fff5f5 100%)",
               boxShadow: "0 -2px 8px rgba(0,0,0,0.04)",
@@ -192,7 +204,7 @@ function MailboxScreen({ isOpen, onTap }: { isOpen: boolean; onTap: () => void }
               zIndex: 1,
             }}
             initial={{ y: 0 }}
-            animate={isOpen ? { y: -60 } : { y: 0 }}
+            animate={isOpen ? { y: -50 } : { y: 0 }}
             transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
           >
             {/* Letter lines */}
@@ -205,7 +217,7 @@ function MailboxScreen({ isOpen, onTap }: { isOpen: boolean; onTap: () => void }
 
           {/* Decorative bottom corner flourish */}
           <div
-            className="absolute bottom-3 right-4 opacity-10"
+            className="absolute bottom-3 right-4 opacity-10 z-10"
             style={{ fontFamily: "'Dancing Script', cursive", fontSize: "12px", color: "#880e4f" }}
           >
             xoxo

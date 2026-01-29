@@ -2,10 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, X, Monitor, Play, ArrowRight } from "lucide-react";
+import { Sparkles, X, Monitor, Play, ArrowRight, Clock, Heart, Users, Zap } from "lucide-react";
 import { PreviewModal } from "@/components/landing/PreviewModal";
 import { TEMPLATES, PRICING, formatPrice } from "@/lib/supabase/templates";
 import { Template } from "@/lib/supabase/types";
+
+// Get the next Valentine's Day date based on user's local time
+function getNextValentinesDay(): Date {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const valentines = new Date(currentYear, 1, 14, 0, 0, 0); // Feb 14 (month is 0-indexed)
+
+  // If Valentine's Day has passed this year, target next year
+  if (now > valentines) {
+    valentines.setFullYear(currentYear + 1);
+  }
+
+  return valentines;
+}
 
 export default function Home() {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
@@ -13,6 +27,48 @@ export default function Home() {
   const [showDesktopPrompt, setShowDesktopPrompt] = useState(false);
   const [showMembershipModal, setShowMembershipModal] = useState(false);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0 });
+  const [inviteCount, setInviteCount] = useState(2847);
+
+  // Valentine's Day countdown timer - updates every minute
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const valentinesDate = getNextValentinesDay().getTime();
+      const distance = valentinesDate - now;
+
+      if (distance > 0) {
+        setCountdown({
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        });
+      }
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  // Random invite count incrementer
+  useEffect(() => {
+    const incrementInvites = () => {
+      // Randomly increment by 1-3 invites
+      setInviteCount((prev) => prev + Math.floor(Math.random() * 3) + 1);
+    };
+
+    // Random interval between 2-6 seconds
+    const scheduleNext = () => {
+      const randomDelay = 2000 + Math.random() * 4000;
+      return setTimeout(() => {
+        incrementInvites();
+        scheduleNext();
+      }, randomDelay);
+    };
+
+    const timeoutId = scheduleNext();
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   useEffect(() => {
     const isDismissed = sessionStorage.getItem("desktop-prompt-dismissed");
@@ -38,7 +94,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#faf9f7] relative overflow-x-hidden">
+    <main className="min-h-screen bg-[#faf9f7] relative">
       {/* Warm paper texture background */}
       <div
         className="fixed inset-0 opacity-40 pointer-events-none"
@@ -47,93 +103,253 @@ export default function Home() {
         }}
       />
 
-      {/* Mobile desktop prompt toast */}
+      {/* Mobile desktop prompt modal - centered with blur */}
       <AnimatePresence>
         {showDesktopPrompt && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-4 left-4 right-4 z-50 md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6 md:hidden"
+            style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
           >
-            <div className="bg-white rounded-2xl shadow-lg border border-stone-200/60 p-3 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center flex-shrink-0">
-                <Monitor className="w-4 h-4 text-stone-600" />
+            {/* Blur backdrop */}
+            <div className="absolute inset-0 backdrop-blur-md" />
+
+            {/* Modal content */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="relative bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center"
+            >
+              {/* Icon */}
+              <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-stone-100 to-stone-200 flex items-center justify-center">
+                <Monitor className="w-7 h-7 text-stone-600" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-stone-900">Better on desktop</p>
-                <p className="text-xs text-stone-500">Full animations work best on larger screens</p>
-              </div>
+
+              {/* Text */}
+              <h3
+                className="text-xl text-stone-900 mb-2"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                Better on Desktop
+              </h3>
+              <p
+                className="text-stone-500 text-sm mb-6 leading-relaxed"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "15px" }}
+              >
+                For the full experience with animations and interactions, we recommend viewing on a larger screen.
+              </p>
+
+              {/* OK Button */}
               <button
                 onClick={dismissDesktopPrompt}
-                className="w-8 h-8 rounded-full hover:bg-stone-100 flex items-center justify-center flex-shrink-0 transition-colors"
+                className="w-full py-3.5 rounded-full bg-stone-900 text-white font-medium hover:bg-stone-800 transition-all shadow-lg active:scale-[0.98]"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "15px", letterSpacing: "0.02em" }}
               >
-                <X className="w-4 h-4 text-stone-400" />
+                Got it
               </button>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Hero section */}
-      <div className="text-center pt-14 md:pt-20 pb-10 md:pb-14 px-4 relative z-10">
+      <div className="text-center pt-12 sm:pt-16 md:pt-24 pb-8 sm:pb-12 md:pb-16 px-4 relative z-10 overflow-visible">
+        {/* Floating hearts background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute text-rose-200/30"
+              style={{
+                left: `${10 + i * 15}%`,
+                top: `${20 + (i % 3) * 20}%`,
+                fontSize: 12 + (i % 4) * 6,
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{
+                opacity: [0, 0.4, 0],
+                y: [-20, -60, -100],
+                x: [0, (i % 2 === 0 ? 10 : -10), 0],
+                rotate: [0, (i % 2 === 0 ? 15 : -15), 0],
+              }}
+              transition={{
+                duration: 4 + i * 0.5,
+                repeat: Infinity,
+                delay: i * 0.8,
+                ease: "easeOut",
+              }}
+            >
+              ♥
+            </motion.div>
+          ))}
+        </div>
+
         <motion.div
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 1 }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-          className="flex items-center justify-center gap-3 mb-6"
+          className="flex items-center justify-center gap-4 mb-4 sm:mb-8"
         >
-          <span className="block h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-rose-300/60" />
-          <span
-            className="text-rose-400/80 text-[10px] tracking-[0.35em] uppercase"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500 }}
+          <span className="block h-px w-16 sm:w-24 bg-gradient-to-r from-transparent to-rose-300/60" />
+          <motion.span
+            className="text-rose-400/80 text-xs sm:text-sm tracking-[0.4em] uppercase"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
           >
             make it count
-          </span>
-          <span className="block h-px w-10 sm:w-16 bg-gradient-to-l from-transparent to-rose-300/60" />
+          </motion.span>
+          <span className="block h-px w-16 sm:w-24 bg-gradient-to-l from-transparent to-rose-300/60" />
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="text-4xl sm:text-5xl md:text-6xl text-stone-900 tracking-tight leading-[1.1] mb-5"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 500 }}
+        {/* Animated Hero Title */}
+        <h1
+          className="text-[2.75rem] sm:text-6xl md:text-7xl lg:text-8xl text-stone-900 tracking-tight leading-[1.05] mb-3 sm:mb-6 overflow-visible"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
         >
-          Impress your{" "}
-          <span className="relative inline-block">
-            <span
-              className="italic"
+          {/* Letter-by-letter "Impress" */}
+          <span className="inline-block">
+            {"Impress".split("").map((letter, i) => (
+              <motion.span
+                key={i}
+                className="inline-block"
+                initial={{ opacity: 0, y: 40, rotateX: -90 }}
+                animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.3 + i * 0.05,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {letter}
+              </motion.span>
+            ))}
+          </span>{" "}
+          {/* Letter-by-letter "your" */}
+          <span className="inline-block">
+            {"your".split("").map((letter, i) => (
+              <motion.span
+                key={i}
+                className="inline-block"
+                initial={{ opacity: 0, y: 40, rotateX: -90 }}
+                animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.65 + i * 0.05,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {letter}
+              </motion.span>
+            ))}
+          </span>{" "}
+          {/* Animated "date" with special effects */}
+          <motion.span
+            className="relative inline-block overflow-visible"
+            style={{ paddingRight: "3rem" }}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* Glow effect behind "date" */}
+            <motion.span
+              className="absolute inset-0 blur-xl"
+              style={{
+                background: "radial-gradient(ellipse, rgba(225,29,72,0.3) 0%, transparent 70%)",
+              }}
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.5, 0.8, 0.5],
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            />
+            {/* The word "date" with shimmer */}
+            <motion.span
+              className="relative italic"
               style={{
                 fontFamily: "'Dancing Script', cursive",
                 fontSize: "1.15em",
-                background: "linear-gradient(135deg, #be123c, #e11d48, #f43f5e)",
+                background: "linear-gradient(90deg, #be123c, #e11d48, #f43f5e, #fb7185, #f43f5e, #e11d48, #be123c)",
+                backgroundSize: "200% 100%",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
+                paddingRight: "0.15em",
               }}
+              animate={{
+                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             >
               date
-            </span>
+            </motion.span>
+            {/* Sparkle decorations */}
             <motion.span
-              className="absolute -top-2 -right-5 text-rose-300/70 text-base"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8 }}
+              className="absolute -top-4 -right-2 text-rose-400/80 text-xl md:text-2xl"
+              initial={{ opacity: 0, scale: 0, rotate: -30 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ delay: 1.5, duration: 0.5, type: "spring", stiffness: 200 }}
             >
               ✦
             </motion.span>
-          </span>
-        </motion.h1>
+            <motion.span
+              className="absolute -bottom-2 -left-4 text-rose-300/60 text-base md:text-lg"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: [0, 1, 0.6], scale: 1 }}
+              transition={{ delay: 1.7, duration: 0.5 }}
+            >
+              ✦
+            </motion.span>
+            <motion.span
+              className="absolute top-1/2 -right-8 text-amber-400/50 text-sm md:text-base"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.8, 0.4], rotate: [0, 180, 360] }}
+              transition={{ delay: 1.9, duration: 2, repeat: Infinity }}
+            >
+              ✧
+            </motion.span>
+          </motion.span>
+        </h1>
 
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.15 }}
-          className="text-stone-400 text-sm sm:text-base max-w-md mx-auto"
-          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "1.1rem", letterSpacing: "0.02em" }}
+          className="text-stone-500 text-sm sm:text-xl md:text-2xl max-w-xl mx-auto px-2 sm:px-4"
+          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", letterSpacing: "0.03em" }}
         >
           Interactive invites they&apos;ll actually remember
         </motion.p>
+
+        {/* Valentine's Day Countdown + Social Proof */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-6 sm:mt-8 flex flex-row items-center justify-center gap-3 sm:gap-6"
+        >
+          {/* Countdown Timer */}
+          <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-rose-50 border border-rose-200">
+            <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-rose-400" />
+            <span className="text-rose-600 text-xs sm:text-sm font-medium" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <span className="font-bold">{countdown.days}</span>d <span className="font-bold">{countdown.hours}</span>h until Valentine&apos;s
+            </span>
+            <Heart className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-400 fill-rose-400" />
+          </div>
+
+          {/* Social Proof - Desktop only */}
+          <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-stone-50 border border-stone-200">
+            <Users className="w-4 h-4 text-stone-400" />
+            <span className="text-stone-600 text-sm" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              <strong className="text-stone-800">{inviteCount.toLocaleString()}</strong> invites sent this week
+            </span>
+          </div>
+        </motion.div>
+
       </div>
 
       {/* Template Grid */}
@@ -151,6 +367,8 @@ export default function Home() {
               onClick={() => handleCardClick(template)}
             />
           ))}
+          {/* Coming Soon Card */}
+          <ComingSoonCard index={TEMPLATES.length} />
         </div>
 
         {/* Mobile: 2 column grid with preview art */}
@@ -163,6 +381,8 @@ export default function Home() {
               onClick={() => handleCardClick(template)}
             />
           ))}
+          {/* Coming Soon Card - Mobile */}
+          <MobileComingSoonCard index={TEMPLATES.length} />
         </div>
       </div>
 
@@ -175,14 +395,22 @@ export default function Home() {
       >
         <button
           onClick={() => setShowMembershipModal(true)}
-          className="w-full md:w-auto bg-stone-900 text-white px-6 py-3.5 rounded-full flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all hover:bg-stone-800 active:scale-[0.98]"
+          className="w-full md:w-auto bg-gradient-to-r from-rose-500 to-pink-500 text-white px-6 py-3.5 rounded-full flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all hover:from-rose-600 hover:to-pink-600 active:scale-[0.98] relative overflow-hidden"
           style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
         >
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <span className="text-sm tracking-wide">
-            {formatPrice(PRICING.membership)} — Unlock all templates
+          {/* Shimmer effect */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            animate={{ x: ["-100%", "100%"] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+          />
+          <Sparkles className="w-4 h-4 text-white relative z-10" />
+          <span className="text-sm tracking-wide relative z-10">
+            <span className="line-through text-white/60 mr-2">{formatPrice(PRICING.originalMembership)}</span>
+            <span className="font-semibold">{formatPrice(PRICING.membership)}</span>
+            <span className="hidden sm:inline"> — Get All Templates</span>
           </span>
-          <ArrowRight className="w-4 h-4 text-stone-400" />
+          <ArrowRight className="w-4 h-4 text-white/80 relative z-10" />
         </button>
       </motion.div>
 
@@ -225,10 +453,18 @@ function TemplateCard({
   onLeave: () => void;
   onClick: () => void;
 }) {
-  // Varying heights for visual interest
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+
+  // Reset iframe loaded state when unhovered
+  useEffect(() => {
+    if (!isHovered) {
+      setIframeLoaded(false);
+    }
+  }, [isHovered]);
+
+  // Standardized larger card height (3x original ~200px)
   const getCardHeight = () => {
-    const heights = [220, 200, 240, 200, 220, 200, 240, 200, 220];
-    return heights[index % heights.length];
+    return 600;
   };
 
   return (
@@ -250,10 +486,30 @@ function TemplateCard({
         }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Background with preview art */}
+        {/* Background with preview art (static preview) */}
         <div className="absolute inset-0">
           <TemplatePreviewScene templateId={template.id} isHovered={isHovered} />
         </div>
+
+        {/* Live iframe preview on hover */}
+        <AnimatePresence>
+          {isHovered && (
+            <motion.div
+              className="absolute inset-0 z-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: iframeLoaded ? 1 : 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <iframe
+                src={`/test/${template.id}`}
+                className="w-full h-full border-0 pointer-events-none"
+                title={`Preview of ${template.name}`}
+                onLoad={() => setIframeLoaded(true)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Gradient overlay for text legibility */}
         <div
@@ -281,6 +537,30 @@ function TemplateCard({
             <Play className="w-6 h-6 text-stone-800 ml-1" fill="currentColor" />
           </motion.div>
         </motion.div>
+
+        {/* Social proof badge */}
+        {template.badge && (
+          <div className="absolute top-4 left-4 z-10">
+            <span
+              className={`px-3 py-1.5 backdrop-blur-sm rounded-full text-[10px] font-semibold uppercase tracking-wider shadow-lg ${
+                template.badge === "Most Popular"
+                  ? "bg-gradient-to-r from-amber-400 to-orange-400 text-white"
+                  : template.badge === "Staff Pick"
+                  ? "bg-gradient-to-r from-purple-400 to-pink-400 text-white"
+                  : template.badge === "New"
+                  ? "bg-gradient-to-r from-emerald-400 to-teal-400 text-white"
+                  : "bg-gradient-to-r from-rose-400 to-pink-400 text-white"
+              }`}
+              style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+            >
+              {template.badge === "Most Popular" && "🔥 "}
+              {template.badge === "Staff Pick" && "⭐ "}
+              {template.badge === "New" && "✨ "}
+              {template.badge === "Trending" && "📈 "}
+              {template.badge}
+            </span>
+          </div>
+        )}
 
         {/* Price badge */}
         <div className="absolute top-4 right-4 z-10">
@@ -349,7 +629,7 @@ function MobileCard({
       transition={{ duration: 0.5, delay: index * 0.06 }}
       onClick={onClick}
       className="relative rounded-xl overflow-hidden active:scale-[0.97] transition-transform"
-      style={{ height: 160 }}
+      style={{ height: 480 }}
     >
       {/* Background with preview art */}
       <div className="absolute inset-0">
@@ -402,6 +682,146 @@ function MobileCard({
           {template.description}
         </p>
       </div>
+    </motion.div>
+  );
+}
+
+// ============================================
+// COMING SOON CARD - Desktop
+// ============================================
+
+function ComingSoonCard({ index }: { index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      className="group"
+    >
+      <div
+        className="relative rounded-2xl overflow-hidden"
+        style={{ height: 600 }}
+      >
+        {/* Gradient background with animated particles */}
+        <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-stone-50 to-stone-100">
+          {/* Animated dots */}
+          {[...Array(12)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full bg-stone-300/30"
+              style={{
+                width: 4 + (i % 3) * 2,
+                height: 4 + (i % 3) * 2,
+                left: `${10 + (i * 8) % 80}%`,
+                top: `${15 + (i * 7) % 70}%`,
+              }}
+              animate={{
+                y: [0, -10, 0],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                duration: 3 + i * 0.2,
+                repeat: Infinity,
+                delay: i * 0.3,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Content */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+          <motion.div
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="text-5xl mb-6"
+          >
+            ✨
+          </motion.div>
+          <h3
+            className="text-stone-400 text-xl font-medium mb-3 text-center"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            More coming soon...
+          </h3>
+          <p
+            className="text-stone-400/70 text-sm text-center max-w-[200px]"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+          >
+            New magical templates are on the way
+          </p>
+        </div>
+
+        {/* Dashed border */}
+        <div className="absolute inset-4 border-2 border-dashed border-stone-300/50 rounded-xl pointer-events-none" />
+      </div>
+    </motion.div>
+  );
+}
+
+// ============================================
+// COMING SOON CARD - Mobile
+// ============================================
+
+function MobileComingSoonCard({ index }: { index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.06 }}
+      className="relative rounded-xl overflow-hidden"
+      style={{ height: 480 }}
+    >
+      {/* Gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-stone-50 to-stone-100">
+        {/* Animated dots */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-stone-300/30"
+            style={{
+              width: 3 + (i % 2) * 2,
+              height: 3 + (i % 2) * 2,
+              left: `${15 + (i * 12) % 70}%`,
+              top: `${20 + (i * 10) % 60}%`,
+            }}
+            animate={{
+              y: [0, -8, 0],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 2.5 + i * 0.2,
+              repeat: Infinity,
+              delay: i * 0.3,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+        <motion.div
+          animate={{ rotate: [0, 5, -5, 0] }}
+          transition={{ duration: 4, repeat: Infinity }}
+          className="text-3xl mb-4"
+        >
+          ✨
+        </motion.div>
+        <h3
+          className="text-stone-400 text-sm font-medium mb-2 text-center"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+        >
+          More coming soon...
+        </h3>
+        <p
+          className="text-stone-400/60 text-[10px] text-center"
+          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+        >
+          Stay tuned
+        </p>
+      </div>
+
+      {/* Dashed border */}
+      <div className="absolute inset-3 border-2 border-dashed border-stone-300/40 rounded-lg pointer-events-none" />
     </motion.div>
   );
 }
@@ -708,37 +1128,6 @@ function TemplatePreviewScene({ templateId, isHovered = false }: { templateId: s
         </div>
       );
 
-    case "avocado-valentine":
-      return (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#f0fdf4] via-[#dcfce7] to-[#bbf7d0] flex items-center justify-center">
-          {/* Confetti dots */}
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 rounded-full"
-              style={{
-                background: ["#86efac", "#fca5a5", "#fcd34d", "#c4b5fd"][i % 4],
-                left: `${10 + (i * 12) % 80}%`,
-                top: `${15 + (i * 11) % 70}%`,
-              }}
-              animate={isHovered ? {
-                y: [0, -10, 0],
-                rotate: [0, 180, 360],
-              } : {}}
-              transition={{ duration: 2, delay: i * 0.15, repeat: Infinity }}
-            />
-          ))}
-          {/* Avocado */}
-          <motion.div
-            className="relative z-10"
-            animate={isHovered ? { rotate: [-8, 8, -8], scale: [1, 1.1, 1] } : {}}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <span className="text-5xl drop-shadow-lg">🥑</span>
-          </motion.div>
-        </div>
-      );
-
     case "premiere":
       return (
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#1a0a0a] to-[#0a0a0a] flex items-center justify-center overflow-hidden">
@@ -861,6 +1250,117 @@ function TemplatePreviewScene({ templateId, isHovered = false }: { templateId: s
         </div>
       );
 
+    case "ocean-dreams":
+      return (
+        <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf7] via-[#f8e8e4] to-[#fdfbf7] flex items-center justify-center overflow-hidden">
+          {/* Subtle floral pattern overlay */}
+          <div
+            className="absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b76e79' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          />
+          {/* Floating decorations */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute"
+              style={{
+                left: `${10 + (i * 15) % 80}%`,
+                top: `${15 + (i * 12) % 70}%`,
+                fontSize: 10 + (i % 3) * 2,
+                color: "#d4a5a5",
+                opacity: 0.35,
+              }}
+              animate={isHovered ? {
+                y: [0, -8, 0],
+                rotate: [0, i % 2 === 0 ? 10 : -10, 0],
+                opacity: [0.35, 0.5, 0.35],
+              } : {}}
+              transition={{ duration: 3 + i * 0.3, repeat: Infinity, delay: i * 0.2 }}
+            >
+              {i % 2 === 0 ? "✦" : "❀"}
+            </motion.div>
+          ))}
+          {/* Elegant card preview */}
+          <div className="relative z-10 flex flex-col items-center">
+            {/* Decorative line */}
+            <motion.div
+              className="w-16 h-px mb-3"
+              style={{ background: "linear-gradient(90deg, transparent, #b76e79, transparent)" }}
+              animate={isHovered ? { scaleX: [1, 1.3, 1] } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            {/* Main question text */}
+            <motion.p
+              className="text-center px-4 mb-2"
+              style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: "14px",
+                fontStyle: "italic",
+                color: "#b76e79",
+              }}
+              animate={isHovered ? {
+                textShadow: ["0 0 0px rgba(183,110,121,0)", "0 0 15px rgba(183,110,121,0.3)", "0 0 0px rgba(183,110,121,0)"],
+              } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              Will you be my Valentine?
+            </motion.p>
+            {/* Decorative flower */}
+            <motion.div
+              animate={isHovered ? { rotate: [0, 360] } : {}}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              className="my-2"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="3" fill="#b76e79" opacity="0.6" />
+                <circle cx="12" cy="12" r="6" stroke="#d4a5a5" strokeWidth="1" fill="none" opacity="0.4" />
+                <path d="M12 4C12 4 14 8 12 12C10 8 12 4 12 4Z" fill="#e8c4bc" opacity="0.5" />
+                <path d="M12 20C12 20 10 16 12 12C14 16 12 20 12 20Z" fill="#e8c4bc" opacity="0.5" />
+                <path d="M4 12C4 12 8 10 12 12C8 14 4 12 4 12Z" fill="#e8c4bc" opacity="0.5" />
+                <path d="M20 12C20 12 16 14 12 12C16 10 20 12 20 12Z" fill="#e8c4bc" opacity="0.5" />
+              </svg>
+            </motion.div>
+            {/* Decorative line */}
+            <motion.div
+              className="w-16 h-px mt-2"
+              style={{ background: "linear-gradient(90deg, transparent, #b76e79, transparent)" }}
+              animate={isHovered ? { scaleX: [1, 1.3, 1] } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            {/* RSVP buttons preview */}
+            <div className="flex gap-2 mt-4">
+              <motion.div
+                className="px-4 py-1.5 rounded text-[10px] text-white"
+                style={{
+                  background: "#b76e79",
+                  fontFamily: "'Cormorant Garamond', serif",
+                  boxShadow: "0 2px 8px rgba(183,110,121,0.3)",
+                }}
+                animate={isHovered ? { scale: [1, 1.05, 1] } : {}}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                Yes, I&apos;ll Be There
+              </motion.div>
+              <motion.div
+                className="px-3 py-1.5 rounded text-[10px]"
+                style={{
+                  background: "transparent",
+                  border: "1px solid #e8c4bc",
+                  color: "#7a6f6f",
+                  fontFamily: "'Cormorant Garamond', serif",
+                }}
+                animate={isHovered ? { x: [0, 8, -5, 10, 0] } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                Perhaps Not
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      );
+
     default:
       return (
         <div className="absolute inset-0 bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center">
@@ -891,6 +1391,19 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
         className="bg-[#faf9f7] rounded-3xl shadow-2xl max-w-md w-full overflow-hidden"
       >
+        {/* Limited Time Badge */}
+        <div className="bg-rose-500 text-white text-center py-2 px-4">
+          <motion.span
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2"
+          >
+            <Zap className="w-3 h-3" />
+            Valentine&apos;s Day Special — 63% OFF
+            <Zap className="w-3 h-3" />
+          </motion.span>
+        </div>
+
         <div
           className="bg-stone-900 p-8 text-center relative overflow-hidden"
         >
@@ -921,12 +1434,19 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="p-8">
+          {/* Social Proof */}
+          <div className="flex items-center justify-center gap-2 mb-6 px-4 py-2 rounded-full bg-amber-50 border border-amber-200">
+            <span className="text-amber-700 text-xs" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+              🔥 <strong>847 people</strong> bought this week
+            </span>
+          </div>
+
           <div className="space-y-4 mb-8">
             {[
-              "All 9 premium templates",
-              "Future templates included",
+              "All 8 premium templates ($7.92 value)",
+              "Future templates included FREE",
               "Priority support",
-              "One-time payment",
+              "One-time payment — no subscription",
             ].map((feature, i) => (
               <motion.div
                 key={i}
@@ -950,32 +1470,50 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
             ))}
           </div>
 
+          {/* Price with Anchoring */}
           <div className="text-center mb-6">
+            <div className="flex items-center justify-center gap-3">
+              <span
+                className="text-xl text-stone-400 line-through"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                {formatPrice(PRICING.originalMembership)}
+              </span>
+              <span
+                className="text-4xl text-stone-900"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                {formatPrice(PRICING.membership)}
+              </span>
+            </div>
             <span
-              className="text-4xl text-stone-900"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              {formatPrice(PRICING.membership)}
-            </span>
-            <span
-              className="text-stone-400 ml-2"
+              className="text-stone-400 text-sm"
               style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
             >
-              one-time
+              one-time payment • less than a latte ☕
             </span>
           </div>
 
           <button
-            className="w-full py-4 rounded-full bg-stone-900 text-white font-medium hover:bg-stone-800 transition-all shadow-lg hover:shadow-xl active:scale-[0.98]"
+            className="w-full py-4 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white font-medium hover:from-rose-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl active:scale-[0.98]"
             style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px", letterSpacing: "0.02em" }}
           >
-            Get All-Access Pass
+            🎁 Unlock All Templates Now
           </button>
+
+          {/* Urgency Text */}
           <p
-            className="text-xs text-stone-400 text-center mt-4"
+            className="text-xs text-rose-500 text-center mt-3 font-medium"
             style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
           >
-            Secure payment via Stripe (coming soon)
+            ⏰ Offer ends on Valentine&apos;s Day
+          </p>
+
+          <p
+            className="text-xs text-stone-400 text-center mt-2"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+          >
+            Secure payment via Stripe
           </p>
         </div>
       </motion.div>

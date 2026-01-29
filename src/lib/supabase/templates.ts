@@ -3,11 +3,11 @@ import {
   RunawayButtonConfig,
   Y2KDigitalCrushConfig,
   CozyScrapbookConfig,
-  NeonArcadeConfig,
   LoveLetterMailboxConfig,
   StargazerConfig,
   PremiereConfig,
   ForestAdventureConfig,
+  OceanDreamsConfig,
 } from "./types";
 
 // ============================================
@@ -42,15 +42,6 @@ export const DEFAULT_COZY_SCRAPBOOK_CONFIG: CozyScrapbookConfig = {
   eventLocation: "Somewhere romantic",
 };
 
-export const DEFAULT_NEON_ARCADE_CONFIG: NeonArcadeConfig = {
-  questionText: "Will you be my Valentine?",
-  yesButtonText: "PRESS START (YES)",
-  successMessage: "YOU WIN: A Date! 💕",
-  personalMessage: "Ready Player 2? Let's start a co-op adventure together.",
-  date: "February 14th",
-  time: "7:00 PM",
-  location: "The usual spot",
-};
 
 export const DEFAULT_LOVE_LETTER_CONFIG: LoveLetterMailboxConfig = {
   message: "I've been wanting to ask you this...",
@@ -85,6 +76,14 @@ export const DEFAULT_FOREST_ADVENTURE_CONFIG: ForestAdventureConfig = {
   location: "The Enchanted Forest",
 };
 
+export const DEFAULT_OCEAN_DREAMS_CONFIG: OceanDreamsConfig = {
+  message: "Will you be my Valentine?",
+  personalMessage: "Every moment with you feels like a beautiful story unfolding.",
+  date: "February 14th",
+  time: "7:00 PM",
+  location: "Our special place",
+};
+
 // ============================================
 // TEMPLATE DEFINITIONS
 // ============================================
@@ -107,8 +106,9 @@ export const TEMPLATES: Template[] = [
       "Open the mailbox to reveal a multi-card love letter with event ticket and shy RSVP button.",
     emoji: "📬",
     is_free: false,
-    price_cents: 100, // $1
+    price_cents: 99, // $0.99 charm pricing
     default_config: DEFAULT_LOVE_LETTER_CONFIG,
+    badge: "Most Popular",
   },
   {
     id: "forest-adventure",
@@ -117,8 +117,9 @@ export const TEMPLATES: Template[] = [
       "Embark on a pixelated quest through the Enchanted Forest — make choices, befriend a bear, and discover a magical invitation!",
     emoji: "🌲",
     is_free: false,
-    price_cents: 100, // $1
+    price_cents: 99, // $0.99 charm pricing
     default_config: DEFAULT_FOREST_ADVENTURE_CONFIG,
+    badge: "New",
   },
   {
     id: "stargazer",
@@ -127,8 +128,9 @@ export const TEMPLATES: Template[] = [
       "Written in the stars — a cinematic night sky experience with constellations, shooting stars, and a supernova finale.",
     emoji: "🌌",
     is_free: false,
-    price_cents: 100, // $1
+    price_cents: 99, // $0.99 charm pricing
     default_config: DEFAULT_STARGAZER_CONFIG,
+    badge: "Trending",
   },
   {
     id: "premiere",
@@ -137,7 +139,7 @@ export const TEMPLATES: Template[] = [
       "You're the star of my movie — a cinematic experience with film countdown, velvet curtains, and a movie ticket invite.",
     emoji: "🎬",
     is_free: false,
-    price_cents: 100, // $1
+    price_cents: 99, // $0.99 charm pricing
     default_config: DEFAULT_PREMIERE_CONFIG,
   },
   {
@@ -147,28 +149,29 @@ export const TEMPLATES: Template[] = [
       "Retro desktop vibes! Click 'No' and watch the system crash with escalating glitch errors.",
     emoji: "💾",
     is_free: false,
-    price_cents: 100, // $1
+    price_cents: 99, // $0.99 charm pricing
     default_config: DEFAULT_Y2K_CONFIG,
   },
-  {
-    id: "neon-arcade",
-    name: "Neon Arcade",
-    description:
-      "80s arcade cabinet vibes! The No button splits and multiplies — game over, you can't win!",
-    emoji: "🕹️",
-    is_free: false,
-    price_cents: 100, // $1
-    default_config: DEFAULT_NEON_ARCADE_CONFIG,
-  },
-  {
+    {
     id: "cozy-scrapbook",
     name: "Cozy Scrapbook",
     description:
       "Flip through a handmade scrapbook with torn paper pages, washi tape, and a ticket-stub invite.",
     emoji: "📒",
     is_free: false,
-    price_cents: 100, // $1
+    price_cents: 99, // $0.99 charm pricing
     default_config: DEFAULT_COZY_SCRAPBOOK_CONFIG,
+  },
+  {
+    id: "ocean-dreams",
+    name: "Elegant Invitation",
+    description:
+      "A refined scroll-through invitation with photo frames, rose gold accents, and delicate floral details.",
+    emoji: "💐",
+    is_free: false,
+    price_cents: 99, // $0.99 charm pricing
+    default_config: DEFAULT_OCEAN_DREAMS_CONFIG,
+    badge: "New",
   },
 ];
 
@@ -198,10 +201,12 @@ export function getDefaultConfig(templateId: string) {
 // ============================================
 
 export const PRICING = {
-  single: 100, // $1 in cents
-  membership: 300, // $3 one-time in cents - all templates + future releases
+  single: 99, // $0.99 in cents (charm pricing)
+  membership: 299, // $2.99 one-time in cents - all templates + future releases
+  originalMembership: 799, // $7.99 "original" price for anchoring
 };
 
 export function formatPrice(cents: number): string {
-  return `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
+  // Always show decimals for charm pricing effect
+  return `$${(cents / 100).toFixed(2)}`;
 }

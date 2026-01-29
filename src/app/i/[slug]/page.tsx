@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, HeartCrack } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
-import { Y2KDigitalCrush } from "@/components/templates/Y2KDigitalCrush";
-import { CozyScrapbook } from "@/components/templates/CozyScrapbook";
-import { NeonArcade } from "@/components/templates/NeonArcade";
-import { LoveLetterMailbox } from "@/components/templates/LoveLetterMailbox";
-import { ScratchReveal } from "@/components/templates/ScratchReveal";
+
+// Dynamic imports for templates - reduces initial bundle size
+const Y2KDigitalCrush = lazy(() => import("@/components/templates/Y2KDigitalCrush").then(m => ({ default: m.Y2KDigitalCrush })));
+const CozyScrapbook = lazy(() => import("@/components/templates/CozyScrapbook").then(m => ({ default: m.CozyScrapbook })));
+const LoveLetterMailbox = lazy(() => import("@/components/templates/LoveLetterMailbox").then(m => ({ default: m.LoveLetterMailbox })));
+const ScratchReveal = lazy(() => import("@/components/templates/ScratchReveal").then(m => ({ default: m.ScratchReveal })));
 
 function InvitePageContent() {
   const params = useParams();
@@ -21,6 +22,8 @@ function InvitePageContent() {
   const name = searchParams.get("name") || "Someone Special";
   const message = searchParams.get("message") || "Will you be my Valentine?";
   const template = searchParams.get("template") || "runaway-button";
+  const photoUrl1 = searchParams.get("photoUrl1") || undefined;
+  const photoUrl2 = searchParams.get("photoUrl2") || undefined;
 
   // Mock expired state - check URL param for testing
   const isExpired = searchParams.get("expired") === "true";
@@ -83,7 +86,7 @@ function InvitePageContent() {
             transition={{ duration: 0.5 }}
             className="relative z-10 min-h-screen flex items-center justify-center p-4"
           >
-            <InteractiveTemplate template={template} message={message} />
+            <InteractiveTemplate template={template} message={message} photoUrl1={photoUrl1} photoUrl2={photoUrl2} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -275,21 +278,41 @@ function SplashScreen({ name, phase }: { name: string; phase: "enter" | "hold" |
 // INTERACTIVE TEMPLATES
 // ============================================
 
-function InteractiveTemplate({ template, message }: { template: string; message: string }) {
-  switch (template) {
-    case "scratch-reveal":
-      return <ScratchRevealTemplate message={message} />;
-    case "y2k-digital-crush":
-      return <Y2KDigitalCrushTemplate message={message} />;
-    case "cozy-scrapbook":
-      return <CozyScrapbookTemplate message={message} />;
-    case "neon-arcade":
-      return <NeonArcadeTemplate message={message} />;
-    case "love-letter-mailbox":
-      return <LoveLetterMailboxTemplate message={message} />;
-    default:
-      return <RunawayButtonTemplate message={message} />;
-  }
+// Loading spinner for lazy-loaded templates
+function TemplateLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-[300px]">
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        className="w-8 h-8 border-3 border-pink-200 border-t-pink-500 rounded-full"
+      />
+    </div>
+  );
+}
+
+function InteractiveTemplate({ template, message, photoUrl1, photoUrl2 }: { template: string; message: string; photoUrl1?: string; photoUrl2?: string }) {
+  // Wrap lazy-loaded templates in Suspense
+  const renderTemplate = () => {
+    switch (template) {
+      case "scratch-reveal":
+        return <ScratchRevealTemplate message={message} />;
+      case "y2k-digital-crush":
+        return <Y2KDigitalCrushTemplate message={message} />;
+      case "cozy-scrapbook":
+        return <CozyScrapbookTemplate message={message} photoUrl1={photoUrl1} photoUrl2={photoUrl2} />;
+      case "love-letter-mailbox":
+        return <LoveLetterMailboxTemplate message={message} />;
+      default:
+        return <RunawayButtonTemplate message={message} />;
+    }
+  };
+
+  return (
+    <Suspense fallback={<TemplateLoader />}>
+      {renderTemplate()}
+    </Suspense>
+  );
 }
 
 // ============================================
@@ -449,12 +472,8 @@ function Y2KDigitalCrushTemplate({ message }: { message: string }) {
   return <Y2KDigitalCrush message={message} />;
 }
 
-function CozyScrapbookTemplate({ message }: { message: string }) {
-  return <CozyScrapbook message={message} />;
-}
-
-function NeonArcadeTemplate({ message }: { message: string }) {
-  return <NeonArcade message={message} />;
+function CozyScrapbookTemplate({ message, photoUrl1, photoUrl2 }: { message: string; photoUrl1?: string; photoUrl2?: string }) {
+  return <CozyScrapbook message={message} photoUrl1={photoUrl1} photoUrl2={photoUrl2} />;
 }
 
 function LoveLetterMailboxTemplate({ message }: { message: string }) {

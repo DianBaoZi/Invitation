@@ -6,16 +6,16 @@ import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { Y2KDigitalCrush } from "@/components/templates/Y2KDigitalCrush";
 import { CozyScrapbook } from "@/components/templates/CozyScrapbook";
-import { NeonArcade } from "@/components/templates/NeonArcade";
 import { LoveLetterMailbox } from "@/components/templates/LoveLetterMailbox";
 import { AvocadoValentine } from "@/components/templates/AvocadoValentine";
 import { Stargazer } from "@/components/templates/Stargazer";
 import { Premiere } from "@/components/templates/Premiere";
 import { ForestAdventure } from "@/components/templates/ForestAdventure";
+import { OceanDreams } from "@/components/templates/OceanDreams";
 import { SplashScreen } from "@/components/invite/SplashScreen";
 
 // Templates that manage their own full-screen layout
-const FULLSCREEN_TEMPLATES = ["y2k-digital-crush", "cozy-scrapbook", "neon-arcade", "love-letter-mailbox", "avocado-valentine", "stargazer", "premiere", "forest-adventure"];
+const FULLSCREEN_TEMPLATES = ["y2k-digital-crush", "cozy-scrapbook", "love-letter-mailbox", "avocado-valentine", "stargazer", "premiere", "forest-adventure", "ocean-dreams"];
 
 export default function TestTemplatePage() {
   const params = useParams();
@@ -54,6 +54,7 @@ export default function TestTemplatePage() {
           isPaid={templateId !== "runaway-button"}
           onComplete={() => setShowSplash(false)}
           templateId={templateId}
+          photoUrl1={overrides.photoUrl1}
         />
       )}
       {!showSplash && renderTemplate()}
@@ -81,22 +82,13 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
     case "cozy-scrapbook":
       return (
         <CozyScrapbook
-          message={message}
-          senderName="Daniel"
+          message={overrides.message || message}
+          senderName={overrides.name || "Daniel"}
           {...(overrides.eventDate && { eventDate: overrides.eventDate })}
           {...(overrides.eventTime && { eventTime: overrides.eventTime })}
           {...(overrides.eventLocation && { eventLocation: overrides.eventLocation })}
-        />
-      );
-    case "neon-arcade":
-      return (
-        <NeonArcade
-          message={overrides.message || message}
-          senderName="Daniel"
-          personalMessage={overrides.personalMessage || "Ready Player 2? Let's start our co-op adventure 🎮"}
-          date={overrides.date || "February 14th"}
-          time={overrides.time || "7:00 PM"}
-          location={overrides.location || "The Arcade"}
+          {...(overrides.photoUrl1 && { photoUrl1: overrides.photoUrl1 })}
+          {...(overrides.photoUrl2 && { photoUrl2: overrides.photoUrl2 })}
         />
       );
     case "love-letter-mailbox":
@@ -141,6 +133,20 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
           {...(overrides.date && { date: overrides.date })}
           {...(overrides.time && { time: overrides.time })}
           {...(overrides.location && { location: overrides.location })}
+        />
+      );
+    case "ocean-dreams":
+      return (
+        <OceanDreams
+          senderName={overrides.name || "Daniel"}
+          {...(overrides.message && { message: overrides.message })}
+          {...(overrides.personalMessage && { personalMessage: overrides.personalMessage })}
+          {...(overrides.date && { date: overrides.date })}
+          {...(overrides.time && { time: overrides.time })}
+          {...(overrides.location && { location: overrides.location })}
+          {...(overrides.photo1Url && { photo1Url: overrides.photo1Url })}
+          {...(overrides.photo2Url && { photo2Url: overrides.photo2Url })}
+          {...(overrides.photo3Url && { photo3Url: overrides.photo3Url })}
         />
       );
     default:
