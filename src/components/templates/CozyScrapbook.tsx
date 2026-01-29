@@ -372,9 +372,8 @@ export function CozyScrapbook({
                       background: "#fff",
                       border: "2px dashed #e0d4c4",
                       borderRadius: 8,
-                      padding: "10px 12px",
+                      padding: "10px 14px",
                       position: "relative",
-                      overflow: "hidden",
                     }}
                   >
                     {/* Punch holes */}
