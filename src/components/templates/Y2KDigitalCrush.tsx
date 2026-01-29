@@ -8,6 +8,10 @@ interface Y2KDigitalCrushProps {
   message: string;
   senderName?: string;
   imageUrl?: string;
+  personalMessage?: string;
+  date?: string;
+  time?: string;
+  location?: string;
 }
 
 // ─── Win95 Style Constants ───────────────────────────────────────────────────
@@ -62,6 +66,10 @@ export function Y2KDigitalCrush({
   message,
   senderName = "Someone Special",
   imageUrl,
+  personalMessage,
+  date,
+  time,
+  location,
 }: Y2KDigitalCrushProps) {
   // Phase: "desktop" | "terminal" | "invitation"
   const [phase, setPhase] = useState<"desktop" | "terminal" | "invitation">("desktop");
@@ -169,10 +177,53 @@ export function Y2KDigitalCrush({
 
   const handleYesClick = useCallback(() => {
     setAccepted(true);
-    confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+    // Y2K/Windows style - blue squares like pixels + some pink hearts
+    const win95Colors = ["#000080", "#008080", "#0000ff", "#00ffff", "#ff69b4"];
+
+    // "Installation complete" burst - squares falling like window pixels
+    confetti({
+      particleCount: 80,
+      spread: 100,
+      origin: { y: 0.4 },
+      colors: win95Colors,
+      shapes: ["square"],
+      scalar: 1.4,
+      gravity: 0.9,
+    });
+
+    // Side glitch effects
     setTimeout(() => {
-      confetti({ particleCount: 100, spread: 120, origin: { y: 0.4 } });
-    }, 300);
+      confetti({
+        particleCount: 30,
+        angle: 45,
+        spread: 40,
+        origin: { x: 0, y: 0.3 },
+        colors: ["#000080", "#008080"],
+        shapes: ["square"],
+        scalar: 1.2,
+      });
+      confetti({
+        particleCount: 30,
+        angle: 135,
+        spread: 40,
+        origin: { x: 1, y: 0.3 },
+        colors: ["#000080", "#008080"],
+        shapes: ["square"],
+        scalar: 1.2,
+      });
+    }, 150);
+
+    // Final pink heart burst (the crush part)
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ["#ff69b4", "#ff1493", "#ff69b4"],
+        shapes: ["circle"],
+        scalar: 1.3,
+      });
+    }, 350);
   }, []);
 
   const handleNoClick = useCallback(() => {
@@ -221,7 +272,7 @@ export function Y2KDigitalCrush({
               <motion.div
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 0.8, repeat: Infinity }}
-                className="text-6xl mb-4"
+                className="text-4xl md:text-6xl mb-4"
               >
                 💕
               </motion.div>
@@ -356,7 +407,7 @@ export function Y2KDigitalCrush({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 250, damping: 22 }}
-            className="w-full max-w-lg"
+            className="w-full max-w-[280px] md:max-w-lg"
           >
             <Win95Window title="C:\WINDOWS\love.exe" width="100%">
               <div
@@ -429,7 +480,7 @@ export function Y2KDigitalCrush({
             initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 250, damping: 22 }}
-            className="w-full max-w-md"
+            className="w-full max-w-[280px] md:max-w-md"
           >
             <Win95Window title="love.exe — Invitation" width="100%">
               <div className="p-5">
@@ -462,7 +513,7 @@ export function Y2KDigitalCrush({
 
                 {/* Message */}
                 <div
-                  className="p-3 mb-5"
+                  className="p-3 mb-4"
                   style={{
                     background: WIN_COLORS.white,
                     border: `2px inset ${WIN_COLORS.insetLight}`,
@@ -475,6 +526,36 @@ export function Y2KDigitalCrush({
                 >
                   {message}
                 </div>
+
+                {/* Personal message */}
+                {personalMessage && (
+                  <p
+                    className="text-xs text-center mb-4 italic"
+                    style={{ fontFamily: FONT_MONO, color: "#666", lineHeight: "1.5" }}
+                  >
+                    "{personalMessage}"
+                  </p>
+                )}
+
+                {/* Event details */}
+                {(date || time || location) && (
+                  <div
+                    className="p-2 mb-4"
+                    style={{
+                      background: "#ffffcc",
+                      border: `1px solid ${WIN_COLORS.borderDark}`,
+                      fontFamily: FONT_MONO,
+                      fontSize: "11px",
+                    }}
+                  >
+                    <p className="text-center font-bold mb-1" style={{ color: "#000080" }}>
+                      📅 EVENT DETAILS
+                    </p>
+                    {date && <p className="text-center" style={{ color: "#000" }}>Date: {date}</p>}
+                    {time && <p className="text-center" style={{ color: "#000" }}>Time: {time}</p>}
+                    {location && <p className="text-center" style={{ color: "#000" }}>Location: {location}</p>}
+                  </div>
+                )}
 
                 {/* Accept label */}
                 <p

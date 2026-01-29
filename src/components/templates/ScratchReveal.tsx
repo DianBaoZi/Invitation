@@ -478,7 +478,7 @@ export function ScratchReveal({ message }: ScratchRevealProps) {
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="relative max-w-md w-full mx-auto rounded-3xl shadow-2xl overflow-hidden select-none"
+      className="relative max-w-[280px] md:max-w-md w-full mx-auto rounded-3xl shadow-2xl overflow-hidden select-none"
       style={{
         background: "linear-gradient(to bottom, #ffffff, #fff1f2, #fce7f3)",
         touchAction: "none",
@@ -512,7 +512,7 @@ export function ScratchReveal({ message }: ScratchRevealProps) {
       </div>
 
       {/* ---- Main card content ---- */}
-      <div className="relative px-8 pt-10 pb-10" style={{ minHeight: 460 }}>
+      <div className="relative px-4 md:px-8 pt-10 pb-10" style={{ minHeight: 460 }}>
         {/* ---- Soil / garden gradient at bottom third ---- */}
         <div
           className="absolute bottom-0 left-0 right-0 pointer-events-none"

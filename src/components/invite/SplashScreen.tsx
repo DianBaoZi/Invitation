@@ -42,9 +42,9 @@ export function SplashScreen({ creatorName, isPaid, onComplete, templateId }: Sp
     stargazer: <StargazerSplash {...splashProps} />,
     premiere: <PremiereSplash {...splashProps} />,
     "y2k-digital-crush": <Y2KSplash {...splashProps} />,
-    "scratch-reveal": <GardenSplash {...splashProps} />,
     "neon-arcade": <ArcadeSplash {...splashProps} />,
     "cozy-scrapbook": <ScrapbookSplash {...splashProps} />,
+    "forest-adventure": <ForestAdventureSplash {...splashProps} />,
   };
 
   const customSplash = templateId && splashMap[templateId];
@@ -1116,6 +1116,275 @@ function PremiereSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashPro
         >
           tap to begin
         </motion.p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ============================================
+// FOREST ADVENTURE — PIXEL RPG SPLASH
+// ============================================
+
+function ForestAdventureSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps) {
+  const displayName = isPaid && creatorName ? creatorName : appName;
+  const tagline = isPaid && creatorName ? "A quest prepared by" : "An adventure from";
+
+  const [questLines, setQuestLines] = useState<string[]>([]);
+  const [questDone, setQuestDone] = useState(false);
+
+  const lines = useMemo(() => [
+    "Loading enchanted forest...",
+    "Awakening forest spirits...",
+    "A letter awaits you...",
+    "YOUR QUEST BEGINS!",
+  ], []);
+
+  useEffect(() => {
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    lines.forEach((line, i) => {
+      timeouts.push(
+        setTimeout(() => {
+          setQuestLines((prev) => [...prev, line]);
+          if (i === lines.length - 1) {
+            timeouts.push(setTimeout(() => setQuestDone(true), 400));
+          }
+        }, 400 + i * 500)
+      );
+    });
+    return () => timeouts.forEach(clearTimeout);
+  }, [lines]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+      className="fixed inset-0 z-50 flex items-center justify-center cursor-pointer overflow-hidden"
+      style={{ background: "#1a1a2e" }}
+      onClick={onTap}
+    >
+      {/* Twinkling stars background */}
+      {Array.from({ length: 30 }, (_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            left: `${(i * 37 + 13) % 100}%`,
+            top: `${(i * 53 + 7) % 100}%`,
+            width: 2 + (i % 2),
+            height: 2 + (i % 2),
+            background: i % 5 === 0 ? "#fbbf24" : "#fff",
+          }}
+          animate={{
+            opacity: [0.2, 0.8, 0.2],
+            scale: [1, 1.3, 1],
+          }}
+          transition={{
+            duration: 2 + (i % 3),
+            delay: (i * 0.3) % 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+
+      {/* Main frame container */}
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.1, type: "spring", stiffness: 200, damping: 20 }}
+        className="relative w-[90%] max-w-sm mx-auto"
+      >
+        {/* Pixel border frame */}
+        <div
+          className="relative p-1 rounded-lg"
+          style={{
+            background: "linear-gradient(135deg, #4ade80, #22c55e, #16a34a)",
+            boxShadow: "0 0 30px rgba(74,222,128,0.3), 4px 4px 0 rgba(0,0,0,0.4)",
+          }}
+        >
+          {/* Inner border */}
+          <div
+            className="p-1 rounded-md"
+            style={{ background: "#0f380f" }}
+          >
+            {/* Content area */}
+            <div
+              className="relative p-6 rounded-sm overflow-hidden"
+              style={{
+                background: "linear-gradient(180deg, #1a4d1a 0%, #0f380f 50%, #1a4d1a 100%)",
+              }}
+            >
+              {/* Corner decorations */}
+              <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-green-400/50" />
+              <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-green-400/50" />
+              <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-green-400/50" />
+              <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-green-400/50" />
+
+              {/* Title */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-center mb-6"
+              >
+                <h1
+                  style={{
+                    fontFamily: "'Press Start 2P', monospace",
+                    fontSize: "14px",
+                    color: "#fbbf24",
+                    textShadow: "2px 2px 0 rgba(0,0,0,0.5), 0 0 20px rgba(251,191,36,0.3)",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  HEARTVENTURE
+                </h1>
+                <div
+                  className="mx-auto mt-2"
+                  style={{
+                    width: 120,
+                    height: 2,
+                    background: "linear-gradient(90deg, transparent, #4ade80, transparent)",
+                  }}
+                />
+              </motion.div>
+
+              {/* Quest loading text */}
+              <div className="mb-6 min-h-[100px]">
+                {questLines.map((line, i) => (
+                  <motion.p
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="mb-1"
+                    style={{
+                      fontFamily: "'Press Start 2P', 'Courier New', monospace",
+                      fontSize: "8px",
+                      color: i === questLines.length - 1 && line.includes("QUEST") ? "#fbbf24" : "#86efac",
+                      lineHeight: 2,
+                      textShadow: i === questLines.length - 1 && line.includes("QUEST")
+                        ? "0 0 10px rgba(251,191,36,0.5)"
+                        : "none",
+                    }}
+                  >
+                    {line.includes("QUEST") ? "★ " : "> "}{line}
+                  </motion.p>
+                ))}
+
+                {/* Blinking cursor */}
+                {!questDone && (
+                  <motion.span
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ duration: 0.5, repeat: Infinity }}
+                    style={{
+                      fontFamily: "'Press Start 2P', monospace",
+                      fontSize: "8px",
+                      color: "#86efac",
+                    }}
+                  >
+                    _
+                  </motion.span>
+                )}
+              </div>
+
+              {/* After loading — show name */}
+              <AnimatePresence>
+                {questDone && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2, duration: 0.4 }}
+                    className="text-center"
+                  >
+                    {/* Divider */}
+                    <div
+                      className="mx-auto mb-4 flex items-center justify-center gap-2"
+                      style={{ opacity: 0.5 }}
+                    >
+                      <span style={{ color: "#4ade80", fontSize: 8 }}>♦</span>
+                      <div style={{ width: 50, height: 1, background: "#4ade80" }} />
+                      <span style={{ color: "#4ade80", fontSize: 8 }}>♦</span>
+                    </div>
+
+                    <p
+                      style={{
+                        fontFamily: "'Press Start 2P', monospace",
+                        fontSize: "6px",
+                        color: "#86efac",
+                        letterSpacing: "0.15em",
+                        marginBottom: 8,
+                        opacity: 0.8,
+                      }}
+                    >
+                      {tagline.toUpperCase()}
+                    </p>
+                    <motion.p
+                      initial={{ scale: 0.9 }}
+                      animate={{ scale: 1 }}
+                      style={{
+                        fontFamily: "'Press Start 2P', monospace",
+                        fontSize: "clamp(12px, 4vw, 18px)",
+                        fontWeight: 700,
+                        color: "#fff",
+                        textShadow: "0 0 15px rgba(255,255,255,0.3), 2px 2px 0 rgba(0,0,0,0.4)",
+                      }}
+                    >
+                      {displayName}
+                    </motion.p>
+
+                    {/* Tap to start */}
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0, 1, 0.5, 1] }}
+                      transition={{ delay: 0.5, duration: 1.5, repeat: Infinity }}
+                      className="mt-6"
+                      style={{
+                        fontFamily: "'Press Start 2P', monospace",
+                        fontSize: "7px",
+                        color: "#4ade80",
+                        letterSpacing: "0.1em",
+                      }}
+                    >
+                      [ TAP TO BEGIN ]
+                    </motion.p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
+        {/* Floating sparkles around frame */}
+        {[
+          { x: -10, y: "20%", delay: 0 },
+          { x: -8, y: "70%", delay: 0.5 },
+          { x: "calc(100% + 10px)", y: "30%", delay: 0.3 },
+          { x: "calc(100% + 8px)", y: "80%", delay: 0.8 },
+        ].map((pos, i) => (
+          <motion.div
+            key={i}
+            className="absolute pointer-events-none"
+            style={{
+              left: typeof pos.x === "number" ? pos.x : undefined,
+              right: typeof pos.x === "string" && pos.x.includes("100%") ? -10 : undefined,
+              top: pos.y,
+            }}
+            animate={{
+              opacity: [0.3, 1, 0.3],
+              scale: [0.8, 1.2, 0.8],
+            }}
+            transition={{
+              duration: 2,
+              delay: pos.delay,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <span style={{ fontSize: 12, color: "#fbbf24" }}>✦</span>
+          </motion.div>
+        ))}
       </motion.div>
     </motion.div>
   );

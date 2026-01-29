@@ -1,13 +1,13 @@
 import {
   Template,
   RunawayButtonConfig,
-  ScratchRevealConfig,
   Y2KDigitalCrushConfig,
   CozyScrapbookConfig,
   NeonArcadeConfig,
   LoveLetterMailboxConfig,
   StargazerConfig,
   PremiereConfig,
+  ForestAdventureConfig,
 } from "./types";
 
 // ============================================
@@ -21,16 +21,16 @@ export const DEFAULT_RUNAWAY_CONFIG: RunawayButtonConfig = {
   successMessage: "Yay! You made me so happy! 🎉💕",
 };
 
-export const DEFAULT_SCRATCH_CONFIG: ScratchRevealConfig = {
-  instructionText: "Scratch to reveal your surprise!",
-  revealContent: "You're invited to my special day! 🎂🎈",
-};
 
 export const DEFAULT_Y2K_CONFIG: Y2KDigitalCrushConfig = {
   questionText: "Will you be my Valentine?",
   yesButtonText: "YES PLS 💕",
   noButtonText: "No",
   successMessage: "crush.exe completed successfully ✓",
+  personalMessage: "You've captured my heart like a rare Pokémon.",
+  date: "February 14th",
+  time: "7:00 PM",
+  location: "The usual spot",
 };
 
 export const DEFAULT_COZY_SCRAPBOOK_CONFIG: CozyScrapbookConfig = {
@@ -46,6 +46,10 @@ export const DEFAULT_NEON_ARCADE_CONFIG: NeonArcadeConfig = {
   questionText: "Will you be my Valentine?",
   yesButtonText: "PRESS START (YES)",
   successMessage: "YOU WIN: A Date! 💕",
+  personalMessage: "Ready Player 2? Let's start a co-op adventure together.",
+  date: "February 14th",
+  time: "7:00 PM",
+  location: "The usual spot",
 };
 
 export const DEFAULT_LOVE_LETTER_CONFIG: LoveLetterMailboxConfig = {
@@ -73,6 +77,14 @@ export const DEFAULT_PREMIERE_CONFIG: PremiereConfig = {
   location: "The usual spot",
 };
 
+export const DEFAULT_FOREST_ADVENTURE_CONFIG: ForestAdventureConfig = {
+  message: "Will you be my Valentine?",
+  personalMessage: "I planned this whole adventure just for you!",
+  date: "February 14th",
+  time: "7:00 PM",
+  location: "The Enchanted Forest",
+};
+
 // ============================================
 // TEMPLATE DEFINITIONS
 // ============================================
@@ -97,6 +109,16 @@ export const TEMPLATES: Template[] = [
     is_free: false,
     price_cents: 100, // $1
     default_config: DEFAULT_LOVE_LETTER_CONFIG,
+  },
+  {
+    id: "forest-adventure",
+    name: "Forest Adventure",
+    description:
+      "Embark on a pixelated quest through the Enchanted Forest — make choices, befriend a bear, and discover a magical invitation!",
+    emoji: "🌲",
+    is_free: false,
+    price_cents: 100, // $1
+    default_config: DEFAULT_FOREST_ADVENTURE_CONFIG,
   },
   {
     id: "stargazer",
@@ -137,16 +159,6 @@ export const TEMPLATES: Template[] = [
     is_free: false,
     price_cents: 100, // $1
     default_config: DEFAULT_NEON_ARCADE_CONFIG,
-  },
-  {
-    id: "scratch-reveal",
-    name: "Scratch to Reveal",
-    description:
-      "A golden scratch card! They scratch away the surface to reveal your hidden message.",
-    emoji: "✨",
-    is_free: false,
-    price_cents: 100, // $1
-    default_config: DEFAULT_SCRATCH_CONFIG,
   },
   {
     id: "cozy-scrapbook",

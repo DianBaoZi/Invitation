@@ -8,14 +8,14 @@ import { Y2KDigitalCrush } from "@/components/templates/Y2KDigitalCrush";
 import { CozyScrapbook } from "@/components/templates/CozyScrapbook";
 import { NeonArcade } from "@/components/templates/NeonArcade";
 import { LoveLetterMailbox } from "@/components/templates/LoveLetterMailbox";
-import { ScratchReveal } from "@/components/templates/ScratchReveal";
 import { AvocadoValentine } from "@/components/templates/AvocadoValentine";
 import { Stargazer } from "@/components/templates/Stargazer";
 import { Premiere } from "@/components/templates/Premiere";
+import { ForestAdventure } from "@/components/templates/ForestAdventure";
 import { SplashScreen } from "@/components/invite/SplashScreen";
 
 // Templates that manage their own full-screen layout
-const FULLSCREEN_TEMPLATES = ["y2k-digital-crush", "cozy-scrapbook", "neon-arcade", "love-letter-mailbox", "avocado-valentine", "stargazer", "premiere"];
+const FULLSCREEN_TEMPLATES = ["y2k-digital-crush", "cozy-scrapbook", "neon-arcade", "love-letter-mailbox", "avocado-valentine", "stargazer", "premiere", "forest-adventure"];
 
 export default function TestTemplatePage() {
   const params = useParams();
@@ -67,10 +67,17 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
   switch (templateId) {
     case "runaway-button":
       return <RunawayButtonTemplate message={message} />;
-    case "scratch-reveal":
-      return <ScratchRevealTemplate message={message} />;
     case "y2k-digital-crush":
-      return <Y2KDigitalCrush message={message} senderName="Daniel" />;
+      return (
+        <Y2KDigitalCrush
+          message={overrides.message || message}
+          senderName="Daniel"
+          personalMessage={overrides.personalMessage || "You've always been my favorite error message 💾"}
+          date={overrides.date || "February 14th"}
+          time={overrides.time || "7:00 PM"}
+          location={overrides.location || "Our favorite spot"}
+        />
+      );
     case "cozy-scrapbook":
       return (
         <CozyScrapbook
@@ -82,7 +89,16 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
         />
       );
     case "neon-arcade":
-      return <NeonArcade message={message} senderName="Daniel" />;
+      return (
+        <NeonArcade
+          message={overrides.message || message}
+          senderName="Daniel"
+          personalMessage={overrides.personalMessage || "Ready Player 2? Let's start our co-op adventure 🎮"}
+          date={overrides.date || "February 14th"}
+          time={overrides.time || "7:00 PM"}
+          location={overrides.location || "The Arcade"}
+        />
+      );
     case "love-letter-mailbox":
       return (
         <LoveLetterMailbox
@@ -108,6 +124,17 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
     case "premiere":
       return (
         <Premiere
+          senderName={overrides.name || "Daniel"}
+          {...(overrides.message && { message: overrides.message })}
+          {...(overrides.personalMessage && { personalMessage: overrides.personalMessage })}
+          {...(overrides.date && { date: overrides.date })}
+          {...(overrides.time && { time: overrides.time })}
+          {...(overrides.location && { location: overrides.location })}
+        />
+      );
+    case "forest-adventure":
+      return (
+        <ForestAdventure
           senderName={overrides.name || "Daniel"}
           {...(overrides.message && { message: overrides.message })}
           {...(overrides.personalMessage && { personalMessage: overrides.personalMessage })}
@@ -146,10 +173,26 @@ function RunawayButtonTemplate({ message }: { message: string }) {
 
   const handleYesClick = () => {
     setShowSuccess(true);
-    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+    // Pink heart burst - simple but themed
+    const heartColors = ["#ec4899", "#f472b6", "#fb7185", "#fda4af"];
+    confetti({
+      particleCount: 60,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: heartColors,
+      shapes: ["circle"],
+      scalar: 1.2,
+    });
     setTimeout(() => {
-      confetti({ particleCount: 100, spread: 100, origin: { y: 0.5 } });
-    }, 200);
+      confetti({
+        particleCount: 40,
+        spread: 90,
+        origin: { y: 0.5 },
+        colors: heartColors,
+        shapes: ["circle"],
+        scalar: 1.1,
+      });
+    }, 150);
   };
 
   if (showSuccess) {
@@ -157,39 +200,117 @@ function RunawayButtonTemplate({ message }: { message: string }) {
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="text-center p-8 bg-white rounded-3xl shadow-2xl max-w-md"
+        className="text-center p-8 rounded-3xl max-w-md relative overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, #fff 0%, #fef7f7 100%)",
+          boxShadow: "0 20px 50px rgba(236,72,153,0.15), 0 8px 20px rgba(0,0,0,0.08)",
+        }}
       >
+        {/* Subtle corner accent */}
+        <div
+          style={{
+            position: "absolute",
+            top: -30,
+            right: -30,
+            width: 80,
+            height: 80,
+            background: "radial-gradient(circle, rgba(251,113,133,0.15) 0%, transparent 70%)",
+            borderRadius: "50%",
+          }}
+        />
         <motion.div
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 0.5, repeat: Infinity }}
+          animate={{ scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }}
+          transition={{ duration: 0.6, repeat: Infinity }}
           className="text-6xl mb-4"
         >
           🎉
         </motion.div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Yay! You made my day! 💕</h2>
-        <p className="text-gray-600">Can&apos;t wait to see you!</p>
+        <h2
+          className="text-2xl font-bold mb-2"
+          style={{ color: "#be185d" }}
+        >
+          Yay! You made my day!
+        </h2>
+        <p className="text-gray-600">Can&apos;t wait to see you! 💕</p>
       </motion.div>
     );
   }
 
   return (
     <motion.div
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="text-center p-8 bg-white rounded-3xl shadow-2xl max-w-md w-full"
+      initial={{ scale: 0.9, opacity: 0, y: 20 }}
+      animate={{ scale: 1, opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+      className="text-center p-8 rounded-3xl max-w-md w-full relative overflow-hidden"
+      style={{
+        background: "linear-gradient(145deg, #ffffff 0%, #fefcfd 50%, #fdf2f8 100%)",
+        boxShadow: "0 20px 50px rgba(236,72,153,0.12), 0 8px 20px rgba(0,0,0,0.06)",
+        border: "1px solid rgba(251,113,133,0.1)",
+      }}
     >
-      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">{message}</h2>
-      <div className="flex items-center justify-center gap-6 min-h-[100px] relative">
+      {/* Subtle decorative elements */}
+      <div
+        style={{
+          position: "absolute",
+          top: -40,
+          left: -40,
+          width: 100,
+          height: 100,
+          background: "radial-gradient(circle, rgba(251,113,133,0.08) 0%, transparent 70%)",
+          borderRadius: "50%",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          bottom: -30,
+          right: -30,
+          width: 80,
+          height: 80,
+          background: "radial-gradient(circle, rgba(244,63,94,0.06) 0%, transparent 70%)",
+          borderRadius: "50%",
+        }}
+      />
+
+      {/* Small heart accent */}
+      <motion.div
+        animate={{ y: [0, -3, 0] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position: "absolute",
+          top: 16,
+          right: 20,
+          fontSize: 14,
+          opacity: 0.4,
+        }}
+      >
+        ♥
+      </motion.div>
+
+      <h2
+        className="text-2xl md:text-3xl font-bold mb-8 relative z-10"
+        style={{
+          color: "#1f2937",
+          fontFamily: "'Playfair Display', Georgia, serif",
+        }}
+      >
+        {message}
+      </h2>
+      <div className="flex items-center justify-center gap-6 min-h-[100px] relative z-10">
         <motion.button
           onClick={handleYesClick}
-          className="px-8 py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white text-lg font-bold shadow-lg hover:shadow-xl transition-shadow"
-          whileHover={{ scale: 1.05 }}
+          className="px-8 py-4 rounded-xl text-white text-lg font-bold"
+          style={{
+            background: "linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)",
+            boxShadow: "0 8px 20px rgba(236,72,153,0.3)",
+          }}
+          whileHover={{ scale: 1.05, boxShadow: "0 12px 28px rgba(236,72,153,0.4)" }}
           whileTap={{ scale: 0.95 }}
         >
           Yes! 💕
         </motion.button>
         <motion.button
-          className="px-8 py-4 rounded-xl bg-gray-200 text-gray-700 text-lg font-semibold"
+          className="px-8 py-4 rounded-xl bg-gray-100 text-gray-500 text-lg font-medium border border-gray-200"
           animate={{ x: noPosition.x, y: noPosition.y }}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}
           onMouseEnter={handleNoHover}
@@ -200,20 +321,17 @@ function RunawayButtonTemplate({ message }: { message: string }) {
         </motion.button>
       </div>
       {hoverCount > 3 && (
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 text-sm text-gray-500">
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-6 text-sm relative z-10"
+          style={{ color: "#9ca3af" }}
+        >
           Looks like &quot;No&quot; isn&apos;t an option 😉
         </motion.p>
       )}
     </motion.div>
   );
-}
-
-// ============================================
-// SCRATCH REVEAL TEMPLATE
-// ============================================
-
-function ScratchRevealTemplate({ message }: { message: string }) {
-  return <ScratchReveal message={message} />;
 }
 
 // ============================================

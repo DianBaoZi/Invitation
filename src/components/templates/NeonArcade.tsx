@@ -8,6 +8,10 @@ interface NeonArcadeProps {
   message: string;
   senderName?: string;
   imageUrl?: string;
+  personalMessage?: string;
+  date?: string;
+  time?: string;
+  location?: string;
 }
 
 type Phase = "waiting" | "showing" | "input" | "success" | "miss" | "complete";
@@ -37,6 +41,10 @@ export function NeonArcade({
   message,
   senderName = "Someone Special",
   imageUrl,
+  personalMessage,
+  date,
+  time,
+  location,
 }: NeonArcadeProps) {
   // --- Sequence generation (lazy init, stable across renders) ---
   const [sequences] = useState<number[][]>(() => generateSequences());
@@ -206,20 +214,57 @@ export function NeonArcade({
   // --- Accept handler ---
   const handleAccept = () => {
     setAccepted(true);
+    // Arcade pixel explosion - square shapes burst like 8-bit effects
+    const arcadeColors = ["#ff00ff", "#00ffff", "#00ff88", "#ffff00", "#ff0066"];
+
+    // Center explosion
     confetti({
-      particleCount: 250,
-      spread: 120,
-      origin: { y: 0.6 },
-      colors: ["#ff00ff", "#00ffff", "#00ff88", "#7c3aed", "#ff69b4"],
+      particleCount: 80,
+      spread: 360,
+      origin: { y: 0.5, x: 0.5 },
+      colors: arcadeColors,
+      shapes: ["square"],
+      scalar: 1.5,
+      gravity: 0.8,
+      drift: 0,
+      ticks: 150,
     });
+
+    // Side bursts (like arcade bonus explosions)
     setTimeout(() => {
       confetti({
-        particleCount: 150,
-        spread: 160,
-        origin: { y: 0.3 },
-        colors: ["#ff00ff", "#00ffff", "#7c3aed"],
+        particleCount: 40,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0.1, y: 0.6 },
+        colors: ["#ff00ff", "#00ffff"],
+        shapes: ["square"],
+        scalar: 1.3,
       });
-    }, 500);
+      confetti({
+        particleCount: 40,
+        angle: 120,
+        spread: 55,
+        origin: { x: 0.9, y: 0.6 },
+        colors: ["#00ff88", "#ffff00"],
+        shapes: ["square"],
+        scalar: 1.3,
+      });
+    }, 200);
+
+    // Top shower (like coins/points falling)
+    setTimeout(() => {
+      confetti({
+        particleCount: 60,
+        angle: 270,
+        spread: 80,
+        origin: { y: 0, x: 0.5 },
+        colors: arcadeColors,
+        shapes: ["square"],
+        scalar: 1.2,
+        gravity: 1.2,
+      });
+    }, 400);
   };
 
   // --- Decline handler ---
@@ -256,7 +301,7 @@ export function NeonArcade({
           initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 200, damping: 15 }}
-          className="text-center p-10 relative z-10 rounded-lg max-w-md w-full"
+          className="text-center px-6 md:px-10 py-10 relative z-10 rounded-lg max-w-[280px] md:max-w-md w-full"
           style={{
             background: "rgba(10,10,26,0.95)",
             border: "2px solid #00ffff",
@@ -267,7 +312,7 @@ export function NeonArcade({
           <motion.div
             animate={{ scale: [1, 1.3, 1], rotate: [0, 10, -10, 0] }}
             transition={{ duration: 1.2, repeat: Infinity }}
-            className="text-7xl mb-6"
+            className="text-5xl md:text-7xl mb-6"
           >
             {"\uD83C\uDFC6"}
           </motion.div>
@@ -279,7 +324,7 @@ export function NeonArcade({
           />
 
           <motion.h2
-            className="text-5xl font-bold uppercase tracking-widest mb-4"
+            className="text-3xl md:text-5xl font-bold uppercase tracking-wide md:tracking-widest mb-4"
             style={{
               color: "#ff00ff",
               fontFamily: "'Courier New', monospace",
@@ -353,7 +398,7 @@ export function NeonArcade({
         )}
       </AnimatePresence>
 
-      <div className="relative z-10 w-full max-w-md flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-[280px] md:max-w-md flex flex-col items-center">
         {/* Score / round indicator */}
         <div className="w-full flex justify-between items-center mb-4 px-2">
           <span
@@ -582,7 +627,7 @@ export function NeonArcade({
         </div>
 
         {/* Revealed invitation lines */}
-        <div className="w-full max-w-sm min-h-[120px] mb-6">
+        <div className="w-full max-w-[260px] md:max-w-sm min-h-[120px] mb-6">
           <AnimatePresence>
             {revealedLines >= 1 && (
               <motion.div
@@ -675,12 +720,98 @@ export function NeonArcade({
                 YOU WIN!
               </motion.h2>
 
+              {/* Personal message - large and prominent */}
+              {personalMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="w-full max-w-[320px] mb-6 text-center"
+                >
+                  <p
+                    className="text-xl md:text-2xl leading-relaxed font-medium"
+                    style={{
+                      color: "#fff",
+                      fontFamily: "'Courier New', monospace",
+                      textShadow: "0 0 20px rgba(255,255,255,0.5), 0 0 40px rgba(0,255,255,0.3)",
+                    }}
+                  >
+                    "{personalMessage}"
+                  </p>
+                </motion.div>
+              )}
+
+              {/* Event details - big and clear */}
+              {(date || time || location) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="w-full max-w-[320px] mb-6 p-5 rounded-xl text-center"
+                  style={{
+                    background: "rgba(0,0,0,0.5)",
+                    border: "2px solid #00ffff",
+                    boxShadow: "0 0 30px rgba(0,255,255,0.3), inset 0 0 20px rgba(0,255,255,0.05)",
+                  }}
+                >
+                  <p
+                    className="text-sm uppercase tracking-[0.3em] mb-4"
+                    style={{
+                      color: "#00ffff",
+                      fontFamily: "'Courier New', monospace",
+                      textShadow: "0 0 10px #00ffff",
+                    }}
+                  >
+                    📍 MEET UP INFO 📍
+                  </p>
+
+                  <div className="space-y-3">
+                    {date && (
+                      <p
+                        className="text-xl md:text-2xl font-bold"
+                        style={{
+                          color: "#00ff88",
+                          fontFamily: "'Courier New', monospace",
+                          textShadow: "0 0 15px #00ff88"
+                        }}
+                      >
+                        📅 {date}
+                      </p>
+                    )}
+                    {time && (
+                      <p
+                        className="text-xl md:text-2xl font-bold"
+                        style={{
+                          color: "#ff00ff",
+                          fontFamily: "'Courier New', monospace",
+                          textShadow: "0 0 15px #ff00ff"
+                        }}
+                      >
+                        ⏰ {time}
+                      </p>
+                    )}
+                    {location && (
+                      <p
+                        className="text-lg md:text-xl font-bold"
+                        style={{
+                          color: "#00ffff",
+                          fontFamily: "'Courier New', monospace",
+                          textShadow: "0 0 15px #00ffff"
+                        }}
+                      >
+                        📍 {location}
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+
               {/* Accept button */}
               <motion.button
                 onClick={handleAccept}
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-10 py-4 rounded-md font-bold text-lg uppercase tracking-[0.2em] mb-4"
+                className="px-6 md:px-10 py-4 rounded-md font-bold text-lg uppercase tracking-[0.2em] mb-4"
                 style={{
                   background: "transparent",
                   border: "2px solid #00ff88",

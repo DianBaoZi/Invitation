@@ -45,15 +45,68 @@ export function Premiere({
 
   const handleAccept = () => {
     setAccepted(true);
-    const colors = ["#d4a017", "#c41e3a", "#f5c842", "#f5e6d0"];
-    confetti({ particleCount: 120, spread: 100, origin: { y: 0.55 }, colors });
+    // Hollywood premiere - gold stars rain down like an award show
+
+    // Initial spotlight burst (gold explosion)
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.5 },
+      colors: ["#d4a017", "#f5c842", "#fff8e7"],
+      shapes: ["star"],
+      scalar: 2,
+      gravity: 0.6,
+    });
+
+    // Red carpet side flourishes
     setTimeout(() => {
-      confetti({ particleCount: 80, spread: 140, origin: { y: 0.45 }, colors });
-    }, 250);
+      confetti({
+        particleCount: 40,
+        angle: 60,
+        spread: 45,
+        origin: { x: 0, y: 0.7 },
+        colors: ["#c41e3a", "#8b1a2b", "#d4a017"],
+        shapes: ["circle"],
+        scalar: 1.2,
+      });
+      confetti({
+        particleCount: 40,
+        angle: 120,
+        spread: 45,
+        origin: { x: 1, y: 0.7 },
+        colors: ["#c41e3a", "#8b1a2b", "#d4a017"],
+        shapes: ["circle"],
+        scalar: 1.2,
+      });
+    }, 200);
+
+    // Gold star rain from top (like Oscar confetti)
     setTimeout(() => {
-      confetti({ particleCount: 60, spread: 160, origin: { y: 0.5, x: 0.3 }, colors });
-      confetti({ particleCount: 60, spread: 160, origin: { y: 0.5, x: 0.7 }, colors });
-    }, 500);
+      confetti({
+        particleCount: 60,
+        angle: 270,
+        spread: 100,
+        origin: { y: 0, x: 0.5 },
+        colors: ["#d4a017", "#f5c842"],
+        shapes: ["star"],
+        scalar: 1.8,
+        gravity: 1,
+        ticks: 200,
+      });
+    }, 350);
+
+    // Final cream/gold shimmer
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        spread: 140,
+        origin: { y: 0.4 },
+        colors: ["#f5e6d0", "#d4a017", "#f5c842"],
+        shapes: ["star", "circle"],
+        scalar: 1.3,
+        gravity: 0.7,
+      });
+    }, 550);
   };
 
   return (
@@ -455,10 +508,10 @@ function CurtainScene({
 
       {/* Center content — behind curtains */}
       <motion.div
-        className="absolute inset-0 flex flex-col items-center justify-center px-8 z-10"
+        className="absolute inset-0 flex flex-col items-center justify-center px-4 md:px-8 z-10"
         style={{ opacity: contentOpacity }}
       >
-        <div className="text-center max-w-md">
+        <div className="text-center max-w-[280px] md:max-w-md">
           {/* Decorative ornament */}
           <motion.div
             className="mb-8 flex justify-center"
@@ -603,7 +656,7 @@ function ScrollContent({
       {/* Section 1: Feature message (visible on load) */}
       <div className="min-h-screen flex flex-col items-center justify-center px-6">
         <motion.div
-          className="text-center max-w-md"
+          className="text-center max-w-[280px] md:max-w-md"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2 }}
@@ -826,9 +879,9 @@ function ScrollContent({
       </div>
 
       {/* Section 3: Credits / Personal Message */}
-      <div className="min-h-[70vh] flex flex-col items-center justify-center px-8 py-20">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 md:px-8 py-20">
         <motion.div
-          className="max-w-md text-center"
+          className="max-w-[280px] md:max-w-md text-center"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -900,7 +953,7 @@ function ScrollContent({
       </div>
 
       {/* Section 4: RSVP */}
-      <div className="min-h-[80vh] flex flex-col items-center justify-center px-8 py-20">
+      <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 md:px-8 py-20">
         <RSVPSection accepted={accepted} onAccept={onAccept} senderName={senderName} />
       </div>
 
@@ -1016,7 +1069,7 @@ function RSVPSection({
             <div className="flex items-center gap-5">
               <motion.button
                 onClick={onAccept}
-                className="relative overflow-hidden rounded-full px-10 py-4"
+                className="relative overflow-hidden rounded-full px-6 md:px-10 py-4"
                 style={{
                   background: `linear-gradient(135deg, ${P.crimson}, ${P.velvet})`,
                   border: `1px solid rgba(212,160,23,0.3)`,
@@ -1052,7 +1105,7 @@ function RSVPSection({
                   <motion.button
                     key={`no-${noCount}`}
                     onClick={handleNo}
-                    className="relative overflow-hidden rounded-full px-8 py-4"
+                    className="relative overflow-hidden rounded-full px-4 md:px-8 py-4"
                     style={{
                       background: "rgba(255,255,255,0.04)",
                       border: "1px solid rgba(255,255,255,0.1)",

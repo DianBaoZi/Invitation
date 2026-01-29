@@ -315,15 +315,63 @@ function RevealScreen({
 
   const handleRSVP = () => {
     setShowSuccess(true);
+    // Rose petals falling - soft romantic pinks like flower petals
+    const petalColors = ["#f8bbd0", "#f48fb1", "#f06292", "#ec407a", "#fff0f5"];
+
+    // Initial soft burst (like petals scattering)
     confetti({
-      particleCount: 120,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ["#e91e63", "#f06292", "#f8bbd0", "#ff5252", "#ff80ab"],
+      particleCount: 60,
+      spread: 80,
+      origin: { y: 0.5 },
+      colors: petalColors,
+      shapes: ["circle"],
+      scalar: 1.8,
+      gravity: 0.4,
+      drift: 1,
+      ticks: 200,
     });
+
+    // Rose petals falling from top
     setTimeout(() => {
-      confetti({ particleCount: 80, spread: 100, origin: { y: 0.5 }, colors: ["#e91e63", "#f48fb1"] });
-    }, 300);
+      confetti({
+        particleCount: 40,
+        angle: 270,
+        spread: 120,
+        origin: { y: 0, x: 0.3 },
+        colors: petalColors,
+        shapes: ["circle"],
+        scalar: 1.5,
+        gravity: 0.5,
+        drift: 0.5,
+        ticks: 250,
+      });
+      confetti({
+        particleCount: 40,
+        angle: 270,
+        spread: 120,
+        origin: { y: 0, x: 0.7 },
+        colors: petalColors,
+        shapes: ["circle"],
+        scalar: 1.5,
+        gravity: 0.5,
+        drift: -0.5,
+        ticks: 250,
+      });
+    }, 200);
+
+    // Final gentle shimmer
+    setTimeout(() => {
+      confetti({
+        particleCount: 50,
+        spread: 160,
+        origin: { y: 0.3 },
+        colors: ["#fff0f5", "#fce4ec", "#f8bbd0"],
+        shapes: ["circle"],
+        scalar: 1.2,
+        gravity: 0.35,
+        ticks: 180,
+      });
+    }, 450);
   };
 
   if (showSuccess) {
@@ -337,7 +385,7 @@ function RevealScreen({
           <motion.div
             animate={{ scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }}
             transition={{ duration: 1.5, repeat: Infinity }}
-            className="text-7xl mb-6"
+            className="text-5xl md:text-7xl mb-6"
           >
             💕
           </motion.div>
@@ -443,7 +491,7 @@ function RevealScreen({
         }}
       />
 
-      <div className="max-w-sm mx-auto relative z-10">
+      <div className="max-w-[280px] md:max-w-sm mx-auto relative z-10">
         {/* Card 1: Valentine Header — takes full viewport to force scroll */}
         <div className="min-h-[70vh] flex flex-col items-center justify-center px-5 py-12">
           <motion.div
@@ -510,7 +558,7 @@ function RevealScreen({
             variants={cardDramaticSweep}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, amount: 0.2 }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
@@ -584,7 +632,7 @@ function RevealScreen({
             variants={cardDramaticReveal}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, amount: 0.2 }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
@@ -653,7 +701,7 @@ function RevealScreen({
             variants={cardDramaticFlip}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, amount: 0.2 }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.15)" }}
           >
@@ -881,64 +929,112 @@ function HoldToConfirmButton({ onConfirm }: { onConfirm: () => void }) {
 }
 
 function RSVPDeclineButton() {
-  const [declineSide, setDeclineSide] = useState<"right" | "left">("right");
   const [attempts, setAttempts] = useState(0);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [fallingHearts, setFallingHearts] = useState<{ id: number; x: number; delay: number }[]>([]);
+  const [sealed, setSealed] = useState(false);
 
   const handleDeclineApproach = () => {
-    setDeclineSide((prev) => (prev === "right" ? "left" : "right"));
+    if (sealed) return;
+
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
 
-    if (newAttempts >= 3) {
-      setShowTooltip(true);
-      setTimeout(() => setShowTooltip(false), 2000);
+    // Add falling hearts each attempt
+    const newHearts = Array.from({ length: 3 }, (_, i) => ({
+      id: Date.now() + i,
+      x: -30 + Math.random() * 60, // spread around center
+      delay: i * 0.1,
+    }));
+    setFallingHearts((prev) => [...prev, ...newHearts]);
+
+    // After 4 attempts, seal it with a kiss
+    if (newAttempts >= 4) {
+      setSealed(true);
     }
   };
 
-  const shrinkFactor = Math.max(0.5, 1 - attempts * 0.1);
-
   return (
-    <div className="relative overflow-hidden h-10 mt-4">
+    <div className="relative h-12 mt-4 flex items-center justify-center">
+      {/* The button */}
       <motion.button
-        className="absolute top-0 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full text-xs whitespace-nowrap"
+        className="relative px-5 py-2 rounded-full text-xs whitespace-nowrap z-10"
         style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontStyle: "italic",
           color: "#e0a0b0",
           letterSpacing: "0.03em",
+          background: "rgba(255,245,247,0.8)",
+          border: "1px dashed rgba(233,30,99,0.2)",
         }}
         animate={{
-          x: declineSide === "right" ? 40 : -40,
-          scale: shrinkFactor,
-          opacity: Math.max(0.25, shrinkFactor * 0.6),
+          opacity: sealed ? 0 : Math.max(0.4, 1 - attempts * 0.15),
+          scale: sealed ? 0.8 : 1,
+          y: sealed ? 10 : 0,
         }}
-        transition={{
-          type: "spring",
-          stiffness: 200,
-          damping: 20,
-        }}
+        transition={{ type: "spring", stiffness: 200, damping: 20 }}
         onMouseEnter={handleDeclineApproach}
         onTouchStart={handleDeclineApproach}
       >
         Can&apos;t make it...
       </motion.button>
 
-      <AnimatePresence>
-        {showTooltip && (
+      {/* Falling paper hearts that pile up */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {fallingHearts.map((heart) => (
           <motion.div
+            key={heart.id}
+            initial={{ y: -20, x: heart.x, opacity: 0, rotate: -20 + Math.random() * 40 }}
+            animate={{
+              y: 25 + Math.random() * 10,
+              opacity: [0, 1, 1],
+              rotate: -10 + Math.random() * 20,
+            }}
+            transition={{
+              duration: 0.6,
+              delay: heart.delay,
+              ease: "easeOut",
+            }}
+            className="absolute left-1/2 text-sm"
+            style={{ color: ["#ffb6c1", "#ff69b4", "#e91e63", "#f8bbd9"][Math.floor(Math.random() * 4)] }}
+          >
+            {["♥", "♡", "❤"][Math.floor(Math.random() * 3)]}
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Lipstick kiss seal */}
+      <AnimatePresence>
+        {sealed && (
+          <motion.div
+            initial={{ scale: 0, rotate: -30, opacity: 0 }}
+            animate={{ scale: 1, rotate: -8, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            className="absolute z-20"
+            style={{
+              fontSize: 32,
+              filter: "drop-shadow(0 2px 4px rgba(233,30,99,0.3))",
+            }}
+          >
+            💋
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Message after sealed */}
+      <AnimatePresence>
+        {sealed && (
+          <motion.p
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap"
+            transition={{ delay: 0.3 }}
+            className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap"
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontStyle: "italic",
+              fontFamily: "'Dancing Script', cursive",
               color: "#e91e63",
             }}
           >
-            just say yes 🥺
-          </motion.div>
+            sealed with love 💕
+          </motion.p>
         )}
       </AnimatePresence>
     </div>

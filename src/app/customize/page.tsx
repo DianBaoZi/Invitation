@@ -24,7 +24,7 @@ interface FieldDef {
   key: "message" | "personalMessage" | "date" | "time" | "location";
   label: string;
   placeholder: string;
-  icon: "calendar" | "clock" | "mappin" | "penline" | "message";
+  icon: "calendar" | "clock" | "mappin" | "penline" | "message" | "heart";
   type: "input" | "textarea";
   hint?: string;
   textareaStyle?: React.CSSProperties;
@@ -227,6 +227,35 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             type: "input",
             hint: "Shown after beating the rhythm game",
           },
+          {
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "Ready Player 2? Let's start a co-op adventure together.",
+            icon: "heart",
+            type: "textarea",
+            hint: "Your reward message revealed after winning",
+          },
+          {
+            key: "date",
+            label: "Event Date",
+            placeholder: "February 14th",
+            icon: "calendar",
+            type: "input",
+          },
+          {
+            key: "time",
+            label: "Event Time",
+            placeholder: "7:00 PM",
+            icon: "clock",
+            type: "input",
+          },
+          {
+            key: "location",
+            label: "Event Location",
+            placeholder: "The usual spot",
+            icon: "mappin",
+            type: "input",
+          },
         ],
       };
 
@@ -244,22 +273,34 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             type: "input",
             hint: "Displayed in the love.exe dialog",
           },
-        ],
-      };
-
-    case "scratch-reveal":
-      return {
-        sectionTitle: "Garden Bloom Details",
-        sectionIcon: "heart",
-        accentColor: "emerald",
-        fields: [
           {
-            key: "message",
-            label: "Hidden Message",
-            placeholder: "Will you be my Valentine?",
-            icon: "message",
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "You've captured my heart like a rare Pokémon.",
+            icon: "heart",
+            type: "textarea",
+            hint: "A sweet note shown in the invitation",
+          },
+          {
+            key: "date",
+            label: "Event Date",
+            placeholder: "February 14th",
+            icon: "calendar",
             type: "input",
-            hint: "Revealed when the flower fully blooms",
+          },
+          {
+            key: "time",
+            label: "Event Time",
+            placeholder: "7:00 PM",
+            icon: "clock",
+            type: "input",
+          },
+          {
+            key: "location",
+            label: "Event Location",
+            placeholder: "The usual spot",
+            icon: "mappin",
+            type: "input",
           },
         ],
       };
@@ -270,6 +311,58 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
         sectionIcon: "heart",
         accentColor: "green",
         fields: [], // Only needs name
+      };
+
+    case "forest-adventure":
+      return {
+        sectionTitle: "Adventure Details",
+        sectionIcon: "sparkles",
+        accentColor: "emerald",
+        fields: [
+          {
+            key: "message",
+            label: "Main Message",
+            placeholder: "Will you be my Valentine?",
+            icon: "message",
+            type: "input",
+            hint: "Revealed in the magical letter at the end of the quest",
+          },
+          {
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "I planned this whole adventure just for you!",
+            icon: "penline",
+            type: "textarea",
+            hint: "A sweet note on the invitation scroll",
+            textareaStyle: {
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "12px",
+              lineHeight: 1.8,
+              color: "#166534",
+            },
+          },
+          {
+            key: "date",
+            label: "Date",
+            placeholder: "February 14th",
+            icon: "calendar",
+            type: "input",
+          },
+          {
+            key: "time",
+            label: "Time",
+            placeholder: "7:00 PM",
+            icon: "clock",
+            type: "input",
+          },
+          {
+            key: "location",
+            label: "Location",
+            placeholder: "The Enchanted Forest",
+            icon: "mappin",
+            type: "input",
+          },
+        ],
       };
 
     case "runaway-button":
@@ -370,6 +463,7 @@ function FieldIcon({ icon }: { icon: string }) {
     case "mappin": return <MapPin className="w-4 h-4 text-gray-400" />;
     case "penline": return <PenLine className="w-4 h-4 text-gray-400" />;
     case "message": return <MessageSquare className="w-4 h-4 text-gray-400" />;
+    case "heart": return <Heart className="w-4 h-4 text-gray-400" />;
     default: return null;
   }
 }
@@ -392,12 +486,12 @@ function getPageBackground(templateId: string): string {
       return "bg-gradient-to-br from-purple-50 via-fuchsia-50 to-pink-50";
     case "y2k-digital-crush":
       return "bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50";
-    case "scratch-reveal":
-      return "bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50";
     case "avocado-valentine":
       return "bg-gradient-to-br from-green-50 via-emerald-50 to-lime-50";
     case "runaway-button":
       return "bg-gradient-to-br from-pink-50 via-rose-50 to-red-50";
+    case "forest-adventure":
+      return "bg-gradient-to-br from-emerald-50 via-green-50 to-lime-50";
     default:
       return "bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50";
   }
@@ -410,9 +504,9 @@ function getHeaderBorder(templateId: string): string {
     case "premiere": return "border-amber-100";
     case "neon-arcade": return "border-purple-100";
     case "y2k-digital-crush": return "border-blue-100";
-    case "scratch-reveal": return "border-emerald-100";
     case "cozy-scrapbook": return "border-amber-100";
     case "avocado-valentine": return "border-green-100";
+    case "forest-adventure": return "border-emerald-100";
     default: return "border-gray-100";
   }
 }
@@ -424,7 +518,7 @@ function getHeaderBorder(templateId: string): string {
 function CustomizePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const templateId = searchParams.get("template") || "scratch-reveal";
+  const templateId = searchParams.get("template") || "love-letter-mailbox";
   const template = getTemplateById(templateId);
   const fieldConfig = getTemplateFields(templateId);
   const accent = getAccentClasses(fieldConfig.accentColor);
@@ -464,7 +558,7 @@ function CustomizePageContent() {
       if (fieldValues.date.trim()) params.set("eventDate", fieldValues.date.trim());
       if (fieldValues.time.trim()) params.set("eventTime", fieldValues.time.trim());
       if (fieldValues.location.trim()) params.set("eventLocation", fieldValues.location.trim());
-    } else if (templateId === "stargazer" || templateId === "premiere") {
+    } else if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure") {
       if (fieldValues.message.trim()) params.set("message", fieldValues.message.trim());
       if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
       if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
@@ -488,8 +582,6 @@ function CustomizePageContent() {
   // Get default message based on template
   const getDefaultMessage = (tid: string) => {
     switch (tid) {
-      case "scratch-reveal":
-        return "You're invited to something special!";
       case "love-letter-mailbox":
         return "I've been wanting to ask you this...";
       default:
@@ -533,7 +625,7 @@ function CustomizePageContent() {
       if (fieldValues.time.trim()) params.set("eventTime", fieldValues.time.trim());
       if (fieldValues.location.trim()) params.set("eventLocation", fieldValues.location.trim());
     }
-    if (templateId === "stargazer" || templateId === "premiere") {
+    if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure") {
       if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
       if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
       if (fieldValues.time.trim()) params.set("time", fieldValues.time.trim());
@@ -774,12 +866,12 @@ function CustomizePageContent() {
             ) : null}
           </AnimatePresence>
 
-          {/* Preview panel */}
+          {/* Preview panel - hidden on mobile, shown on desktop */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="space-y-4"
+            className="hidden md:block space-y-4"
           >
             {/* Step indicator pills */}
             <div className="flex items-center gap-1.5 bg-white rounded-xl p-1.5 shadow-sm border border-gray-100">
@@ -837,6 +929,39 @@ function CustomizePageContent() {
         </div>
       </div>
 
+      {/* Mobile floating preview bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 shadow-lg z-30">
+        <div className="flex items-center gap-3">
+          {/* Mini preview */}
+          <div className="w-14 h-20 bg-gray-900 rounded-lg overflow-hidden flex-shrink-0 relative">
+            <div className="absolute inset-0 border border-gray-700 rounded-lg pointer-events-none z-10" />
+            {step === 1 ? (
+              <MiniSplashPreview name={name} templateId={templateId} />
+            ) : (
+              <MiniDetailsPreview templateId={templateId} name={name} fieldValues={fieldValues} />
+            )}
+          </div>
+          {/* Status text */}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900 truncate">
+              Step {step}: {step === 1 ? "Splash Screen" : "Details"}
+            </p>
+            <p className="text-xs text-gray-500 truncate">
+              {step === 1 ? `From ${name || "Your Name"}` : "Fill in the details above"}
+            </p>
+          </div>
+          {/* Step dots */}
+          <div className="flex gap-1">
+            <div className={`w-2 h-2 rounded-full ${step === 1 ? accent.bgGradient : "bg-gray-200"}`} />
+            {hasFields && <div className={`w-2 h-2 rounded-full ${step === 2 ? accent.bgGradient : "bg-gray-200"}`} />}
+            <div className={`w-2 h-2 rounded-full ${step === totalSteps ? accent.bgGradient : "bg-gray-200"}`} />
+          </div>
+        </div>
+      </div>
+
+      {/* Spacer for mobile floating bar */}
+      <div className="md:hidden h-24" />
+
       {/* Confirmation Modal */}
       <AnimatePresence>
         {showConfirm && (
@@ -878,14 +1003,14 @@ function DetailsPreview({
       case "premiere": return "linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 50%, #0a0a0a 100%)";
       case "neon-arcade": return "linear-gradient(180deg, #0a0a1a 0%, #120825 50%, #0a0a1a 100%)";
       case "y2k-digital-crush": return "#008080";
-      case "scratch-reveal": return "linear-gradient(180deg, #fdf2e9 0%, #e8d5b7 50%, #d4b896 100%)";
       case "cozy-scrapbook": return "linear-gradient(180deg, #f5ebe0 0%, #eddcd2 50%, #e3d5ca 100%)";
       case "avocado-valentine": return "linear-gradient(180deg, #f0fdf4 0%, #dcfce7 50%, #f0fdf4 100%)";
+      case "forest-adventure": return "linear-gradient(180deg, #1a3c1a 0%, #2d5a2d 50%, #1a3c1a 100%)";
       default: return "linear-gradient(180deg, #fce4ec 0%, #f8bbd0 100%)";
     }
   };
 
-  const isDark = ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush"].includes(templateId);
+  const isDark = ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush", "forest-adventure"].includes(templateId);
   const textColor = isDark ? "text-white/90" : "text-gray-800";
   const subtextColor = isDark ? "text-white/50" : "text-gray-500";
   const cardBg = isDark ? "bg-white/10 border-white/10" : "bg-white/80 border-white/50";
@@ -899,10 +1024,10 @@ function DetailsPreview({
       case "premiere": return "🎬";
       case "neon-arcade": return "🕹️";
       case "y2k-digital-crush": return "💾";
-      case "scratch-reveal": return "🌱";
       case "cozy-scrapbook": return "📒";
       case "avocado-valentine": return "🥑";
       case "runaway-button": return "💕";
+      case "forest-adventure": return "🌲";
       default: return "💌";
     }
   };
@@ -1072,9 +1197,9 @@ function SplashPreview({ name, templateId }: { name: string; templateId: string 
       case "premiere": return "bg-gradient-to-br from-[#0a0a0a] via-[#1a0a0a] to-[#0a0a0a]";
       case "neon-arcade": return "bg-[#0a0a1a]";
       case "y2k-digital-crush": return "bg-[#000080]";
-      case "scratch-reveal": return "bg-gradient-to-br from-[#fdf2e9] to-[#e8d5b7]";
       case "cozy-scrapbook": return "bg-[#f5ebe0]";
       case "avocado-valentine": return "bg-white";
+      case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] via-[#2d5a2d] to-[#1a3c1a]";
       default: return "bg-gradient-to-br from-rose-100 via-pink-50 to-purple-100";
     }
   };
@@ -1085,6 +1210,7 @@ function SplashPreview({ name, templateId }: { name: string; templateId: string 
       case "premiere":
       case "neon-arcade":
       case "y2k-digital-crush":
+      case "forest-adventure":
         return "text-white/60";
       default:
         return "text-gray-600";
@@ -1097,9 +1223,9 @@ function SplashPreview({ name, templateId }: { name: string; templateId: string 
       case "premiere": return "from-amber-400 to-yellow-300";
       case "neon-arcade": return "from-cyan-400 to-magenta-400";
       case "y2k-digital-crush": return "from-green-400 to-lime-300";
-      case "scratch-reveal": return "from-amber-700 to-yellow-600";
       case "cozy-scrapbook": return "from-amber-700 to-orange-600";
       case "avocado-valentine": return "from-green-500 to-emerald-500";
+      case "forest-adventure": return "from-emerald-400 to-lime-300";
       default: return "from-pink-500 to-purple-500";
     }
   };
@@ -1118,7 +1244,7 @@ function SplashPreview({ name, templateId }: { name: string; templateId: string 
           className="mb-4"
         >
           <Heart className={`w-12 h-12 mx-auto ${
-            ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush"].includes(templateId)
+            ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush", "forest-adventure"].includes(templateId)
               ? "text-white/80 fill-white/80"
               : "text-pink-500 fill-pink-500"
           }`} />
@@ -1130,6 +1256,83 @@ function SplashPreview({ name, templateId }: { name: string; templateId: string 
         </h2>
       </div>
     </motion.div>
+  );
+}
+
+// ============================================
+// MINI SPLASH PREVIEW (for mobile floating bar)
+// ============================================
+
+function MiniSplashPreview({ name, templateId }: { name: string; templateId: string }) {
+  const getBg = () => {
+    switch (templateId) {
+      case "stargazer": return "bg-gradient-to-br from-[#0a0a2e] to-[#1a1a4e]";
+      case "premiere": return "bg-gradient-to-br from-[#0a0a0a] to-[#1a0a0a]";
+      case "neon-arcade": return "bg-[#0a0a1a]";
+      case "y2k-digital-crush": return "bg-[#000080]";
+      case "cozy-scrapbook": return "bg-[#f5ebe0]";
+      case "avocado-valentine": return "bg-white";
+      case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] to-[#2d5a2d]";
+      default: return "bg-gradient-to-br from-rose-100 to-pink-100";
+    }
+  };
+
+  const isDark = ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush", "forest-adventure"].includes(templateId);
+
+  return (
+    <div className={`absolute inset-0 flex items-center justify-center ${getBg()}`}>
+      <div className="text-center">
+        <Heart className={`w-4 h-4 mx-auto mb-1 ${isDark ? "text-white/80 fill-white/80" : "text-pink-500 fill-pink-500"}`} />
+        <p className={`text-[6px] truncate max-w-[50px] ${isDark ? "text-white/70" : "text-gray-700"}`}>
+          {name || "Name"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// MINI DETAILS PREVIEW (for mobile floating bar)
+// ============================================
+
+function MiniDetailsPreview({
+  templateId,
+  name,
+  fieldValues,
+}: {
+  templateId: string;
+  name: string;
+  fieldValues: Record<string, string>;
+}) {
+  const getBg = () => {
+    switch (templateId) {
+      case "love-letter-mailbox": return "bg-gradient-to-br from-pink-100 to-rose-200";
+      case "stargazer": return "bg-gradient-to-br from-[#0a0a2e] to-[#1a1a4e]";
+      case "premiere": return "bg-gradient-to-br from-[#0a0a0a] to-[#1a0a0a]";
+      case "neon-arcade": return "bg-[#0a0a1a]";
+      case "y2k-digital-crush": return "bg-[#008080]";
+      case "cozy-scrapbook": return "bg-[#f5ebe0]";
+      case "avocado-valentine": return "bg-green-50";
+      case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] to-[#2d5a2d]";
+      default: return "bg-gradient-to-br from-pink-100 to-rose-100";
+    }
+  };
+
+  const isDark = ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush", "forest-adventure"].includes(templateId);
+
+  return (
+    <div className={`absolute inset-0 flex flex-col items-center justify-center p-1 ${getBg()}`}>
+      {fieldValues.message && (
+        <p className={`text-[5px] text-center leading-tight line-clamp-2 ${isDark ? "text-white/80" : "text-gray-700"}`}>
+          {fieldValues.message}
+        </p>
+      )}
+      {fieldValues.date && (
+        <p className={`text-[5px] mt-0.5 ${isDark ? "text-white/60" : "text-gray-500"}`}>
+          📅 {fieldValues.date}
+        </p>
+      )}
+    </div>
   );
 }
 

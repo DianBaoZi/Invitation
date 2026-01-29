@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, X, Monitor } from "lucide-react";
 import { PreviewModal } from "@/components/landing/PreviewModal";
 import { TEMPLATES, PRICING, formatPrice } from "@/lib/supabase/templates";
 import { Template } from "@/lib/supabase/types";
@@ -11,6 +11,22 @@ export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showDesktopPrompt, setShowDesktopPrompt] = useState(false);
+  const [showMembershipModal, setShowMembershipModal] = useState(false);
+
+  // Check for mobile and show desktop prompt
+  useEffect(() => {
+    const isDismissed = sessionStorage.getItem("desktop-prompt-dismissed");
+    const isMobile = window.innerWidth < 768;
+    if (isMobile && !isDismissed) {
+      setShowDesktopPrompt(true);
+    }
+  }, []);
+
+  const dismissDesktopPrompt = () => {
+    setShowDesktopPrompt(false);
+    sessionStorage.setItem("desktop-prompt-dismissed", "true");
+  };
 
   const handleCardClick = (index: number) => {
     if (index === currentIndex) {
@@ -46,6 +62,34 @@ export default function Home() {
         backgroundSize: '40px 40px'
       }} />
 
+      {/* Mobile desktop prompt toast */}
+      <AnimatePresence>
+        {showDesktopPrompt && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-4 left-4 right-4 z-50 md:hidden"
+          >
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-3 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <Monitor className="w-4 h-4 text-blue-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900">Better on desktop</p>
+                <p className="text-xs text-gray-500">Full animations & interactions work best on larger screens</p>
+              </div>
+              <button
+                onClick={dismissDesktopPrompt}
+                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center flex-shrink-0 transition-colors"
+              >
+                <X className="w-4 h-4 text-gray-400" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Hero section */}
       <div className="text-center mb-4 md:mb-6 relative z-10">
         {/* Decorative flourish */}
@@ -66,12 +110,12 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[5.25rem] font-semibold text-gray-900 tracking-[-0.02em] leading-[1.1] mb-5"
+          className="text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[5.25rem] font-semibold text-gray-900 tracking-[-0.02em] leading-[1.2] mb-5"
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
           Impress your
           <br />
-          <span className="relative inline-block">
+          <span className="relative inline-block overflow-visible py-2 px-1">
             <span
               className="italic font-medium relative z-10"
               style={{
@@ -80,9 +124,9 @@ export default function Home() {
                 background: "linear-gradient(135deg, #e11d48, #f43f5e, #fb7185)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                lineHeight: 1.4,
+                lineHeight: 1.6,
                 display: "inline-block",
-                paddingBottom: "0.05em",
+                padding: "0.2em 0.1em",
               }}
             >
               date
@@ -138,8 +182,24 @@ export default function Home() {
         </motion.p>
       </div>
 
-      {/* Card carousel */}
-      <div className="relative w-full max-w-[500px] md:max-w-[800px] h-[300px] md:h-[420px] mb-3">
+      {/* Mobile: Grid layout */}
+      <div className="md:hidden w-full max-w-md px-2 mb-4">
+        <div className="grid grid-cols-2 gap-3">
+          {TEMPLATES.map((template, index) => (
+            <MobileGridCard
+              key={template.id}
+              template={template}
+              onClick={() => {
+                setSelectedTemplate(template);
+                setIsModalOpen(true);
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: Card carousel */}
+      <div className="hidden md:block relative w-full max-w-[800px] h-[420px] mb-3">
         <AnimatePresence mode="popLayout">
           {TEMPLATES.map((template, index) => {
             const offset = index - currentIndex;
@@ -160,12 +220,12 @@ export default function Home() {
         </AnimatePresence>
       </div>
 
-      {/* Navigation */}
+      {/* Desktop: Navigation */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.6 }}
-        className="flex items-center gap-6 mb-3 relative z-20"
+        className="hidden md:flex items-center gap-6 mb-3 relative z-20"
       >
         <button
           onClick={goPrev}
@@ -208,7 +268,8 @@ export default function Home() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.6 }}
-        className="flex items-center gap-3 px-5 py-2.5 rounded-full border shadow-sm cursor-pointer group"
+        onClick={() => setShowMembershipModal(true)}
+        className="flex items-center gap-3 px-5 py-2.5 rounded-full border shadow-sm cursor-pointer group hover:shadow-md transition-shadow"
         style={{
           background: "linear-gradient(135deg, rgba(212,160,23,0.06), rgba(245,200,66,0.1))",
           borderColor: "rgba(212,160,23,0.25)",
@@ -223,6 +284,13 @@ export default function Home() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </motion.div>
+
+      {/* Membership Modal */}
+      <AnimatePresence>
+        {showMembershipModal && (
+          <MembershipModal onClose={() => setShowMembershipModal(false)} />
+        )}
+      </AnimatePresence>
 
       {/* Preview Modal */}
       <AnimatePresence>
@@ -342,8 +410,6 @@ function FanCard({
     switch (template.id) {
       case "runaway-button":
         return { background: "linear-gradient(135deg, #fff1f2 0%, #ffe4e6 40%, #fecdd3 100%)" };
-      case "scratch-reveal":
-        return { background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 40%, #fbbf24 100%)" };
       case "y2k-digital-crush":
         return { background: "#c0c0c0", borderBottom: "2px solid #868a8e" };
       case "cozy-scrapbook":
@@ -366,6 +432,10 @@ function FanCard({
       case "premiere":
         return {
           background: "linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 40%, #0a0a0a 100%)",
+        };
+      case "forest-adventure":
+        return {
+          background: "linear-gradient(180deg, #1a3c1a 0%, #2d5a2d 40%, #1a3c1a 100%)",
         };
       default:
         return { background: "linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)" };
@@ -466,45 +536,6 @@ function TemplatePreviewArt({ templateId }: { templateId: string }) {
             >
               No
             </motion.div>
-          </div>
-        </div>
-      );
-
-    case "scratch-reveal":
-      return (
-        <div className="relative z-10 w-[160px] h-[100px]">
-          {/* Golden card */}
-          <div
-            className="absolute inset-0 rounded-xl"
-            style={{
-              background: "linear-gradient(135deg, #f9a825 0%, #fdd835 30%, #f57f17 60%, #fbc02d 100%)",
-              boxShadow: "0 4px 20px rgba(245,127,23,0.3), inset 0 1px 0 rgba(255,255,255,0.4)",
-            }}
-          />
-          {/* Scratch marks */}
-          <div className="absolute inset-0 rounded-xl overflow-hidden">
-            <div className="absolute top-3 left-4 w-16 h-2 rounded-full bg-white/20 rotate-[-5deg]" />
-            <div className="absolute top-7 left-6 w-12 h-1.5 rounded-full bg-white/15 rotate-[3deg]" />
-            <div className="absolute bottom-5 right-4 w-14 h-2 rounded-full bg-white/20 rotate-[-8deg]" />
-          </div>
-          {/* Sparkles */}
-          <motion.div
-            className="absolute -top-2 -right-2 text-yellow-300 text-lg"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            ✦
-          </motion.div>
-          <motion.div
-            className="absolute -bottom-1 -left-1 text-amber-300 text-sm"
-            animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0.9, 0.4] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-          >
-            ✦
-          </motion.div>
-          {/* Center text hint */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-white/50 text-xs font-bold tracking-widest uppercase">Scratch me</span>
           </div>
         </div>
       );
@@ -977,7 +1008,308 @@ function TemplatePreviewArt({ templateId }: { templateId: string }) {
         </div>
       );
 
+    case "forest-adventure":
+      return (
+        <div className="absolute inset-0 z-10">
+          {/* Forest background elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            {/* Trees silhouettes on sides */}
+            <div className="absolute left-0 bottom-0 w-1/4 h-full opacity-40">
+              <svg viewBox="0 0 50 100" className="w-full h-full" preserveAspectRatio="xMinYMax slice">
+                <path d="M25 0 L50 60 L40 60 L50 80 L35 80 L45 100 L5 100 L15 80 L0 80 L10 60 L0 60 Z" fill="#0a2a0a" />
+              </svg>
+            </div>
+            <div className="absolute right-0 bottom-0 w-1/4 h-full opacity-40">
+              <svg viewBox="0 0 50 100" className="w-full h-full" preserveAspectRatio="xMaxYMax slice">
+                <path d="M25 0 L50 60 L40 60 L50 80 L35 80 L45 100 L5 100 L15 80 L0 80 L10 60 L0 60 Z" fill="#0a2a0a" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Magical sparkles */}
+          {[
+            { x: 20, y: 25, d: 0 },
+            { x: 75, y: 30, d: 0.5 },
+            { x: 50, y: 15, d: 1 },
+            { x: 35, y: 60, d: 1.5 },
+            { x: 65, y: 55, d: 0.8 },
+          ].map((spark, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 rounded-full bg-yellow-300"
+              style={{
+                left: `${spark.x}%`,
+                top: `${spark.y}%`,
+                boxShadow: "0 0 4px #fbbf24, 0 0 8px #fbbf24",
+              }}
+              animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] }}
+              transition={{ duration: 2, delay: spark.d, repeat: Infinity }}
+            />
+          ))}
+
+          {/* Center content */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            {/* Pixel character */}
+            <motion.div
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="relative mb-2"
+            >
+              <div
+                className="w-12 h-12 rounded-lg flex items-center justify-center"
+                style={{
+                  background: "linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%)",
+                  border: "2px solid #92400e",
+                  boxShadow: "0 4px 0 #78350f",
+                }}
+              >
+                <span className="text-2xl">🧙</span>
+              </div>
+            </motion.div>
+
+            {/* Quest text */}
+            <div
+              className="px-4 py-2 rounded-lg"
+              style={{
+                background: "rgba(0,0,0,0.6)",
+                border: "2px solid #22c55e",
+                boxShadow: "0 0 10px rgba(34,197,94,0.3)",
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: "'Press Start 2P', monospace",
+                  fontSize: "8px",
+                  color: "#86efac",
+                  textShadow: "0 0 4px rgba(134,239,172,0.5)",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                BEGIN QUEST
+              </p>
+            </div>
+
+            {/* Floating letter */}
+            <motion.div
+              className="absolute bottom-6 right-6"
+              animate={{ y: [0, -3, 0], rotate: [-5, 5, -5] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              <span className="text-xl opacity-80">💌</span>
+            </motion.div>
+          </div>
+
+          {/* Pixel scanline effect */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-10"
+            style={{
+              background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px)",
+            }}
+          />
+
+          {/* Vignette */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)",
+            }}
+          />
+        </div>
+      );
+
     default:
       return <span className="text-7xl relative z-10">{templateId}</span>;
   }
+}
+
+// ============================================
+// MOBILE GRID CARD - compact tile for mobile
+// ============================================
+
+function MobileGridCard({
+  template,
+  onClick,
+}: {
+  template: Template;
+  onClick: () => void;
+}) {
+  const getPreviewStyle = (): React.CSSProperties => {
+    switch (template.id) {
+      case "runaway-button":
+        return { background: "linear-gradient(135deg, #fff1f2 0%, #ffe4e6 40%, #fecdd3 100%)" };
+      case "y2k-digital-crush":
+        return { background: "#c0c0c0" };
+      case "cozy-scrapbook":
+        return { background: "linear-gradient(135deg, #fef9ef 0%, #fdf2e0 40%, #f5e6c8 100%)" };
+      case "neon-arcade":
+        return { background: "linear-gradient(180deg, #0a0014 0%, #1a0033 50%, #0d001a 100%)" };
+      case "love-letter-mailbox":
+        return { background: "linear-gradient(135deg, #fff5f5 0%, #fce4ec 40%, #f8bbd0 100%)" };
+      case "stargazer":
+        return { background: "linear-gradient(180deg, #050514 0%, #0a0a2e 40%, #1a1a4e 100%)" };
+      case "avocado-valentine":
+        return { background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 40%, #bbf7d0 100%)" };
+      case "premiere":
+        return { background: "linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 40%, #0a0a0a 100%)" };
+      case "forest-adventure":
+        return { background: "linear-gradient(180deg, #1a3c1a 0%, #2d5a2d 40%, #1a3c1a 100%)" };
+      default:
+        return { background: "linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)" };
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileTap={{ scale: 0.97 }}
+      onClick={onClick}
+      className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm cursor-pointer active:shadow-md transition-shadow"
+    >
+      {/* Preview area */}
+      <div
+        style={{ height: 100, ...getPreviewStyle() }}
+        className="flex items-center justify-center relative overflow-hidden scale-75 origin-center"
+      >
+        {/* Same preview art as desktop, scaled down */}
+        <TemplatePreviewArt templateId={template.id} />
+
+        {/* Price badge */}
+        <div className="absolute top-2 right-2 scale-[1.33]">
+          {template.is_free ? (
+            <span className="px-2 py-0.5 bg-emerald-500 text-white rounded text-[9px] font-semibold uppercase">
+              Free
+            </span>
+          ) : (
+            <span
+              className="px-2 py-0.5 rounded text-[9px] font-bold"
+              style={{
+                background: "linear-gradient(135deg, #d4a017, #f5c842, #d4a017)",
+                color: "#5c3d00",
+              }}
+            >
+              {formatPrice(template.price_cents)}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-3">
+        <h3 className="font-semibold text-gray-900 text-sm mb-0.5 truncate">
+          {template.name}
+        </h3>
+        <p className="text-[11px] text-gray-500 leading-snug line-clamp-2">
+          {template.description}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+// ============================================
+// MEMBERSHIP MODAL
+// ============================================
+
+function MembershipModal({ onClose }: { onClose: () => void }) {
+  const paidTemplates = TEMPLATES.filter(t => !t.is_free);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl max-w-md w-full max-h-[85vh] overflow-y-auto shadow-2xl"
+      >
+        {/* Header */}
+        <div className="sticky top-0 bg-white px-6 pt-6 pb-4 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-500" />
+              <h2 className="text-xl font-bold text-gray-900">Membership</h2>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-400" />
+            </button>
+          </div>
+          <p className="text-sm text-gray-500 mt-1">One-time payment, lifetime access</p>
+        </div>
+
+        {/* Price */}
+        <div className="px-6 py-6 text-center border-b border-gray-100">
+          <div className="inline-flex items-baseline gap-1">
+            <span className="text-4xl font-bold" style={{ color: "#b8860b" }}>$3</span>
+            <span className="text-gray-400 text-sm">USD</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-2">All premium templates + future releases</p>
+        </div>
+
+        {/* What's included */}
+        <div className="px-6 py-4">
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">What you get:</h3>
+          <ul className="space-y-2">
+            <li className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="text-emerald-500">✓</span>
+              {paidTemplates.length} premium templates
+            </li>
+            <li className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="text-emerald-500">✓</span>
+              All future template releases
+            </li>
+            <li className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="text-emerald-500">✓</span>
+              Unlimited invitations
+            </li>
+            <li className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="text-emerald-500">✓</span>
+              Custom messages & event details
+            </li>
+          </ul>
+        </div>
+
+        {/* Templates preview */}
+        <div className="px-6 py-4 border-t border-gray-100">
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Premium templates included:</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {paidTemplates.map((template) => (
+              <div
+                key={template.id}
+                className="flex items-center gap-2 p-2 rounded-lg bg-gray-50"
+              >
+                <span className="text-xl">{template.emoji}</span>
+                <span className="text-xs font-medium text-gray-700 truncate">{template.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="sticky bottom-0 bg-white px-6 py-4 border-t border-gray-100">
+          <button
+            className="w-full py-3 rounded-xl text-white font-semibold text-base"
+            style={{
+              background: "linear-gradient(135deg, #d4a017, #f5c842)",
+              boxShadow: "0 4px 14px rgba(212,160,23,0.35)",
+            }}
+          >
+            Get Membership — $3
+          </button>
+          <p className="text-xs text-gray-400 text-center mt-2">
+            Secure payment via Stripe (coming soon)
+          </p>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
 }

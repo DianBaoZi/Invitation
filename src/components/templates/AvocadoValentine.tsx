@@ -142,7 +142,7 @@ function MainScreen({
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="flex flex-col items-center z-10 w-full max-w-[400px] px-6"
+      className="flex flex-col items-center z-10 w-full max-w-[280px] md:max-w-[400px] px-6"
     >
       {/* Title */}
       <motion.h2
@@ -185,7 +185,7 @@ function MainScreen({
         {/* Yes button */}
         <motion.button
           onClick={onYes}
-          className="px-8 py-4 rounded-2xl text-white text-lg font-bold shadow-lg"
+          className="px-6 md:px-8 py-4 rounded-2xl text-white text-lg font-bold shadow-lg"
           style={{
             background: "linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)",
             fontFamily: "'Nunito', sans-serif",

@@ -25,7 +25,7 @@ export interface Template {
   preview_video_url?: string;
 }
 
-export type TemplateId = "runaway-button" | "scratch-reveal" | "y2k-digital-crush" | "cozy-scrapbook" | "neon-arcade" | "love-letter-mailbox" | "stargazer" | "premiere";
+export type TemplateId = "runaway-button" | "y2k-digital-crush" | "cozy-scrapbook" | "neon-arcade" | "love-letter-mailbox" | "stargazer" | "premiere" | "avocado-valentine" | "forest-adventure";
 
 // Configuration for each template type
 export interface RunawayButtonConfig {
@@ -35,16 +35,15 @@ export interface RunawayButtonConfig {
   successMessage: string;
 }
 
-export interface ScratchRevealConfig {
-  instructionText: string;
-  revealContent: string;
-}
-
 export interface Y2KDigitalCrushConfig {
   questionText: string;
   yesButtonText: string;
   noButtonText: string;
   successMessage: string;
+  personalMessage?: string;
+  date?: string;
+  time?: string;
+  location?: string;
 }
 
 export interface CozyScrapbookConfig {
@@ -60,6 +59,10 @@ export interface NeonArcadeConfig {
   questionText: string;
   yesButtonText: string;
   successMessage: string;
+  personalMessage?: string;
+  date?: string;
+  time?: string;
+  location?: string;
 }
 
 export interface LoveLetterMailboxConfig {
@@ -87,15 +90,23 @@ export interface PremiereConfig {
   location: string;
 }
 
+export interface ForestAdventureConfig {
+  message: string;
+  personalMessage: string;
+  date: string;
+  time: string;
+  location: string;
+}
+
 export type TemplateConfig =
   | RunawayButtonConfig
-  | ScratchRevealConfig
   | Y2KDigitalCrushConfig
   | CozyScrapbookConfig
   | NeonArcadeConfig
   | LoveLetterMailboxConfig
   | StargazerConfig
-  | PremiereConfig;
+  | PremiereConfig
+  | ForestAdventureConfig;
 
 // ============================================
 // INVITE TYPES

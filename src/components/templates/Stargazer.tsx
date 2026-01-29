@@ -58,16 +58,75 @@ export function Stargazer({
 
   const handleAccept = () => {
     setAccepted(true);
-    // Gold & purple starburst
-    const colors = ["#fbbf24", "#7c3aed", "#ec4899", "#e8e4ff"];
-    confetti({ particleCount: 120, spread: 100, origin: { y: 0.55 }, colors });
+    // Shooting stars effect - diagonal streaks across the sky
+    const starColors = ["#fbbf24", "#e8e4ff", "#f5f3ff"];
+    const nebulaColors = ["#7c3aed", "#ec4899"];
+
+    // Central starburst (supernova effect)
+    confetti({
+      particleCount: 100,
+      spread: 360,
+      origin: { y: 0.5, x: 0.5 },
+      colors: starColors,
+      shapes: ["star"],
+      scalar: 2,
+      gravity: 0.4,
+      drift: 0,
+      ticks: 200,
+    });
+
+    // Shooting stars from top corners
     setTimeout(() => {
-      confetti({ particleCount: 80, spread: 140, origin: { y: 0.45 }, colors });
-    }, 250);
+      confetti({
+        particleCount: 25,
+        angle: 225,
+        spread: 20,
+        origin: { x: 1, y: 0 },
+        colors: ["#fbbf24", "#e8e4ff"],
+        shapes: ["star"],
+        scalar: 1.5,
+        gravity: 1.5,
+        drift: 2,
+      });
+      confetti({
+        particleCount: 25,
+        angle: 315,
+        spread: 20,
+        origin: { x: 0, y: 0 },
+        colors: ["#fbbf24", "#e8e4ff"],
+        shapes: ["star"],
+        scalar: 1.5,
+        gravity: 1.5,
+        drift: -2,
+      });
+    }, 200);
+
+    // Nebula sparkle (purple/pink mist)
     setTimeout(() => {
-      confetti({ particleCount: 60, spread: 160, origin: { y: 0.5, x: 0.3 }, colors });
-      confetti({ particleCount: 60, spread: 160, origin: { y: 0.5, x: 0.7 }, colors });
-    }, 500);
+      confetti({
+        particleCount: 60,
+        spread: 120,
+        origin: { y: 0.6 },
+        colors: nebulaColors,
+        shapes: ["circle"],
+        scalar: 0.8,
+        gravity: 0.3,
+        ticks: 150,
+      });
+    }, 400);
+
+    // Final golden shimmer
+    setTimeout(() => {
+      confetti({
+        particleCount: 40,
+        spread: 160,
+        origin: { y: 0.4 },
+        colors: ["#fbbf24", "#f5f3ff"],
+        shapes: ["star"],
+        scalar: 1.2,
+        gravity: 0.5,
+      });
+    }, 600);
   };
 
   return (
