@@ -2,19 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Sparkles, X, Monitor } from "lucide-react";
+import { Sparkles, X, Monitor, Play } from "lucide-react";
 import { PreviewModal } from "@/components/landing/PreviewModal";
 import { TEMPLATES, PRICING, formatPrice } from "@/lib/supabase/templates";
 import { Template } from "@/lib/supabase/types";
 
 export default function Home() {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDesktopPrompt, setShowDesktopPrompt] = useState(false);
   const [showMembershipModal, setShowMembershipModal] = useState(false);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
-  // Check for mobile and show desktop prompt
   useEffect(() => {
     const isDismissed = sessionStorage.getItem("desktop-prompt-dismissed");
     const isMobile = window.innerWidth < 768;
@@ -28,13 +27,9 @@ export default function Home() {
     sessionStorage.setItem("desktop-prompt-dismissed", "true");
   };
 
-  const handleCardClick = (index: number) => {
-    if (index === currentIndex) {
-      setSelectedTemplate(TEMPLATES[index]);
-      setIsModalOpen(true);
-    } else {
-      setCurrentIndex(index);
-    }
+  const handleCardClick = (template: Template) => {
+    setSelectedTemplate(template);
+    setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
@@ -42,24 +37,12 @@ export default function Home() {
     setSelectedTemplate(null);
   };
 
-  const goNext = () => {
-    if (currentIndex < TEMPLATES.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  const goPrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
-
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#fafafa] via-white to-[#f5f5f5] flex flex-col items-center justify-center px-4 py-4 relative overflow-y-auto">
+    <main className="min-h-screen bg-gradient-to-b from-[#fafafa] via-white to-[#f5f5f5] relative overflow-x-hidden">
       {/* Subtle background pattern */}
-      <div className="absolute inset-0 opacity-[0.015]" style={{
+      <div className="absolute inset-0 opacity-[0.02]" style={{
         backgroundImage: `radial-gradient(circle at 1px 1px, #000 1px, transparent 0)`,
-        backgroundSize: '40px 40px'
+        backgroundSize: '32px 32px'
       }} />
 
       {/* Mobile desktop prompt toast */}
@@ -77,7 +60,7 @@ export default function Home() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900">Better on desktop</p>
-                <p className="text-xs text-gray-500">Full animations & interactions work best on larger screens</p>
+                <p className="text-xs text-gray-500">Full animations work best on larger screens</p>
               </div>
               <button
                 onClick={dismissDesktopPrompt}
@@ -91,8 +74,7 @@ export default function Home() {
       </AnimatePresence>
 
       {/* Hero section */}
-      <div className="text-center mb-4 md:mb-6 relative z-10">
-        {/* Decorative flourish */}
+      <div className="text-center pt-12 md:pt-16 pb-8 md:pb-12 px-4 relative z-10">
         <motion.div
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 1 }}
@@ -100,7 +82,7 @@ export default function Home() {
           className="flex items-center justify-center gap-3 mb-5"
         >
           <span className="block h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-rose-300" />
-          <span className="text-rose-300 text-sm tracking-[0.3em] uppercase" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>
+          <span className="text-rose-300 text-xs tracking-[0.3em] uppercase font-medium">
             make it count
           </span>
           <span className="block h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-rose-300" />
@@ -110,61 +92,28 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[5.25rem] font-semibold text-gray-900 tracking-[-0.02em] leading-[1.2] mb-5"
+          className="text-4xl sm:text-5xl md:text-6xl font-semibold text-gray-900 tracking-tight leading-tight mb-4"
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
-          Impress your
-          <br />
-          <span className="relative inline-block overflow-visible py-2 px-1">
+          Impress your{" "}
+          <span className="relative inline-block">
             <span
-              className="italic font-medium relative z-10"
+              className="italic"
               style={{
                 fontFamily: "'Dancing Script', cursive",
-                fontSize: "1.15em",
+                fontSize: "1.1em",
                 background: "linear-gradient(135deg, #e11d48, #f43f5e, #fb7185)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                lineHeight: 1.6,
-                display: "inline-block",
-                padding: "0.2em 0.1em",
               }}
             >
               date
             </span>
-            {/* Decorative swash underline */}
-            <motion.svg
-              viewBox="0 0 200 12"
-              className="absolute -bottom-1 left-0 w-full"
-              style={{ height: "0.25em" }}
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 1.2, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <motion.path
-                d="M8 8 C 40 2, 80 2, 100 6 S 160 12, 192 6"
-                fill="none"
-                stroke="url(#swash-grad)"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1.2, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              />
-              <defs>
-                <linearGradient id="swash-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#e11d48" stopOpacity="0.7" />
-                  <stop offset="50%" stopColor="#f43f5e" stopOpacity="0.9" />
-                  <stop offset="100%" stopColor="#fb7185" stopOpacity="0.5" />
-                </linearGradient>
-              </defs>
-            </motion.svg>
-            {/* Sparkle accent */}
             <motion.span
-              className="absolute -top-2 -right-5 sm:-top-3 sm:-right-7 text-rose-300 pointer-events-none"
-              style={{ fontSize: "0.3em" }}
-              initial={{ opacity: 0, scale: 0, rotate: -30 }}
-              animate={{ opacity: [0, 1, 0.7], scale: [0, 1.2, 1], rotate: [-30, 0, 0] }}
-              transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }}
+              className="absolute -top-1 -right-4 text-rose-300 text-sm"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.8 }}
             >
               ✦
             </motion.span>
@@ -174,123 +123,61 @@ export default function Home() {
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-          className="text-base sm:text-lg text-gray-400 font-light max-w-xs sm:max-w-sm mx-auto"
-          style={{ fontFamily: "'DM Sans', sans-serif" }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+          className="text-gray-400 text-sm sm:text-base max-w-sm mx-auto"
         >
           Interactive invites they&apos;ll actually remember
         </motion.p>
       </div>
 
-      {/* Mobile: Grid layout */}
-      <div className="md:hidden w-full max-w-md px-2 mb-4">
-        <div className="grid grid-cols-2 gap-3">
+      {/* Template Grid */}
+      <div className="max-w-6xl mx-auto px-4 pb-16">
+        {/* Desktop: 4 column grid */}
+        <div className="hidden md:grid md:grid-cols-4 gap-5">
           {TEMPLATES.map((template, index) => (
-            <MobileGridCard
+            <TemplateCard
               key={template.id}
               template={template}
-              onClick={() => {
-                setSelectedTemplate(template);
-                setIsModalOpen(true);
-              }}
+              index={index}
+              isHovered={hoveredId === template.id}
+              onHover={() => setHoveredId(template.id)}
+              onLeave={() => setHoveredId(null)}
+              onClick={() => handleCardClick(template)}
+            />
+          ))}
+        </div>
+
+        {/* Mobile: 2 column grid */}
+        <div className="md:hidden grid grid-cols-2 gap-3">
+          {TEMPLATES.map((template, index) => (
+            <MobileCard
+              key={template.id}
+              template={template}
+              index={index}
+              onClick={() => handleCardClick(template)}
             />
           ))}
         </div>
       </div>
 
-      {/* Desktop: Card carousel */}
-      <div className="hidden md:block relative w-full max-w-[800px] h-[420px] mb-3">
-        <AnimatePresence mode="popLayout">
-          {TEMPLATES.map((template, index) => {
-            const offset = index - currentIndex;
-            const isVisible = Math.abs(offset) <= 1;
-
-            if (!isVisible) return null;
-
-            return (
-              <FanCardWrapper
-                key={template.id}
-                template={template}
-                offset={offset}
-                isCurrent={offset === 0}
-                onClick={() => handleCardClick(index)}
-              />
-            );
-          })}
-        </AnimatePresence>
-      </div>
-
-      {/* Desktop: Navigation */}
+      {/* Membership Banner */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.6 }}
-        className="hidden md:flex items-center gap-6 mb-3 relative z-20"
+        transition={{ delay: 0.5 }}
+        className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:w-auto z-40"
       >
         <button
-          onClick={goPrev}
-          disabled={currentIndex === 0}
-          className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-30 disabled:hover:bg-white disabled:hover:border-gray-200 transition-all shadow-sm"
+          onClick={() => setShowMembershipModal(true)}
+          className="w-full md:w-auto bg-gradient-to-r from-gray-900 to-gray-800 text-white px-5 py-3 rounded-xl flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-
-        {/* Progress dots */}
-        <div className="flex gap-2">
-          {TEMPLATES.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className="group relative p-1"
-            >
-              <span
-                className={`block w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentIndex
-                    ? "bg-gray-900 scale-125"
-                    : "bg-gray-300 group-hover:bg-gray-400"
-                }`}
-              />
-            </button>
-          ))}
-        </div>
-
-        <button
-          onClick={goNext}
-          disabled={currentIndex === TEMPLATES.length - 1}
-          className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-30 disabled:hover:bg-white disabled:hover:border-gray-200 transition-all shadow-sm"
-        >
-          <ChevronRight className="w-5 h-5" />
+          <Sparkles className="w-4 h-4 text-amber-400" />
+          <span className="text-sm font-medium">
+            {formatPrice(PRICING.membership)} — All templates + future releases
+          </span>
+          <Sparkles className="w-4 h-4 text-amber-400" />
         </button>
       </motion.div>
-
-      {/* Membership banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.6 }}
-        onClick={() => setShowMembershipModal(true)}
-        className="flex items-center gap-3 px-5 py-2.5 rounded-full border shadow-sm cursor-pointer group hover:shadow-md transition-shadow"
-        style={{
-          background: "linear-gradient(135deg, rgba(212,160,23,0.06), rgba(245,200,66,0.1))",
-          borderColor: "rgba(212,160,23,0.25)",
-        }}
-      >
-        <Sparkles className="w-4 h-4 text-amber-500" />
-        <span className="text-sm text-gray-700">
-          <span className="font-bold" style={{ color: "#b8860b" }}>$3</span>
-          {" "}— All templates + future releases
-        </span>
-        <svg className="w-3.5 h-3.5 text-amber-600 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </motion.div>
-
-      {/* Membership Modal */}
-      <AnimatePresence>
-        {showMembershipModal && (
-          <MembershipModal onClose={() => setShowMembershipModal(false)} />
-        )}
-      </AnimatePresence>
 
       {/* Preview Modal */}
       <AnimatePresence>
@@ -301,860 +188,179 @@ export default function Home() {
           />
         )}
       </AnimatePresence>
+
+      {/* Membership Modal */}
+      <AnimatePresence>
+        {showMembershipModal && (
+          <MembershipModal onClose={() => setShowMembershipModal(false)} />
+        )}
+      </AnimatePresence>
     </main>
   );
 }
 
 // ============================================
-// FAN CARD WRAPPER - handles positioning
+// DESKTOP TEMPLATE CARD
 // ============================================
 
-function useIsMd() {
-  const [isMd, setIsMd] = useState(false);
-  useEffect(() => {
-    const mql = window.matchMedia("(min-width: 768px)");
-    setIsMd(mql.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMd(e.matches);
-    mql.addEventListener("change", handler);
-    return () => mql.removeEventListener("change", handler);
-  }, []);
-  return isMd;
-}
-
-function FanCardWrapper({
+function TemplateCard({
   template,
-  offset,
-  isCurrent,
+  index,
+  isHovered,
+  onHover,
+  onLeave,
   onClick,
 }: {
   template: Template;
-  offset: number;
-  isCurrent: boolean;
+  index: number;
+  isHovered: boolean;
+  onHover: () => void;
+  onLeave: () => void;
   onClick: () => void;
 }) {
-  const isMd = useIsMd();
-  const fanSpread = isMd ? 200 : 130;
-  const cardW = isMd ? 300 : 240;
-  const cardH = isMd ? 400 : 300;
-
-  const variants = {
-    left: {
-      x: -fanSpread,
-      rotate: -8,
-      scale: 0.9,
-      zIndex: 1,
-      opacity: 0.6,
-    },
-    center: {
-      x: 0,
-      rotate: 0,
-      scale: 1,
-      zIndex: 10,
-      opacity: 1,
-    },
-    right: {
-      x: fanSpread,
-      rotate: 8,
-      scale: 0.9,
-      zIndex: 1,
-      opacity: 0.6,
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.85,
-      transition: { duration: 0.2 }
-    },
+  const getPreviewBg = () => {
+    switch (template.id) {
+      case "runaway-button":
+        return "linear-gradient(135deg, #fff1f2 0%, #ffe4e6 50%, #fecdd3 100%)";
+      case "y2k-digital-crush":
+        return "linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%)";
+      case "cozy-scrapbook":
+        return "linear-gradient(135deg, #fef9ef 0%, #fdf2e0 50%, #f5e6c8 100%)";
+      case "neon-arcade":
+        return "linear-gradient(180deg, #0a0014 0%, #1a0033 100%)";
+      case "love-letter-mailbox":
+        return "linear-gradient(135deg, #fff5f5 0%, #fce4ec 50%, #f8bbd0 100%)";
+      case "stargazer":
+        return "linear-gradient(180deg, #050514 0%, #0a0a2e 50%, #1a1a4e 100%)";
+      case "avocado-valentine":
+        return "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)";
+      case "premiere":
+        return "linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 50%, #0a0a0a 100%)";
+      case "forest-adventure":
+        return "linear-gradient(180deg, #1a3c1a 0%, #2d5a2d 50%, #1a3c1a 100%)";
+      default:
+        return "linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)";
+    }
   };
-
-  const position = offset === 0 ? "center" : offset < 0 ? "left" : "right";
 
   return (
     <motion.div
-      className="absolute left-1/2 top-1/2 cursor-pointer"
-      style={{ marginLeft: -(cardW / 2), marginTop: -(cardH / 2) }}
-      variants={variants}
-      initial={position}
-      animate={position}
-      exit="exit"
-      transition={{
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-      }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
       onClick={onClick}
-      whileHover={{
-        scale: isCurrent ? 1.02 : 0.93,
-        transition: { duration: 0.2 }
-      }}
-      whileTap={{ scale: isCurrent ? 0.98 : 0.88 }}
+      className="group cursor-pointer"
     >
-      <FanCard template={template} isCurrent={isCurrent} isMd={isMd} />
+      <motion.div
+        className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm"
+        animate={{
+          scale: isHovered ? 1.03 : 1,
+          y: isHovered ? -8 : 0,
+          boxShadow: isHovered
+            ? "0 25px 50px -12px rgba(0, 0, 0, 0.15)"
+            : "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
+          borderRadius: isHovered ? "20px" : "16px",
+        }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* Preview Area */}
+        <div
+          className="relative h-40 overflow-hidden flex items-center justify-center"
+          style={{ background: getPreviewBg() }}
+        >
+          <TemplatePreviewArt templateId={template.id} isHovered={isHovered} />
+
+          {/* Play overlay on hover */}
+          <motion.div
+            className="absolute inset-0 bg-black/30 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div
+              className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: isHovered ? 1 : 0.8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Play className="w-5 h-5 text-gray-800 ml-0.5" fill="currentColor" />
+            </motion.div>
+          </motion.div>
+
+          {/* Price badge */}
+          <div className="absolute top-3 right-3 z-10">
+            {template.is_free ? (
+              <span className="px-2.5 py-1 bg-emerald-500 text-white rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg">
+                Free
+              </span>
+            ) : (
+              <span
+                className="px-2.5 py-1 rounded-full text-[10px] font-bold shadow-lg"
+                style={{
+                  background: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+                  color: "#78350f",
+                }}
+              >
+                {formatPrice(template.price_cents)}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-4">
+          <div className="flex items-start gap-2 mb-2">
+            <span className="text-lg">{template.emoji}</span>
+            <h3 className="font-semibold text-gray-900 text-sm leading-tight">
+              {template.name}
+            </h3>
+          </div>
+          <p className="text-[11px] text-gray-500 leading-relaxed line-clamp-2">
+            {template.description}
+          </p>
+        </div>
+      </motion.div>
     </motion.div>
   );
 }
 
 // ============================================
-// FAN CARD COMPONENT
+// MOBILE CARD
 // ============================================
 
-function FanCard({
+function MobileCard({
   template,
-  isCurrent,
-  isMd,
-}: {
-  template: Template;
-  isCurrent: boolean;
-  isMd: boolean;
-}) {
-  const getPreviewStyle = (): React.CSSProperties => {
-    switch (template.id) {
-      case "runaway-button":
-        return { background: "linear-gradient(135deg, #fff1f2 0%, #ffe4e6 40%, #fecdd3 100%)" };
-      case "y2k-digital-crush":
-        return { background: "#c0c0c0", borderBottom: "2px solid #868a8e" };
-      case "cozy-scrapbook":
-        return {
-          background: "linear-gradient(135deg, #fef9ef 0%, #fdf2e0 40%, #f5e6c8 100%)",
-          backgroundImage: `linear-gradient(135deg, #fef9ef 0%, #fdf2e0 40%, #f5e6c8 100%), repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(210,180,140,0.05) 35px, rgba(210,180,140,0.05) 36px)`,
-        };
-      case "neon-arcade":
-        return {
-          background: "linear-gradient(180deg, #0a0014 0%, #1a0033 50%, #0d001a 100%)",
-        };
-      case "love-letter-mailbox":
-        return { background: "linear-gradient(135deg, #fff5f5 0%, #fce4ec 40%, #f8bbd0 100%)" };
-      case "stargazer":
-        return {
-          background: "linear-gradient(180deg, #050514 0%, #0a0a2e 40%, #1a1a4e 100%)",
-        };
-      case "avocado-valentine":
-        return { background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 40%, #bbf7d0 100%)" };
-      case "premiere":
-        return {
-          background: "linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 40%, #0a0a0a 100%)",
-        };
-      case "forest-adventure":
-        return {
-          background: "linear-gradient(180deg, #1a3c1a 0%, #2d5a2d 40%, #1a3c1a 100%)",
-        };
-      default:
-        return { background: "linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)" };
-    }
-  };
-
-  const cardW = isMd ? 300 : 240;
-  const cardH = isMd ? 400 : 300;
-  const previewH = isMd ? 200 : 150;
-
-  return (
-    <div
-      style={{ width: cardW, height: cardH }}
-      className={`bg-white rounded-2xl overflow-hidden select-none transition-all duration-300 border flex flex-col ${
-        isCurrent
-          ? "border-gray-200 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)]"
-          : "border-gray-100 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.08)]"
-      }`}
-    >
-      {/* Preview area */}
-      <div style={{ height: previewH, ...getPreviewStyle() }} className="flex items-center justify-center relative overflow-hidden">
-        <TemplatePreviewArt templateId={template.id} />
-
-        {/* Price badge */}
-        <div className="absolute top-3 right-3 z-20">
-          {template.is_free ? (
-            <span className="px-2.5 py-1 bg-emerald-500 text-white rounded-md text-[11px] font-semibold uppercase tracking-wider">
-              Free
-            </span>
-          ) : (
-            <span
-              className="px-2.5 py-1 rounded-md text-[11px] font-bold"
-              style={{
-                background: "linear-gradient(135deg, #d4a017, #f5c842, #d4a017)",
-                color: "#5c3d00",
-                boxShadow: "0 2px 8px rgba(212,160,23,0.35)",
-                letterSpacing: "0.03em",
-              }}
-            >
-              {formatPrice(template.price_cents)}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-4 flex flex-col flex-1">
-        <h3 className="font-semibold text-gray-900 text-base mb-1">
-          {template.name}
-        </h3>
-        <p className="text-[12px] text-gray-500 leading-relaxed line-clamp-2 flex-1">
-          {template.description}
-        </p>
-
-        {/* CTA button */}
-        <div className={`pt-2 mt-auto transition-opacity duration-200 ${isCurrent ? 'opacity-100' : 'opacity-0'}`}>
-          <div
-            className="w-full py-2.5 rounded-lg text-center text-sm font-semibold text-white cursor-pointer hover:brightness-110 active:scale-[0.97] transition-all"
-            style={{
-              background: template.is_free
-                ? "linear-gradient(135deg, #10b981, #059669)"
-                : "linear-gradient(135deg, #e11d48, #f43f5e)",
-              boxShadow: template.is_free
-                ? "0 3px 10px rgba(16,185,129,0.3)"
-                : "0 3px 10px rgba(225,29,72,0.3)",
-            }}
-          >
-            {template.is_free ? "Pick this template — Free" : "Pick this template"}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// TEMPLATE PREVIEW ART - mini illustrations
-// ============================================
-
-function TemplatePreviewArt({ templateId }: { templateId: string }) {
-  switch (templateId) {
-    case "runaway-button":
-      return (
-        <div className="relative z-10 flex flex-col items-center gap-4">
-          {/* Mini question */}
-          <div className="px-4 py-1.5 rounded-lg bg-white/70 text-[11px] font-semibold text-rose-400 tracking-wide">
-            Will you be my Valentine?
-          </div>
-          {/* Mini buttons */}
-          <div className="flex items-center gap-3">
-            <div className="px-5 py-2 rounded-lg bg-emerald-500 text-white text-xs font-bold shadow-md">
-              Yes! 💕
-            </div>
-            <motion.div
-              className="px-5 py-2 rounded-lg bg-gray-200 text-gray-500 text-xs font-semibold"
-              animate={{ x: [0, 12, -8, 15, -12, 0], y: [0, -6, 4, -10, 6, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            >
-              No
-            </motion.div>
-          </div>
-        </div>
-      );
-
-    case "y2k-digital-crush":
-      return (
-        <div className="relative z-10 w-[170px]">
-          {/* Win95 window */}
-          <div className="rounded-sm overflow-hidden" style={{ border: "2px solid #868a8e", boxShadow: "2px 2px 0 #000, inset -1px -1px 0 #868a8e, inset 1px 1px 0 #fff" }}>
-            {/* Title bar */}
-            <div className="flex items-center gap-1 px-1.5 py-0.5" style={{ background: "linear-gradient(90deg, #000080, #1084d0)" }}>
-              <span className="text-white text-[9px] font-bold flex-1">💕 crush.exe</span>
-              <div className="flex gap-0.5">
-                <div className="w-3 h-3 bg-[#c0c0c0] border border-t-white border-l-white border-b-[#868a8e] border-r-[#868a8e] flex items-center justify-center text-[7px] font-bold">_</div>
-                <div className="w-3 h-3 bg-[#c0c0c0] border border-t-white border-l-white border-b-[#868a8e] border-r-[#868a8e] flex items-center justify-center text-[7px] font-bold">×</div>
-              </div>
-            </div>
-            {/* Content */}
-            <div className="bg-[#c0c0c0] p-2.5 text-center space-y-2" style={{ borderTop: "1px solid #fff" }}>
-              <p className="text-[10px] font-bold text-[#000080]">Be my Valentine?</p>
-              <div className="flex gap-1.5 justify-center">
-                <div className="px-3 py-0.5 text-[9px] font-bold bg-[#c0c0c0] border border-t-white border-l-white border-b-[#868a8e] border-r-[#868a8e]">Yes ♥</div>
-                <motion.div
-                  className="px-3 py-0.5 text-[9px] font-bold bg-[#c0c0c0] border border-t-white border-l-white border-b-[#868a8e] border-r-[#868a8e] text-red-600"
-                  animate={{ opacity: [1, 0.3, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  N̷o̷
-                </motion.div>
-              </div>
-            </div>
-          </div>
-          {/* Error popup */}
-          <motion.div
-            className="absolute -bottom-3 -right-3 rounded-sm overflow-hidden"
-            style={{ border: "2px solid #868a8e", boxShadow: "2px 2px 0 #000", width: "100px" }}
-            animate={{ rotate: [0, -2, 0], y: [0, -2, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <div className="flex items-center px-1 py-0.5" style={{ background: "linear-gradient(90deg, #800000, #ff0000)" }}>
-              <span className="text-white text-[7px] font-bold">⚠ Error</span>
-            </div>
-            <div className="bg-[#c0c0c0] px-1.5 py-1">
-              <p className="text-[7px] text-red-700 font-bold">crush.exe: No is not valid</p>
-            </div>
-          </motion.div>
-        </div>
-      );
-
-    case "cozy-scrapbook":
-      return (
-        <div className="relative z-10">
-          {/* Polaroid frame */}
-          <div
-            className="bg-white p-2 pb-8 rounded-sm relative"
-            style={{
-              transform: "rotate(-3deg)",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.08)",
-            }}
-          >
-            {/* Photo area */}
-            <div
-              className="w-[120px] h-[80px] rounded-sm flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%)" }}
-            >
-              <span className="text-3xl">📸</span>
-            </div>
-            {/* Caption */}
-            <p
-              className="absolute bottom-1.5 left-0 right-0 text-center text-[9px] text-gray-400"
-              style={{ fontFamily: "'Dancing Script', cursive" }}
-            >
-              our memory ♥
-            </p>
-          </div>
-          {/* Washi tape strips */}
-          <div
-            className="absolute -top-2 left-1/2 -translate-x-1/2 w-16 h-4 opacity-60"
-            style={{
-              background: "repeating-linear-gradient(45deg, #f8bbd0, #f8bbd0 3px, #f48fb1 3px, #f48fb1 6px)",
-              transform: "translateX(-50%) rotate(2deg)",
-            }}
-          />
-          {/* Decorative sticker */}
-          <motion.div
-            className="absolute -bottom-3 -right-4 text-xl"
-            animate={{ rotate: [0, 10, -5, 0] }}
-            transition={{ duration: 3, repeat: Infinity }}
-          >
-            🌸
-          </motion.div>
-          {/* Small heart sticker */}
-          <div className="absolute -top-3 -left-2 text-sm opacity-70">💗</div>
-        </div>
-      );
-
-    case "neon-arcade":
-      return (
-        <div className="relative z-10 flex flex-col items-center">
-          {/* Neon border frame */}
-          <div
-            className="relative px-5 py-3 rounded-lg"
-            style={{
-              border: "2px solid #7c4dff",
-              boxShadow: "0 0 10px rgba(124,77,255,0.5), 0 0 30px rgba(124,77,255,0.2), inset 0 0 10px rgba(124,77,255,0.1)",
-              background: "rgba(0,0,0,0.6)",
-            }}
-          >
-            <motion.p
-              className="text-center font-bold text-[11px] tracking-[0.2em] uppercase"
-              style={{
-                color: "#e040fb",
-                textShadow: "0 0 8px rgba(224,64,251,0.8), 0 0 20px rgba(224,64,251,0.4)",
-              }}
-              animate={{ opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              Press Start
-            </motion.p>
-            <p
-              className="text-center text-[9px] mt-1 tracking-widest"
-              style={{
-                color: "#69f0ae",
-                textShadow: "0 0 6px rgba(105,240,174,0.6)",
-              }}
-            >
-              ♥ PLAYER 1 ♥
-            </p>
-          </div>
-          {/* Scanline effect */}
-          <div
-            className="absolute inset-0 pointer-events-none opacity-10"
-            style={{
-              background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)",
-            }}
-          />
-          {/* Glow dots */}
-          <motion.div
-            className="absolute -top-1 -left-1 w-2 h-2 rounded-full"
-            style={{ background: "#ff1744", boxShadow: "0 0 6px #ff1744" }}
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 1, repeat: Infinity }}
-          />
-          <motion.div
-            className="absolute -bottom-1 -right-1 w-2 h-2 rounded-full"
-            style={{ background: "#00e5ff", boxShadow: "0 0 6px #00e5ff" }}
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 1.3, repeat: Infinity }}
-          />
-        </div>
-      );
-
-    case "love-letter-mailbox":
-      return (
-        <div className="relative z-10">
-          {/* Envelope */}
-          <motion.div
-            className="relative"
-            style={{ width: "140px", height: "100px" }}
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          >
-            {/* Envelope body */}
-            <div
-              className="absolute inset-0 rounded-lg"
-              style={{
-                background: "linear-gradient(160deg, #fff5f5 0%, #fce4ec 40%, #f8bbd0 100%)",
-                boxShadow: "0 10px 30px rgba(183,28,28,0.12)",
-              }}
-            />
-            {/* Flap */}
-            <div
-              className="absolute -top-px left-0 right-0"
-              style={{
-                height: "50px",
-                background: "linear-gradient(180deg, #f8bbd0 0%, #fce4ec 100%)",
-                clipPath: "polygon(0 0, 50% 85%, 100% 0)",
-                filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.05))",
-              }}
-            />
-            {/* Wax seal */}
-            <motion.div
-              className="absolute left-1/2 flex items-center justify-center"
-              style={{
-                top: "28px",
-                transform: "translateX(-50%)",
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                background: "radial-gradient(circle at 35% 35%, #ef5350 0%, #c62828 60%, #8e1318 100%)",
-                boxShadow: "0 3px 8px rgba(183,28,28,0.35), inset 0 -1px 3px rgba(0,0,0,0.2)",
-                zIndex: 2,
-              }}
-              animate={{ scale: [1, 1.08, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <span style={{ fontSize: "14px", color: "#ffcdd2" }}>♥</span>
-            </motion.div>
-            {/* Paper lines */}
-            <div className="absolute bottom-4 left-5 right-5 space-y-1.5 opacity-10">
-              <div className="h-px bg-rose-400 w-3/4 mx-auto" />
-              <div className="h-px bg-rose-400 w-1/2 mx-auto" />
-            </div>
-          </motion.div>
-          {/* Floating petal */}
-          <motion.div
-            className="absolute -top-3 -right-3 text-base opacity-50"
-            animate={{ y: [0, -8, 0], rotate: [0, 20, 0] }}
-            transition={{ duration: 4, repeat: Infinity }}
-          >
-            🌸
-          </motion.div>
-        </div>
-      );
-
-    case "stargazer":
-      return (
-        <div className="absolute inset-0 z-10">
-          {/* Stars scattered across the card */}
-          {[
-            { x: 15, y: 20, s: 2, d: 0, gold: false },
-            { x: 72, y: 12, s: 1.5, d: 0.5, gold: true },
-            { x: 40, y: 55, s: 2.5, d: 1.2, gold: false },
-            { x: 85, y: 40, s: 1, d: 0.3, gold: false },
-            { x: 25, y: 75, s: 1.5, d: 1.8, gold: true },
-            { x: 60, y: 30, s: 1, d: 0.7, gold: false },
-            { x: 50, y: 80, s: 2, d: 2, gold: false },
-            { x: 10, y: 45, s: 1, d: 1.5, gold: false },
-            { x: 90, y: 70, s: 1.5, d: 0.9, gold: true },
-            { x: 33, y: 15, s: 1, d: 2.2, gold: false },
-            { x: 78, y: 60, s: 2, d: 1, gold: false },
-            { x: 55, y: 42, s: 1.5, d: 0.2, gold: false },
-          ].map((star, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full"
-              style={{
-                left: `${star.x}%`,
-                top: `${star.y}%`,
-                width: star.s,
-                height: star.s,
-                background: star.gold ? "#fbbf24" : "#e8e4ff",
-                boxShadow: star.gold
-                  ? `0 0 ${star.s * 3}px rgba(251,191,36,0.6)`
-                  : `0 0 ${star.s * 2}px rgba(232,228,255,0.4)`,
-              }}
-              animate={{ opacity: [0.2, 0.9, 0.2] }}
-              transition={{ duration: 2 + (i % 3), delay: star.d, repeat: Infinity, ease: "easeInOut" }}
-            />
-          ))}
-
-          {/* Nebula glow */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: `
-                radial-gradient(ellipse 70% 50% at 30% 40%, rgba(124,58,237,0.15), transparent),
-                radial-gradient(ellipse 50% 70% at 75% 65%, rgba(236,72,153,0.1), transparent)
-              `,
-            }}
-          />
-
-          {/* Central constellation + text */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            {/* Glowing star */}
-            <motion.div
-              animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: "50%",
-                background: "#fbbf24",
-                boxShadow: "0 0 20px #fbbf24, 0 0 40px rgba(124,58,237,0.5), 0 0 60px rgba(251,191,36,0.3)",
-                marginBottom: 12,
-              }}
-            />
-
-            {/* Title text */}
-            <p
-              style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
-                fontStyle: "italic",
-                fontSize: "13px",
-                fontWeight: 600,
-                color: "#e8e4ff",
-                textShadow: "0 0 20px rgba(124,58,237,0.6), 0 0 40px rgba(124,58,237,0.3)",
-                letterSpacing: "0.08em",
-              }}
-            >
-              written in the stars
-            </p>
-
-            {/* Decorative line */}
-            <motion.div
-              className="mt-2"
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 50, opacity: 0.4 }}
-              transition={{ delay: 0.5, duration: 1 }}
-              style={{
-                height: 1,
-                background: "linear-gradient(90deg, transparent, #fbbf24, transparent)",
-              }}
-            />
-          </div>
-
-          {/* Shooting star */}
-          <motion.div
-            className="absolute"
-            style={{
-              top: "18%",
-              left: "-10%",
-              width: 40,
-              height: 1,
-              background: "linear-gradient(90deg, transparent, #fbbf24, transparent)",
-              borderRadius: 1,
-              opacity: 0.6,
-            }}
-            animate={{
-              left: ["−10%", "110%"],
-              top: ["18%", "35%"],
-              opacity: [0, 0.8, 0],
-            }}
-            transition={{
-              duration: 2,
-              delay: 1.5,
-              repeat: Infinity,
-              repeatDelay: 5,
-              ease: "easeOut",
-            }}
-          />
-        </div>
-      );
-
-    case "avocado-valentine":
-      return (
-        <div className="relative z-10 flex flex-col items-center">
-          <motion.div
-            animate={{ y: [0, -6, 0], rotate: [0, 3, -3, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="text-6xl"
-          >
-            🥑
-          </motion.div>
-          <p
-            className="mt-2 text-[10px] font-bold text-green-700 tracking-wide"
-            style={{ fontFamily: "'Nunito', sans-serif" }}
-          >
-            You&apos;re the good kind of fat
-          </p>
-        </div>
-      );
-
-    case "premiere":
-      return (
-        <div className="absolute inset-0 z-10">
-          {/* Film grain subtle texture */}
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-              mixBlendMode: "overlay",
-            }}
-          />
-
-          {/* Red velvet curtain sides */}
-          <div
-            className="absolute left-0 top-0 bottom-0"
-            style={{
-              width: "15%",
-              background: "linear-gradient(90deg, #8b1a2b 0%, #5a1018 60%, transparent 100%)",
-              opacity: 0.7,
-            }}
-          />
-          <div
-            className="absolute right-0 top-0 bottom-0"
-            style={{
-              width: "15%",
-              background: "linear-gradient(-90deg, #8b1a2b 0%, #5a1018 60%, transparent 100%)",
-              opacity: 0.7,
-            }}
-          />
-
-          {/* Gold spotlight beam from top */}
-          <div
-            className="absolute top-0 left-1/2 -translate-x-1/2"
-            style={{
-              width: "60%",
-              height: "70%",
-              background: "radial-gradient(ellipse at top center, rgba(212,160,23,0.15) 0%, transparent 70%)",
-            }}
-          />
-
-          {/* Center content */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            {/* Clapperboard icon */}
-            <motion.div
-              className="relative mb-3"
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <div
-                style={{
-                  width: 44,
-                  height: 32,
-                  background: "linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%)",
-                  border: "1.5px solid #d4a017",
-                  borderRadius: 3,
-                  position: "relative",
-                }}
-              >
-                {/* Clapperboard top (the clapper) */}
-                <motion.div
-                  animate={{ rotate: [0, -8, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
-                  style={{
-                    position: "absolute",
-                    top: -8,
-                    left: -1,
-                    width: 46,
-                    height: 10,
-                    background: "repeating-linear-gradient(135deg, #d4a017 0px, #d4a017 4px, #0a0a0a 4px, #0a0a0a 8px)",
-                    borderRadius: "2px 2px 0 0",
-                    transformOrigin: "left bottom",
-                  }}
-                />
-                {/* Text lines on board */}
-                <div className="absolute bottom-1 left-1 right-1 flex flex-col gap-[2px]">
-                  <div style={{ height: 1, background: "#d4a017", opacity: 0.4 }} />
-                  <div style={{ height: 1, background: "#d4a017", opacity: 0.3, width: "70%" }} />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Title text */}
-            <p
-              style={{
-                fontFamily: "'Bebas Neue', 'Arial Black', sans-serif",
-                fontSize: "14px",
-                fontWeight: 400,
-                color: "#d4a017",
-                textShadow: "0 0 20px rgba(212,160,23,0.5), 0 0 40px rgba(212,160,23,0.2)",
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-              }}
-            >
-              Premiere
-            </p>
-
-            {/* Decorative line */}
-            <motion.div
-              className="mt-1"
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 40, opacity: 0.5 }}
-              transition={{ delay: 0.5, duration: 1 }}
-              style={{
-                height: 1,
-                background: "linear-gradient(90deg, transparent, #c41e3a, transparent)",
-              }}
-            />
-          </div>
-
-          {/* Vignette overlay */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%)",
-            }}
-          />
-        </div>
-      );
-
-    case "forest-adventure":
-      return (
-        <div className="absolute inset-0 z-10">
-          {/* Forest background elements */}
-          <div className="absolute inset-0 overflow-hidden">
-            {/* Trees silhouettes on sides */}
-            <div className="absolute left-0 bottom-0 w-1/4 h-full opacity-40">
-              <svg viewBox="0 0 50 100" className="w-full h-full" preserveAspectRatio="xMinYMax slice">
-                <path d="M25 0 L50 60 L40 60 L50 80 L35 80 L45 100 L5 100 L15 80 L0 80 L10 60 L0 60 Z" fill="#0a2a0a" />
-              </svg>
-            </div>
-            <div className="absolute right-0 bottom-0 w-1/4 h-full opacity-40">
-              <svg viewBox="0 0 50 100" className="w-full h-full" preserveAspectRatio="xMaxYMax slice">
-                <path d="M25 0 L50 60 L40 60 L50 80 L35 80 L45 100 L5 100 L15 80 L0 80 L10 60 L0 60 Z" fill="#0a2a0a" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Magical sparkles */}
-          {[
-            { x: 20, y: 25, d: 0 },
-            { x: 75, y: 30, d: 0.5 },
-            { x: 50, y: 15, d: 1 },
-            { x: 35, y: 60, d: 1.5 },
-            { x: 65, y: 55, d: 0.8 },
-          ].map((spark, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 rounded-full bg-yellow-300"
-              style={{
-                left: `${spark.x}%`,
-                top: `${spark.y}%`,
-                boxShadow: "0 0 4px #fbbf24, 0 0 8px #fbbf24",
-              }}
-              animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] }}
-              transition={{ duration: 2, delay: spark.d, repeat: Infinity }}
-            />
-          ))}
-
-          {/* Center content */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            {/* Pixel character */}
-            <motion.div
-              animate={{ y: [0, -5, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="relative mb-2"
-            >
-              <div
-                className="w-12 h-12 rounded-lg flex items-center justify-center"
-                style={{
-                  background: "linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%)",
-                  border: "2px solid #92400e",
-                  boxShadow: "0 4px 0 #78350f",
-                }}
-              >
-                <span className="text-2xl">🧙</span>
-              </div>
-            </motion.div>
-
-            {/* Quest text */}
-            <div
-              className="px-4 py-2 rounded-lg"
-              style={{
-                background: "rgba(0,0,0,0.6)",
-                border: "2px solid #22c55e",
-                boxShadow: "0 0 10px rgba(34,197,94,0.3)",
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: "'Press Start 2P', monospace",
-                  fontSize: "8px",
-                  color: "#86efac",
-                  textShadow: "0 0 4px rgba(134,239,172,0.5)",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                BEGIN QUEST
-              </p>
-            </div>
-
-            {/* Floating letter */}
-            <motion.div
-              className="absolute bottom-6 right-6"
-              animate={{ y: [0, -3, 0], rotate: [-5, 5, -5] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              <span className="text-xl opacity-80">💌</span>
-            </motion.div>
-          </div>
-
-          {/* Pixel scanline effect */}
-          <div
-            className="absolute inset-0 pointer-events-none opacity-10"
-            style={{
-              background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px)",
-            }}
-          />
-
-          {/* Vignette */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)",
-            }}
-          />
-        </div>
-      );
-
-    default:
-      return <span className="text-7xl relative z-10">{templateId}</span>;
-  }
-}
-
-// ============================================
-// MOBILE GRID CARD - compact tile for mobile
-// ============================================
-
-function MobileGridCard({
-  template,
+  index,
   onClick,
 }: {
   template: Template;
+  index: number;
   onClick: () => void;
 }) {
-  const getPreviewStyle = (): React.CSSProperties => {
+  const getPreviewBg = () => {
     switch (template.id) {
       case "runaway-button":
-        return { background: "linear-gradient(135deg, #fff1f2 0%, #ffe4e6 40%, #fecdd3 100%)" };
+        return "linear-gradient(135deg, #fff1f2 0%, #fecdd3 100%)";
       case "y2k-digital-crush":
-        return { background: "#c0c0c0" };
+        return "#c0c0c0";
       case "cozy-scrapbook":
-        return { background: "linear-gradient(135deg, #fef9ef 0%, #fdf2e0 40%, #f5e6c8 100%)" };
+        return "linear-gradient(135deg, #fef9ef 0%, #f5e6c8 100%)";
       case "neon-arcade":
-        return { background: "linear-gradient(180deg, #0a0014 0%, #1a0033 50%, #0d001a 100%)" };
+        return "linear-gradient(180deg, #0a0014 0%, #1a0033 100%)";
       case "love-letter-mailbox":
-        return { background: "linear-gradient(135deg, #fff5f5 0%, #fce4ec 40%, #f8bbd0 100%)" };
+        return "linear-gradient(135deg, #fff5f5 0%, #f8bbd0 100%)";
       case "stargazer":
-        return { background: "linear-gradient(180deg, #050514 0%, #0a0a2e 40%, #1a1a4e 100%)" };
+        return "linear-gradient(180deg, #050514 0%, #1a1a4e 100%)";
       case "avocado-valentine":
-        return { background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 40%, #bbf7d0 100%)" };
+        return "linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%)";
       case "premiere":
-        return { background: "linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 40%, #0a0a0a 100%)" };
+        return "linear-gradient(180deg, #0a0a0a 0%, #1a0a0a 100%)";
       case "forest-adventure":
-        return { background: "linear-gradient(180deg, #1a3c1a 0%, #2d5a2d 40%, #1a3c1a 100%)" };
+        return "linear-gradient(180deg, #1a3c1a 0%, #2d5a2d 100%)";
       default:
-        return { background: "linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)" };
+        return "#f5f5f5";
     }
   };
 
@@ -1162,30 +368,29 @@ function MobileGridCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileTap={{ scale: 0.97 }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
       onClick={onClick}
-      className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm cursor-pointer active:shadow-md transition-shadow"
+      className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm active:scale-[0.98] transition-transform"
     >
-      {/* Preview area */}
+      {/* Preview */}
       <div
-        style={{ height: 100, ...getPreviewStyle() }}
-        className="flex items-center justify-center relative overflow-hidden scale-75 origin-center"
+        className="relative h-28 flex items-center justify-center"
+        style={{ background: getPreviewBg() }}
       >
-        {/* Same preview art as desktop, scaled down */}
-        <TemplatePreviewArt templateId={template.id} />
+        <span className="text-3xl">{template.emoji}</span>
 
         {/* Price badge */}
-        <div className="absolute top-2 right-2 scale-[1.33]">
+        <div className="absolute top-2 right-2">
           {template.is_free ? (
-            <span className="px-2 py-0.5 bg-emerald-500 text-white rounded text-[9px] font-semibold uppercase">
+            <span className="px-2 py-0.5 bg-emerald-500 text-white rounded-full text-[9px] font-bold uppercase">
               Free
             </span>
           ) : (
             <span
-              className="px-2 py-0.5 rounded text-[9px] font-bold"
+              className="px-2 py-0.5 rounded-full text-[9px] font-bold"
               style={{
-                background: "linear-gradient(135deg, #d4a017, #f5c842, #d4a017)",
-                color: "#5c3d00",
+                background: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+                color: "#78350f",
               }}
             >
               {formatPrice(template.price_cents)}
@@ -1196,10 +401,10 @@ function MobileGridCard({
 
       {/* Content */}
       <div className="p-3">
-        <h3 className="font-semibold text-gray-900 text-sm mb-0.5 truncate">
+        <h3 className="font-semibold text-gray-900 text-xs mb-1 truncate">
           {template.name}
         </h3>
-        <p className="text-[11px] text-gray-500 leading-snug line-clamp-2">
+        <p className="text-[10px] text-gray-500 line-clamp-2 leading-relaxed">
           {template.description}
         </p>
       </div>
@@ -1208,104 +413,221 @@ function MobileGridCard({
 }
 
 // ============================================
+// TEMPLATE PREVIEW ART
+// ============================================
+
+function TemplatePreviewArt({ templateId, isHovered = false }: { templateId: string; isHovered?: boolean }) {
+  switch (templateId) {
+    case "runaway-button":
+      return (
+        <div className="relative z-10 flex flex-col items-center gap-3">
+          <div className="px-3 py-1 rounded-lg bg-white/80 text-[10px] font-semibold text-rose-400">
+            Will you be my Valentine?
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="px-4 py-1.5 rounded-lg bg-emerald-500 text-white text-[9px] font-bold shadow-md">
+              Yes! 💕
+            </div>
+            <motion.div
+              className="px-4 py-1.5 rounded-lg bg-gray-200 text-gray-500 text-[9px] font-semibold"
+              animate={isHovered ? { x: [0, 8, -6, 10, 0], y: [0, -4, 3, -6, 0] } : {}}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              No
+            </motion.div>
+          </div>
+        </div>
+      );
+
+    case "y2k-digital-crush":
+      return (
+        <div className="relative z-10 w-32">
+          <div className="rounded-sm overflow-hidden" style={{ border: "2px solid #868a8e", boxShadow: "2px 2px 0 #000" }}>
+            <div className="flex items-center gap-1 px-1.5 py-0.5" style={{ background: "linear-gradient(90deg, #000080, #1084d0)" }}>
+              <span className="text-white text-[8px] font-bold">💕 crush.exe</span>
+            </div>
+            <div className="bg-[#c0c0c0] p-2 text-center">
+              <p className="text-[9px] font-bold text-[#000080]">Be mine?</p>
+            </div>
+          </div>
+        </div>
+      );
+
+    case "cozy-scrapbook":
+      return (
+        <div className="relative z-10">
+          <motion.div
+            className="bg-white p-1.5 pb-5 rounded-sm shadow-lg"
+            style={{ transform: "rotate(-3deg)" }}
+            animate={isHovered ? { rotate: [-3, 0, -3] } : {}}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <div className="w-20 h-14 rounded-sm bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+              <span className="text-2xl">📸</span>
+            </div>
+          </motion.div>
+          <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-12 h-3 opacity-60"
+            style={{ background: "repeating-linear-gradient(45deg, #f8bbd0, #f8bbd0 2px, #f48fb1 2px, #f48fb1 4px)" }}
+          />
+        </div>
+      );
+
+    case "neon-arcade":
+      return (
+        <div className="relative z-10">
+          <div className="px-4 py-2 rounded-lg" style={{ border: "2px solid #7c4dff", boxShadow: "0 0 15px rgba(124,77,255,0.5)", background: "rgba(0,0,0,0.6)" }}>
+            <motion.p
+              className="text-[10px] font-bold tracking-wider text-center"
+              style={{ color: "#e040fb", textShadow: "0 0 8px rgba(224,64,251,0.8)" }}
+              animate={isHovered ? { opacity: [0.7, 1, 0.7] } : { opacity: 1 }}
+              transition={{ duration: 1, repeat: Infinity }}
+            >
+              PRESS START
+            </motion.p>
+          </div>
+        </div>
+      );
+
+    case "love-letter-mailbox":
+      return (
+        <motion.div
+          className="relative z-10"
+          animate={isHovered ? { y: [0, -4, 0] } : {}}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <div className="w-24 h-16 rounded-lg relative" style={{ background: "linear-gradient(160deg, #fff5f5 0%, #f8bbd0 100%)", boxShadow: "0 8px 24px rgba(183,28,28,0.12)" }}>
+            <div className="absolute -top-px left-0 right-0 h-8" style={{ background: "linear-gradient(180deg, #f8bbd0 0%, #fce4ec 100%)", clipPath: "polygon(0 0, 50% 85%, 100% 0)" }} />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-rose-400">
+              <span className="text-lg">💌</span>
+            </div>
+          </div>
+        </motion.div>
+      );
+
+    case "stargazer":
+      return (
+        <div className="relative z-10 w-full h-full">
+          {[...Array(8)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-white rounded-full"
+              style={{
+                left: `${20 + (i * 10) % 60}%`,
+                top: `${15 + (i * 15) % 70}%`,
+                opacity: 0.6 + (i % 3) * 0.2,
+              }}
+              animate={isHovered ? { opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] } : {}}
+              transition={{ duration: 2, delay: i * 0.2, repeat: Infinity }}
+            />
+          ))}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-[10px] text-white/70 font-light tracking-widest">✦ written in the stars ✦</p>
+          </div>
+        </div>
+      );
+
+    case "avocado-valentine":
+      return (
+        <motion.div
+          animate={isHovered ? { rotate: [-5, 5, -5] } : {}}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <span className="text-4xl">🥑</span>
+        </motion.div>
+      );
+
+    case "premiere":
+      return (
+        <div className="relative z-10 text-center">
+          <motion.div
+            className="px-4 py-2 rounded border-2 border-amber-500/50"
+            style={{ background: "rgba(0,0,0,0.6)" }}
+            animate={isHovered ? { borderColor: ["rgba(245,158,11,0.5)", "rgba(245,158,11,1)", "rgba(245,158,11,0.5)"] } : {}}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <p className="text-[10px] text-amber-400 font-bold tracking-wider">🎬 PREMIERE</p>
+          </motion.div>
+        </div>
+      );
+
+    case "forest-adventure":
+      return (
+        <div className="relative z-10 flex flex-col items-center">
+          <motion.div
+            animate={isHovered ? { y: [0, -4, 0] } : {}}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(180deg, #fbbf24, #f59e0b)", border: "2px solid #92400e" }}>
+              <span className="text-xl">🧙</span>
+            </div>
+          </motion.div>
+          <div className="mt-2 px-3 py-1 rounded" style={{ background: "rgba(0,0,0,0.6)", border: "1px solid #22c55e" }}>
+            <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "7px", color: "#86efac" }}>BEGIN QUEST</p>
+          </div>
+        </div>
+      );
+
+    default:
+      return <span className="text-4xl">{templateId}</span>;
+  }
+}
+
+// ============================================
 // MEMBERSHIP MODAL
 // ============================================
 
 function MembershipModal({ onClose }: { onClose: () => void }) {
-  const paidTemplates = TEMPLATES.filter(t => !t.is_free);
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-2xl max-w-md w-full max-h-[85vh] overflow-y-auto shadow-2xl"
+        className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
       >
-        {/* Header */}
-        <div className="sticky top-0 bg-white px-6 pt-6 pb-4 border-b border-gray-100">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-500" />
-              <h2 className="text-xl font-bold text-gray-900">Membership</h2>
-            </div>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
-            >
-              <X className="w-5 h-5 text-gray-400" />
-            </button>
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+            <Sparkles className="w-8 h-8 text-white" />
           </div>
-          <p className="text-sm text-gray-500 mt-1">One-time payment, lifetime access</p>
+          <h2 className="text-2xl font-bold text-white mb-2">All-Access Pass</h2>
+          <p className="text-gray-400 text-sm">Unlock every template, forever</p>
         </div>
 
-        {/* Price */}
-        <div className="px-6 py-6 text-center border-b border-gray-100">
-          <div className="inline-flex items-baseline gap-1">
-            <span className="text-4xl font-bold" style={{ color: "#b8860b" }}>$3</span>
-            <span className="text-gray-400 text-sm">USD</span>
-          </div>
-          <p className="text-sm text-gray-600 mt-2">All premium templates + future releases</p>
-        </div>
-
-        {/* What's included */}
-        <div className="px-6 py-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">What you get:</h3>
-          <ul className="space-y-2">
-            <li className="flex items-center gap-2 text-sm text-gray-600">
-              <span className="text-emerald-500">✓</span>
-              {paidTemplates.length} premium templates
-            </li>
-            <li className="flex items-center gap-2 text-sm text-gray-600">
-              <span className="text-emerald-500">✓</span>
-              All future template releases
-            </li>
-            <li className="flex items-center gap-2 text-sm text-gray-600">
-              <span className="text-emerald-500">✓</span>
-              Unlimited invitations
-            </li>
-            <li className="flex items-center gap-2 text-sm text-gray-600">
-              <span className="text-emerald-500">✓</span>
-              Custom messages & event details
-            </li>
-          </ul>
-        </div>
-
-        {/* Templates preview */}
-        <div className="px-6 py-4 border-t border-gray-100">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Premium templates included:</h3>
-          <div className="grid grid-cols-2 gap-2">
-            {paidTemplates.map((template) => (
-              <div
-                key={template.id}
-                className="flex items-center gap-2 p-2 rounded-lg bg-gray-50"
-              >
-                <span className="text-xl">{template.emoji}</span>
-                <span className="text-xs font-medium text-gray-700 truncate">{template.name}</span>
+        <div className="p-6">
+          <div className="space-y-3 mb-6">
+            {[
+              "All 8 premium templates",
+              "Future templates included",
+              "Priority support",
+              "One-time payment",
+            ].map((feature, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-gray-700 text-sm">{feature}</span>
               </div>
             ))}
           </div>
-        </div>
 
-        {/* CTA */}
-        <div className="sticky bottom-0 bg-white px-6 py-4 border-t border-gray-100">
-          <button
-            className="w-full py-3 rounded-xl text-white font-semibold text-base"
-            style={{
-              background: "linear-gradient(135deg, #d4a017, #f5c842)",
-              boxShadow: "0 4px 14px rgba(212,160,23,0.35)",
-            }}
-          >
-            Get Membership — $3
+          <div className="text-center mb-4">
+            <span className="text-4xl font-bold text-gray-900">{formatPrice(PRICING.membership)}</span>
+            <span className="text-gray-500 ml-2">one-time</span>
+          </div>
+
+          <button className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl">
+            Get All-Access Pass
           </button>
-          <p className="text-xs text-gray-400 text-center mt-2">
+          <p className="text-xs text-gray-400 text-center mt-3">
             Secure payment via Stripe (coming soon)
           </p>
         </div>

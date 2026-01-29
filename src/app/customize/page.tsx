@@ -9,6 +9,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getTemplateById } from "@/lib/supabase/templates";
 
+// Format date from YYYY-MM-DD to readable format
+function formatDate(dateStr: string): string {
+  if (!dateStr) return "";
+  const date = new Date(dateStr + "T00:00:00");
+  return date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+}
+
+// Format time from HH:MM to readable format
+function formatTime(timeStr: string): string {
+  if (!timeStr) return "";
+  const [hours, minutes] = timeStr.split(":");
+  const h = parseInt(hours);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return `${h12}:${minutes} ${ampm}`;
+}
+
 // ============================================
 // TEMPLATE FIELD CONFIGURATION
 // ============================================
@@ -26,9 +43,21 @@ interface FieldDef {
   placeholder: string;
   icon: "calendar" | "clock" | "mappin" | "penline" | "message" | "heart";
   type: "input" | "textarea";
+  inputType?: "text" | "date" | "time"; // For date/time pickers
+  maxLength?: number;
   hint?: string;
   textareaStyle?: React.CSSProperties;
 }
+
+// Character limits
+const CHAR_LIMITS = {
+  name: 30,
+  message: 80,
+  personalMessage: 200,
+  location: 40,
+  date: 25,
+  time: 15,
+};
 
 function getTemplateFields(templateId: string): TemplateFieldConfig {
   switch (templateId) {
@@ -40,10 +69,19 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
         fields: [
           {
             key: "date",
-            label: "Date & Time",
-            placeholder: "Feb 14th @ 7:30 PM",
+            label: "Date",
+            placeholder: "",
             icon: "calendar",
             type: "input",
+            inputType: "date",
+          },
+          {
+            key: "time",
+            label: "Time",
+            placeholder: "",
+            icon: "clock",
+            type: "input",
+            inputType: "time",
           },
           {
             key: "location",
@@ -51,13 +89,15 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "The Little Italian Place",
             icon: "mappin",
             type: "input",
+            maxLength: CHAR_LIMITS.location,
           },
           {
             key: "personalMessage",
             label: "Personal Message",
-            placeholder: "You make every moment feel like a fairytale. I can't imagine spending this day with anyone else.",
+            placeholder: "You make every moment feel like a fairytale...",
             icon: "penline",
             type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
             hint: "This appears on a dedicated card in cursive",
             textareaStyle: {
               fontFamily: "'Poppins', sans-serif",
@@ -82,6 +122,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Will you be my Valentine?",
             icon: "message",
             type: "input",
+            maxLength: CHAR_LIMITS.message,
             hint: "The typewriter text in the night sky",
           },
           {
@@ -90,6 +131,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Every moment with you feels like stargazing...",
             icon: "penline",
             type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
             hint: "Appears as a stardust letter in the night sky",
             textareaStyle: {
               fontFamily: "'Playfair Display', Georgia, serif",
@@ -102,16 +144,18 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
           {
             key: "date",
             label: "Date",
-            placeholder: "February 14th",
+            placeholder: "",
             icon: "calendar",
             type: "input",
+            inputType: "date",
           },
           {
             key: "time",
             label: "Time",
-            placeholder: "7:00 PM",
+            placeholder: "",
             icon: "clock",
             type: "input",
+            inputType: "time",
           },
           {
             key: "location",
@@ -119,6 +163,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Under the stars",
             icon: "mappin",
             type: "input",
+            maxLength: CHAR_LIMITS.location,
           },
         ],
       };
@@ -135,6 +180,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Will you be my Valentine?",
             icon: "message",
             type: "input",
+            maxLength: CHAR_LIMITS.message,
             hint: "The marquee text on the big screen",
           },
           {
@@ -143,6 +189,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Every scene of my life is better with you in it.",
             icon: "penline",
             type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
             hint: "Scrolls like film credits on the big screen",
             textareaStyle: {
               fontFamily: "'Cormorant Garamond', Georgia, serif",
@@ -155,16 +202,18 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
           {
             key: "date",
             label: "Date",
-            placeholder: "February 14th",
+            placeholder: "",
             icon: "calendar",
             type: "input",
+            inputType: "date",
           },
           {
             key: "time",
             label: "Time",
-            placeholder: "7:00 PM",
+            placeholder: "",
             icon: "clock",
             type: "input",
+            inputType: "time",
           },
           {
             key: "location",
@@ -172,6 +221,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "The usual spot",
             icon: "mappin",
             type: "input",
+            maxLength: CHAR_LIMITS.location,
           },
         ],
       };
@@ -188,20 +238,23 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Will you be my Valentine?",
             icon: "message",
             type: "input",
+            maxLength: CHAR_LIMITS.message,
           },
           {
             key: "date",
             label: "Event Date",
-            placeholder: "Valentine's Day",
+            placeholder: "",
             icon: "calendar",
             type: "input",
+            inputType: "date",
           },
           {
             key: "time",
             label: "Event Time",
-            placeholder: "7:30 PM",
+            placeholder: "",
             icon: "clock",
             type: "input",
+            inputType: "time",
           },
           {
             key: "location",
@@ -209,6 +262,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Somewhere romantic",
             icon: "mappin",
             type: "input",
+            maxLength: CHAR_LIMITS.location,
           },
         ],
       };
@@ -225,29 +279,33 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Will you be my Valentine?",
             icon: "message",
             type: "input",
+            maxLength: CHAR_LIMITS.message,
             hint: "Shown after beating the rhythm game",
           },
           {
             key: "personalMessage",
             label: "Personal Message",
-            placeholder: "Ready Player 2? Let's start a co-op adventure together.",
+            placeholder: "Ready Player 2? Let's start a co-op adventure!",
             icon: "heart",
             type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
             hint: "Your reward message revealed after winning",
           },
           {
             key: "date",
             label: "Event Date",
-            placeholder: "February 14th",
+            placeholder: "",
             icon: "calendar",
             type: "input",
+            inputType: "date",
           },
           {
             key: "time",
             label: "Event Time",
-            placeholder: "7:00 PM",
+            placeholder: "",
             icon: "clock",
             type: "input",
+            inputType: "time",
           },
           {
             key: "location",
@@ -255,6 +313,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "The usual spot",
             icon: "mappin",
             type: "input",
+            maxLength: CHAR_LIMITS.location,
           },
         ],
       };
@@ -271,6 +330,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Will you be my Valentine?",
             icon: "message",
             type: "input",
+            maxLength: CHAR_LIMITS.message,
             hint: "Displayed in the love.exe dialog",
           },
           {
@@ -279,21 +339,24 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "You've captured my heart like a rare Pokémon.",
             icon: "heart",
             type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
             hint: "A sweet note shown in the invitation",
           },
           {
             key: "date",
             label: "Event Date",
-            placeholder: "February 14th",
+            placeholder: "",
             icon: "calendar",
             type: "input",
+            inputType: "date",
           },
           {
             key: "time",
             label: "Event Time",
-            placeholder: "7:00 PM",
+            placeholder: "",
             icon: "clock",
             type: "input",
+            inputType: "time",
           },
           {
             key: "location",
@@ -301,6 +364,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "The usual spot",
             icon: "mappin",
             type: "input",
+            maxLength: CHAR_LIMITS.location,
           },
         ],
       };
@@ -325,6 +389,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Will you be my Valentine?",
             icon: "message",
             type: "input",
+            maxLength: CHAR_LIMITS.message,
             hint: "Revealed in the magical letter at the end of the quest",
           },
           {
@@ -333,6 +398,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "I planned this whole adventure just for you!",
             icon: "penline",
             type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
             hint: "A sweet note on the invitation scroll",
             textareaStyle: {
               fontFamily: "'Press Start 2P', monospace",
@@ -344,16 +410,18 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
           {
             key: "date",
             label: "Date",
-            placeholder: "February 14th",
+            placeholder: "",
             icon: "calendar",
             type: "input",
+            inputType: "date",
           },
           {
             key: "time",
             label: "Time",
-            placeholder: "7:00 PM",
+            placeholder: "",
             icon: "clock",
             type: "input",
+            inputType: "time",
           },
           {
             key: "location",
@@ -361,6 +429,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "The Enchanted Forest",
             icon: "mappin",
             type: "input",
+            maxLength: CHAR_LIMITS.location,
           },
         ],
       };
@@ -377,6 +446,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Will you be my Valentine?",
             icon: "message",
             type: "input",
+            maxLength: CHAR_LIMITS.message,
           },
         ],
       };
@@ -393,6 +463,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             placeholder: "Will you be my Valentine?",
             icon: "message",
             type: "input",
+            maxLength: CHAR_LIMITS.message,
           },
         ],
       };
@@ -758,15 +829,21 @@ function CustomizePageContent() {
 
                   {/* Name input */}
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-gray-700 font-medium">
-                      Your name
-                    </Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="name" className="text-gray-700 font-medium">
+                        Your name
+                      </Label>
+                      <span className={`text-xs ${name.length > CHAR_LIMITS.name ? 'text-red-500' : 'text-gray-400'}`}>
+                        {name.length}/{CHAR_LIMITS.name}
+                      </span>
+                    </div>
                     <Input
                       id="name"
                       type="text"
                       placeholder="Daniel"
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => setName(e.target.value.slice(0, CHAR_LIMITS.name))}
+                      maxLength={CHAR_LIMITS.name}
                       className="h-12 text-lg rounded-xl border-gray-200 focus:border-pink-300 focus:ring-pink-200"
                     />
                   </div>
@@ -816,20 +893,54 @@ function CustomizePageContent() {
                   {/* Dynamic fields */}
                   {fieldConfig.fields.map((field) => (
                     <div key={field.key} className="space-y-2">
-                      <Label htmlFor={field.key} className="text-gray-700 font-medium flex items-center gap-1.5">
-                        <FieldIcon icon={field.icon} />
-                        {field.label}
-                      </Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor={field.key} className="text-gray-700 font-medium flex items-center gap-1.5">
+                          <FieldIcon icon={field.icon} />
+                          {field.label}
+                        </Label>
+                        {field.maxLength && (
+                          <span className={`text-xs ${fieldValues[field.key].length > field.maxLength ? 'text-red-500' : 'text-gray-400'}`}>
+                            {fieldValues[field.key].length}/{field.maxLength}
+                          </span>
+                        )}
+                      </div>
                       {field.type === "textarea" ? (
                         <>
                           <textarea
                             id={field.key}
                             placeholder={field.placeholder}
                             value={fieldValues[field.key]}
-                            onChange={(e) => updateField(field.key, e.target.value)}
+                            onChange={(e) => updateField(field.key, e.target.value.slice(0, field.maxLength || 9999))}
                             rows={3}
+                            maxLength={field.maxLength}
                             className={`w-full px-4 py-3 text-base rounded-xl border border-gray-200 ${accent.border} focus:ring-2 ${accent.ring} focus:outline-none resize-none`}
                             style={field.textareaStyle}
+                          />
+                          {field.hint && (
+                            <p className="text-sm text-gray-500">{field.hint}</p>
+                          )}
+                        </>
+                      ) : field.inputType === "date" ? (
+                        <>
+                          <Input
+                            id={field.key}
+                            type="date"
+                            value={fieldValues[field.key]}
+                            onChange={(e) => updateField(field.key, e.target.value)}
+                            className={`h-12 text-lg rounded-xl border-gray-200 ${accent.border} ${accent.ring}`}
+                          />
+                          {field.hint && (
+                            <p className="text-sm text-gray-500">{field.hint}</p>
+                          )}
+                        </>
+                      ) : field.inputType === "time" ? (
+                        <>
+                          <Input
+                            id={field.key}
+                            type="time"
+                            value={fieldValues[field.key]}
+                            onChange={(e) => updateField(field.key, e.target.value)}
+                            className={`h-12 text-lg rounded-xl border-gray-200 ${accent.border} ${accent.ring}`}
                           />
                           {field.hint && (
                             <p className="text-sm text-gray-500">{field.hint}</p>
@@ -842,7 +953,8 @@ function CustomizePageContent() {
                             type="text"
                             placeholder={field.placeholder}
                             value={fieldValues[field.key]}
-                            onChange={(e) => updateField(field.key, e.target.value)}
+                            onChange={(e) => updateField(field.key, e.target.value.slice(0, field.maxLength || 9999))}
+                            maxLength={field.maxLength}
                             className={`h-12 text-lg rounded-xl border-gray-200 ${accent.border} ${accent.ring}`}
                           />
                           {field.hint && (
