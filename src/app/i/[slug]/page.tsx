@@ -345,7 +345,7 @@ function InteractiveTemplate({
   senderName: string;
 }) {
   // Extract common fields from config
-  const configAny = config as Record<string, unknown>;
+  const configAny = config as unknown as Record<string, unknown>;
   const message = (configAny.questionText || configAny.message || "Will you be my Valentine?") as string;
   const personalMessage = (configAny.personalMessage || "") as string;
   const date = (configAny.date || configAny.eventDate || "") as string;
@@ -370,6 +370,7 @@ function InteractiveTemplate({
       case "cozy-scrapbook":
         return (
           <CozyScrapbook
+            message={message}
             senderName={senderName}
             eventDate={date}
             eventTime={time}

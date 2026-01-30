@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe/client";
-import { createClient } from "@/lib/supabase/client";
+import { createServiceClient } from "@/lib/supabase/server";
 import Stripe from "stripe";
 
 // ============================================
@@ -43,7 +43,8 @@ export async function POST(request: NextRequest) {
       const inviteSlug = session.metadata?.inviteSlug;
 
       if (inviteSlug) {
-        const supabase = createClient();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const supabase = createServiceClient() as any;
 
         // Update invite to mark as paid and extend expiration
         const { error } = await supabase

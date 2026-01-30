@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/client";
+import { createServiceClient } from "@/lib/supabase/server";
 import { generateSlug, getShareUrl } from "@/lib/supabase/utils";
 import { getTemplateById, getDefaultConfig } from "@/lib/supabase/templates";
-import { CreateInviteInput, TemplateId } from "@/lib/supabase/types";
+import { CreateInviteInput, TemplateId, Invite } from "@/lib/supabase/types";
 import { checkRateLimit, getClientIp, rateLimitConfigs } from "@/lib/security/rate-limiter";
 import { sanitizeString, sanitizeEmail, sanitizeInviteConfig } from "@/lib/security/sanitize";
 
@@ -43,7 +43,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate unique slug
-    const supabase = createClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const supabase = createServiceClient() as any;
     let slug = generateSlug();
     let attempts = 0;
 
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     const sanitizedRecipientName = recipient_name ? sanitizeString(recipient_name, 100) : null;
 
     // Insert invite into Supabase
-    const { data: invite, error } = await supabase
+    const { data, error } = await supabase
       .from("invites")
       .insert({
         slug,
@@ -84,6 +85,8 @@ export async function POST(request: NextRequest) {
       })
       .select()
       .single();
+
+    const invite = data as Invite;
 
     if (error) {
       console.error("Supabase error:", error);
@@ -127,7 +130,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabase = createClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const supabase = createServiceClient() as any;
     const { count, error } = await supabase
       .from("invites")
       .select("*", { count: "exact", head: true });

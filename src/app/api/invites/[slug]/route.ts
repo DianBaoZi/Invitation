@@ -61,12 +61,13 @@ export async function GET(
     }
 
     // Record the view (non-blocking)
-    supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any)
       .from("invite_views")
       .insert({
         invite_id: invite.id,
         ip_address: clientIp,
-      } as { invite_id: string; ip_address: string })
+      })
       .then(() => {})
       .catch((err: Error) => console.error("Failed to record view:", err));
 

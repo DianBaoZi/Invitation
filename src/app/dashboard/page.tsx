@@ -43,7 +43,8 @@ export default function DashboardPage() {
   }, [router]);
 
   const loadInvites = async (userId: string) => {
-    const supabase = createClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const supabase = createClient() as any;
 
     // Get invites with view counts
     const { data: invitesData, error } = await supabase
@@ -69,7 +70,7 @@ export default function DashboardPage() {
 
     // Get view counts for each invite
     const invitesWithViews = await Promise.all(
-      (invitesData || []).map(async (invite) => {
+      ((invitesData || []) as InviteWithViews[]).map(async (invite) => {
         const { count } = await supabase
           .from("invite_views")
           .select("*", { count: "exact", head: true })
@@ -102,7 +103,8 @@ export default function DashboardPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this invite?")) return;
 
-    const supabase = createClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const supabase = createClient() as any;
     const { error } = await supabase.from("invites").delete().eq("id", id);
 
     if (!error && user) {
