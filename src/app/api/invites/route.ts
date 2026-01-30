@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error("Supabase error:", error);
       return NextResponse.json(
-        { success: false, error: "Failed to create invite" },
+        { success: false, error: `Failed to create invite: ${error.message}`, details: error },
         { status: 500 }
       );
     }
