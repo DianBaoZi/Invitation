@@ -596,7 +596,7 @@ function RevealScreen({
             {/* Overlay dynamic fields on the card image */}
             <div className="absolute inset-0">
               <p
-                className="absolute truncate"
+                className="absolute"
                 style={{
                   fontFamily: "'Poppins', sans-serif",
                   fontWeight: 600,
@@ -605,12 +605,15 @@ function RevealScreen({
                   bottom: "31%",
                   left: "35%",
                   right: "10%",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {date}
               </p>
               <p
-                className="absolute truncate"
+                className="absolute"
                 style={{
                   fontFamily: "'Poppins', sans-serif",
                   fontWeight: 600,
@@ -619,6 +622,9 @@ function RevealScreen({
                   bottom: "18%",
                   left: "30%",
                   right: "10%",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {location}

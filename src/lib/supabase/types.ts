@@ -124,9 +124,11 @@ export interface Invite {
   configuration: TemplateConfig;
   creator_email: string | null;
   creator_name: string | null;
+  recipient_name: string | null;
   is_paid: boolean;
   stripe_payment_id: string | null;
   created_at: string;
+  expires_at: string;
 }
 
 export interface CreateInviteInput {
@@ -134,8 +136,20 @@ export interface CreateInviteInput {
   configuration?: TemplateConfig;
   creator_email?: string;
   creator_name?: string;
+  recipient_name?: string;
   is_paid?: boolean;
   stripe_payment_id?: string;
+}
+
+// ============================================
+// INVITE VIEW TYPES (Analytics)
+// ============================================
+
+export interface InviteView {
+  id: string;
+  invite_id: string;
+  viewed_at: string;
+  ip_address: string | null;
 }
 
 // ============================================
@@ -190,12 +204,21 @@ export interface Database {
       };
       invites: {
         Row: Invite;
-        Insert: Omit<Invite, "id" | "created_at" | "slug"> & {
+        Insert: Omit<Invite, "id" | "created_at" | "slug" | "expires_at"> & {
           id?: string;
           slug?: string;
           created_at?: string;
+          expires_at?: string;
         };
         Update: Partial<Invite>;
+      };
+      invite_views: {
+        Row: InviteView;
+        Insert: Omit<InviteView, "id" | "viewed_at"> & {
+          id?: string;
+          viewed_at?: string;
+        };
+        Update: Partial<InviteView>;
       };
       purchases: {
         Row: Purchase;

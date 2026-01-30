@@ -635,6 +635,8 @@ function InvitationReveal({
             fontFamily: "'Press Start 2P', monospace",
             fontSize: "10px",
             lineHeight: "1.8",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
           }}
         >
           {personalMessage}
@@ -646,6 +648,8 @@ function InvitationReveal({
             style={{
               fontFamily: "'Press Start 2P', monospace",
               fontSize: "10px",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
             }}
           >
             {date && <p className="text-pink-700">📅 {date}</p>}

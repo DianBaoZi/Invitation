@@ -668,6 +668,8 @@ function DetailsScene({
                 fontWeight: 500,
                 color: PALETTE.starWhite,
                 textShadow: "0 0 20px rgba(124,58,237,0.3)",
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
               }}
             >
               {d.value}

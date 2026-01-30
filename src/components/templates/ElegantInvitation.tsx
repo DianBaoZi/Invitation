@@ -236,15 +236,18 @@ function FloralDivider() {
 
 function FloatingDecorations() {
   const decorations = [
-    { emoji: "✦", x: 8, y: 15, size: 12, delay: 0, duration: 4 },
-    { emoji: "✦", x: 92, y: 25, size: 10, delay: 1, duration: 5 },
-    { emoji: "❀", x: 5, y: 45, size: 16, delay: 0.5, duration: 6 },
-    { emoji: "✦", x: 88, y: 55, size: 8, delay: 2, duration: 4.5 },
-    { emoji: "❀", x: 12, y: 75, size: 14, delay: 1.5, duration: 5.5 },
-    { emoji: "✦", x: 95, y: 80, size: 11, delay: 0.8, duration: 4.2 },
-    { emoji: "❀", x: 3, y: 90, size: 12, delay: 2.5, duration: 5 },
-    { emoji: "✦", x: 90, y: 10, size: 9, delay: 1.2, duration: 4.8 },
+    { emoji: "✦", x: 8, y: 15, size: 12 },
+    { emoji: "✦", x: 92, y: 25, size: 10 },
+    { emoji: "❀", x: 5, y: 45, size: 16 },
+    { emoji: "✦", x: 88, y: 55, size: 8 },
+    { emoji: "❀", x: 12, y: 75, size: 14 },
+    { emoji: "✦", x: 95, y: 80, size: 11 },
+    { emoji: "❀", x: 3, y: 90, size: 12 },
+    { emoji: "✦", x: 90, y: 10, size: 9 },
   ];
+
+  // Synchronized duration for all decorations
+  const syncDuration = 5;
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -257,17 +260,16 @@ function FloatingDecorations() {
             top: `${dec.y}%`,
             fontSize: dec.size,
             color: PALETTE.roseGoldLight,
-            opacity: 0.25,
           }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{
-            y: [0, -20, 0],
-            x: [0, i % 2 === 0 ? 10 : -10, 0],
-            rotate: [0, i % 2 === 0 ? 15 : -15, 0],
-            opacity: [0.15, 0.3, 0.15],
+            y: [0, -30, -60],
+            x: [0, i % 2 === 0 ? 8 : -8, i % 2 === 0 ? 15 : -15],
+            rotate: [0, i % 2 === 0 ? 10 : -10, i % 2 === 0 ? 20 : -20],
+            opacity: [0, 0.3, 0],
           }}
           transition={{
-            duration: dec.duration,
-            delay: dec.delay,
+            duration: syncDuration,
             repeat: Infinity,
             ease: "easeInOut",
           }}
@@ -968,7 +970,7 @@ function RSVPSection({
 
   if (accepted) {
     return (
-      <section className="py-20 px-6">
+      <section className="py-10 px-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -1010,7 +1012,7 @@ function RSVPSection({
   }
 
   return (
-    <section className="py-20 px-6" style={{ overflow: "visible" }}>
+    <section className="py-10 px-6" style={{ overflow: "visible" }}>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -1122,7 +1124,7 @@ function RSVPSection({
                 cursor: "pointer",
               }}
               animate={{ x: noPosition.x, y: noPosition.y }}
-              transition={{ type: "spring", stiffness: 200, damping: 20 }}
+              transition={{ type: "spring", stiffness: 80, damping: 25 }}
               onMouseEnter={handleNoHover}
               onTouchStart={handleNoHover}
               whileHover={{ opacity: 0.7 }}
@@ -1175,7 +1177,7 @@ function RSVPSection({
 
 function FooterSection() {
   return (
-    <section className="py-16 px-6">
+    <section className="py-8 px-6">
       <motion.div
         className="max-w-md mx-auto"
         initial={{ opacity: 0 }}

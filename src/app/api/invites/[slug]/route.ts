@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/client";
 import { getTemplateById } from "@/lib/supabase/templates";
-import { getInviteBySlug } from "@/lib/supabase/store";
 import { checkRateLimit, getClientIp, rateLimitConfigs } from "@/lib/security/rate-limiter";
 import { isValidSlug } from "@/lib/security/sanitize";
 
@@ -34,15 +34,38 @@ export async function GET(
       );
     }
 
-    // Fetch invite from store
-    const invite = getInviteBySlug(slug);
+    // Fetch invite from Supabase
+    const supabase = createClient();
+    const { data: invite, error } = await supabase
+      .from("invites")
+      .select("*")
+      .eq("slug", slug)
+      .single();
 
-    if (!invite) {
+    if (error || !invite) {
       return NextResponse.json(
         { success: false, error: "Invite not found" },
         { status: 404 }
       );
     }
+
+    // Check if invite has expired
+    if (invite.expires_at && new Date(invite.expires_at) < new Date()) {
+      return NextResponse.json(
+        { success: false, error: "This invite has expired" },
+        { status: 410 }
+      );
+    }
+
+    // Record the view (non-blocking)
+    supabase
+      .from("invite_views")
+      .insert({
+        invite_id: invite.id,
+        ip_address: clientIp,
+      })
+      .then(() => {})
+      .catch((err) => console.error("Failed to record view:", err));
 
     // Get template info
     const template = getTemplateById(invite.template_id);

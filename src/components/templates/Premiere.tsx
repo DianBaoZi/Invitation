@@ -834,6 +834,8 @@ function ScrollContent({
                       fontSize: "1.1rem",
                       fontWeight: 500,
                       color: P.cream,
+                      wordBreak: "break-word",
+                      overflowWrap: "break-word",
                     }}
                   >
                     {item.value}

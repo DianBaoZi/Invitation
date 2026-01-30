@@ -129,9 +129,10 @@ export function sanitizeInviteConfig(config: Record<string, unknown>): Record<st
 }
 
 /**
- * Validate slug format - alphanumeric only
+ * Validate slug format - alphanumeric and hyphens allowed
  */
 export function isValidSlug(slug: string): boolean {
   if (typeof slug !== "string") return false;
-  return /^[a-zA-Z0-9]{4,32}$/.test(slug);
+  // Allow alphanumeric characters and hyphens, 4-50 characters
+  return /^[a-zA-Z0-9][a-zA-Z0-9-]{2,48}[a-zA-Z0-9]$/.test(slug);
 }

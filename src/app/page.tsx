@@ -7,6 +7,32 @@ import { PreviewModal } from "@/components/landing/PreviewModal";
 import { TEMPLATES, PRICING, formatPrice } from "@/lib/supabase/templates";
 import { Template } from "@/lib/supabase/types";
 
+// Flip counter component for animated number display
+function FlipCounter({ value }: { value: number }) {
+  const formattedValue = value.toLocaleString();
+
+  return (
+    <span className="inline-flex tabular-nums">
+      {formattedValue.split('').map((char, i) => (
+        <motion.span
+          key={`${i}-${char}`}
+          initial={{ y: -12, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{
+            type: "spring",
+            stiffness: 500,
+            damping: 30,
+          }}
+          className="font-bold text-stone-800"
+          style={{ display: 'inline-block', minWidth: char === ',' ? '0.3em' : '0.55em', textAlign: 'center' }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
 // Get the next Valentine's Day date based on user's local time
 function getNextValentinesDay(): Date {
   const now = new Date();
@@ -345,7 +371,7 @@ export default function Home() {
           <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-stone-50 border border-stone-200">
             <Users className="w-4 h-4 text-stone-400" />
             <span className="text-stone-600 text-sm" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-              <strong className="text-stone-800">{inviteCount.toLocaleString()}</strong> invites sent this week
+              <FlipCounter value={inviteCount} /> invites sent this week
             </span>
           </div>
         </motion.div>

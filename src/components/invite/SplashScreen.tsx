@@ -17,13 +17,19 @@ export function SplashScreen({ creatorName, isPaid, onComplete, templateId, phot
   const [isVisible, setIsVisible] = useState(true);
   const appName = getAppName();
 
+  // Templates that require a tap to continue (no auto-dismiss)
+  const requiresTapToContinue = templateId === "cozy-scrapbook";
+
   useEffect(() => {
+    // Skip auto-dismiss for templates that require tap to continue
+    if (requiresTapToContinue) return;
+
     const timer = setTimeout(() => {
       setIsVisible(false);
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [requiresTapToContinue]);
 
   const handleAnimationComplete = () => {
     if (!isVisible) {
@@ -667,64 +673,68 @@ function ScrapbookSplash({ creatorName, isPaid, appName, onTap, photoUrl1 }: The
         transition={{ delay: 0.2, type: "spring", stiffness: 180, damping: 15 }}
         className="relative text-center px-8 z-10"
       >
-        {/* Polaroid photo frame - shown when photoUrl1 is provided */}
-        {photoUrl1 && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, rotate: -5 }}
-            animate={{ opacity: 1, y: 0, rotate: -3 }}
-            transition={{ delay: 0.3, duration: 0.8, type: "spring" }}
-            className="mx-auto mb-6"
+        {/* Polaroid photo frame - always shown */}
+        <motion.div
+          initial={{ opacity: 0, y: -20, rotate: -5 }}
+          animate={{ opacity: 1, y: 0, rotate: -3 }}
+          transition={{ delay: 0.3, duration: 0.8, type: "spring" }}
+          className="mx-auto mb-6"
+          style={{
+            width: 140,
+            padding: "8px 8px 28px 8px",
+            background: "#fff",
+            boxShadow: "0 4px 12px rgba(92,58,33,0.2), 0 1px 3px rgba(92,58,33,0.1)",
+            transform: "rotate(-3deg)",
+          }}
+        >
+          {/* Photo inside polaroid - or placeholder */}
+          <div
             style={{
-              width: 140,
-              padding: "8px 8px 28px 8px",
-              background: "#fff",
-              boxShadow: "0 4px 12px rgba(92,58,33,0.2), 0 1px 3px rgba(92,58,33,0.1)",
-              transform: "rotate(-3deg)",
+              width: "100%",
+              aspectRatio: "1",
+              background: photoUrl1
+                ? `url(${photoUrl1}) center/cover no-repeat`
+                : "linear-gradient(135deg, #f5ebe0 0%, #e8ddd0 100%)",
+              backgroundColor: "#e8ddd0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            {/* Photo inside polaroid */}
-            <div
-              style={{
-                width: "100%",
-                aspectRatio: "1",
-                background: `url(${photoUrl1}) center/cover no-repeat`,
-                backgroundColor: "#e8ddd0",
-              }}
-            />
-            {/* Washi tape on corner */}
-            <div
-              style={{
-                position: "absolute",
-                top: -6,
-                right: -10,
-                width: 40,
-                height: 14,
-                background: "linear-gradient(90deg, #d4a574, #e8c9a8)",
-                opacity: 0.7,
-                transform: "rotate(25deg)",
-                borderRadius: 2,
-              }}
-            />
-          </motion.div>
-        )}
-
-        {/* Washi tape decorative strip - only show if no photo */}
-        {!photoUrl1 && (
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="mx-auto mb-6"
+            {/* Placeholder text when no photo */}
+            {!photoUrl1 && (
+              <motion.span
+                style={{
+                  fontSize: 11,
+                  color: "#a08060",
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  fontStyle: "italic",
+                  textAlign: "center",
+                  padding: "8px",
+                  opacity: 0.6,
+                }}
+                animate={{ opacity: [0.4, 0.7, 0.4] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                upload photo
+              </motion.span>
+            )}
+          </div>
+          {/* Washi tape on corner */}
+          <div
             style={{
-              width: 80,
-              height: 12,
-              background: "linear-gradient(90deg, #c27256, #d4a574)",
+              position: "absolute",
+              top: -6,
+              right: -10,
+              width: 40,
+              height: 14,
+              background: "linear-gradient(90deg, #d4a574, #e8c9a8)",
+              opacity: 0.7,
+              transform: "rotate(25deg)",
               borderRadius: 2,
-              opacity: 0.4,
-              transform: "rotate(-3deg)",
             }}
           />
-        )}
+        </motion.div>
 
         {/* Envelope / letter icon */}
         <motion.div

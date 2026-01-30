@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/client";
 import { generateSlug, getShareUrl } from "@/lib/supabase/utils";
 import { getTemplateById, getDefaultConfig } from "@/lib/supabase/templates";
-import { Invite, CreateInviteInput, TemplateId } from "@/lib/supabase/types";
-import { saveInvite, getInviteBySlug, getInviteCount } from "@/lib/supabase/store";
+import { CreateInviteInput, TemplateId } from "@/lib/supabase/types";
 import { checkRateLimit, getClientIp, rateLimitConfigs } from "@/lib/security/rate-limiter";
 import { sanitizeString, sanitizeEmail, sanitizeInviteConfig } from "@/lib/security/sanitize";
 
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = (await request.json()) as CreateInviteInput;
-    const { template_id, configuration, creator_email, creator_name, is_paid } =
+    const { template_id, configuration, creator_email, creator_name, recipient_name, is_paid } =
       body;
 
     // Validate template exists
@@ -43,9 +43,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate unique slug
+    const supabase = createClient();
     let slug = generateSlug();
     let attempts = 0;
-    while (getInviteBySlug(slug) && attempts < 10) {
+
+    // Check if slug exists in database
+    while (attempts < 10) {
+      const { data: existing } = await supabase
+        .from("invites")
+        .select("slug")
+        .eq("slug", slug)
+        .single();
+
+      if (!existing) break;
       slug = generateSlug();
       attempts++;
     }
@@ -56,23 +66,31 @@ export async function POST(request: NextRequest) {
       : getDefaultConfig(template_id);
 
     const sanitizedEmail = creator_email ? sanitizeEmail(creator_email) : null;
-    const sanitizedName = creator_name ? sanitizeString(creator_name, 100) : null;
+    const sanitizedCreatorName = creator_name ? sanitizeString(creator_name, 100) : null;
+    const sanitizedRecipientName = recipient_name ? sanitizeString(recipient_name, 100) : null;
 
-    // Create invite object
-    const invite: Invite = {
-      id: `inv_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
-      slug,
-      template_id: template_id as TemplateId,
-      configuration: sanitizedConfig as Invite["configuration"],
-      creator_email: sanitizedEmail,
-      creator_name: sanitizedName,
-      is_paid: is_paid || false,
-      stripe_payment_id: null,
-      created_at: new Date().toISOString(),
-    };
+    // Insert invite into Supabase
+    const { data: invite, error } = await supabase
+      .from("invites")
+      .insert({
+        slug,
+        template_id: template_id as TemplateId,
+        configuration: sanitizedConfig,
+        creator_email: sanitizedEmail,
+        creator_name: sanitizedCreatorName,
+        recipient_name: sanitizedRecipientName,
+        is_paid: is_paid || false,
+      })
+      .select()
+      .single();
 
-    // Store invite
-    saveInvite(invite);
+    if (error) {
+      console.error("Supabase error:", error);
+      return NextResponse.json(
+        { success: false, error: "Failed to create invite" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -107,17 +125,36 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // For security, this endpoint could be protected or removed
-  // For now, just return count with cache headers
-  return NextResponse.json(
-    {
-      success: true,
-      count: getInviteCount(),
-    },
-    {
-      headers: {
-        "Cache-Control": "private, max-age=60",
-      },
+  try {
+    const supabase = createClient();
+    const { count, error } = await supabase
+      .from("invites")
+      .select("*", { count: "exact", head: true });
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return NextResponse.json(
+        { success: true, count: 0 },
+        { headers: { "Cache-Control": "private, max-age=60" } }
+      );
     }
-  );
+
+    return NextResponse.json(
+      {
+        success: true,
+        count: count || 0,
+      },
+      {
+        headers: {
+          "Cache-Control": "private, max-age=60",
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Error fetching invite count:", error);
+    return NextResponse.json(
+      { success: true, count: 0 },
+      { headers: { "Cache-Control": "private, max-age=60" } }
+    );
+  }
 }

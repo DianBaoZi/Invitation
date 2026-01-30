@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { getTemplateById } from "@/lib/supabase/templates";
 import { CozyScrapbook } from "@/components/templates/CozyScrapbook";
 import { ElegantInvitation } from "@/components/templates/ElegantInvitation";
+import { SplashScreen } from "@/components/invite/SplashScreen";
 
 // Format date from YYYY-MM-DD to readable format
 function formatDate(dateStr: string): string {
@@ -771,34 +772,102 @@ function CustomizePageContent() {
     setShowConfirm(true);
   };
 
-  const handleConfirm = () => {
-    const slug = generateSlug(name);
-    const params = new URLSearchParams({
-      slug,
-      name: name.trim(),
-      message: fieldValues.message.trim() || getDefaultMessage(templateId),
-      template: templateId,
-    });
+  const [isCreating, setIsCreating] = useState(false);
 
-    // Add template-specific params
-    if (templateId === "love-letter-mailbox") {
-      if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
-      if (fieldValues.location.trim()) params.set("location", fieldValues.location.trim());
-      if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
-    }
-    if (templateId === "cozy-scrapbook") {
-      if (fieldValues.date.trim()) params.set("eventDate", fieldValues.date.trim());
-      if (fieldValues.time.trim()) params.set("eventTime", fieldValues.time.trim());
-      if (fieldValues.location.trim()) params.set("eventLocation", fieldValues.location.trim());
-    }
-    if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure" || templateId === "elegant-invitation") {
-      if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
-      if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
-      if (fieldValues.time.trim()) params.set("time", fieldValues.time.trim());
-      if (fieldValues.location.trim()) params.set("location", fieldValues.location.trim());
-    }
+  const handleConfirm = async () => {
+    setIsCreating(true);
 
-    router.push(`/success?${params.toString()}`);
+    try {
+      // Build configuration based on template type
+      let configuration: Record<string, string> = {
+        message: fieldValues.message.trim() || getDefaultMessage(templateId),
+      };
+
+      if (templateId === "runaway-button" || templateId === "y2k-digital-crush") {
+        configuration = {
+          questionText: fieldValues.message.trim() || "Will you be my Valentine?",
+          yesButtonText: "Yes!",
+          noButtonText: "No",
+          successMessage: "You made my day! 💕",
+        };
+      } else if (templateId === "love-letter-mailbox") {
+        configuration = {
+          message: fieldValues.message.trim() || getDefaultMessage(templateId),
+          plan: fieldValues.personalMessage.trim() || "",
+          date: fieldValues.date.trim() || "",
+          location: fieldValues.location.trim() || "",
+          yesButtonText: "Yes!",
+          declineButtonText: "Maybe later",
+        };
+      } else if (templateId === "cozy-scrapbook") {
+        configuration = {
+          questionText: fieldValues.message.trim() || "Will you be my Valentine?",
+          yesButtonText: "Yes!",
+          successMessage: "You made my day! 💕",
+          eventDate: fieldValues.date.trim() || "",
+          eventTime: fieldValues.time.trim() || "",
+          eventLocation: fieldValues.location.trim() || "",
+        };
+      } else {
+        // stargazer, premiere, forest-adventure, elegant-invitation
+        configuration = {
+          message: fieldValues.message.trim() || "Will you be my Valentine?",
+          personalMessage: fieldValues.personalMessage.trim() || "",
+          date: fieldValues.date.trim() || "",
+          time: fieldValues.time.trim() || "",
+          location: fieldValues.location.trim() || "",
+        };
+      }
+
+      // Call API to create invite in Supabase
+      const response = await fetch("/api/invites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          template_id: templateId,
+          configuration,
+          creator_name: name.trim(),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create invite");
+      }
+
+      // Build URL params for success page
+      const params = new URLSearchParams({
+        slug: result.invite.slug,
+        name: name.trim(),
+        message: fieldValues.message.trim() || getDefaultMessage(templateId),
+        template: templateId,
+      });
+
+      // Add template-specific params for success page display
+      if (templateId === "love-letter-mailbox") {
+        if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
+        if (fieldValues.location.trim()) params.set("location", fieldValues.location.trim());
+        if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
+      }
+      if (templateId === "cozy-scrapbook") {
+        if (fieldValues.date.trim()) params.set("eventDate", fieldValues.date.trim());
+        if (fieldValues.time.trim()) params.set("eventTime", fieldValues.time.trim());
+        if (fieldValues.location.trim()) params.set("eventLocation", fieldValues.location.trim());
+      }
+      if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure" || templateId === "elegant-invitation") {
+        if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
+        if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
+        if (fieldValues.time.trim()) params.set("time", fieldValues.time.trim());
+        if (fieldValues.location.trim()) params.set("location", fieldValues.location.trim());
+      }
+
+      router.push(`/success?${params.toString()}`);
+    } catch (error) {
+      console.error("Error creating invite:", error);
+      alert("Failed to create invite. Please try again.");
+      setIsCreating(false);
+    }
   };
 
   // Determine step labels
@@ -889,6 +958,7 @@ function CustomizePageContent() {
                 name={name}
                 onConfirm={handleConfirm}
                 onCancel={() => setShowConfirm(false)}
+                isLoading={isCreating}
               />
             )}
           </AnimatePresence>
@@ -983,7 +1053,7 @@ function CustomizePageContent() {
                           <ImagePlus className="w-4 h-4 text-gray-400" />
                           Cover Photo (optional)
                         </Label>
-                        <p className="text-xs text-gray-500">This appears on the splash screen and cover</p>
+                        <p className="text-xs text-gray-500">This appears on the splash screen</p>
 
                         {photoUrl1 ? (
                           <div className="relative inline-block">
@@ -1409,6 +1479,7 @@ function CustomizePageContent() {
             name={name}
             onConfirm={handleConfirm}
             onCancel={() => setShowConfirm(false)}
+            isLoading={isCreating}
           />
         )}
       </AnimatePresence>
@@ -1691,42 +1762,59 @@ function CozyScrapbookFullPreview({
   onGenerate: () => void;
   accentGradient: string;
 }) {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <div className="fixed inset-0 z-40" style={{ top: 0 }}>
-      {/* Render actual CozyScrapbook with photos */}
-      <CozyScrapbook
-        message={message}
-        senderName={senderName}
-        eventDate={eventDate}
-        eventTime={eventTime}
-        eventLocation={eventLocation}
-        photoUrl1={photoUrl1}
-        photoUrl2={photoUrl2}
-      />
+      {/* Show splash screen first */}
+      {showSplash && (
+        <SplashScreen
+          creatorName={senderName}
+          isPaid={true}
+          onComplete={() => setShowSplash(false)}
+          templateId="cozy-scrapbook"
+          photoUrl1={photoUrl1}
+        />
+      )}
 
-      {/* Floating toolbar */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-4 py-3 border border-gray-200"
-      >
-        <Button
-          onClick={onBack}
-          variant="outline"
-          className="h-11 px-5 rounded-xl font-semibold"
+      {/* Render actual CozyScrapbook with photos after splash */}
+      {!showSplash && (
+        <CozyScrapbook
+          message={message}
+          senderName={senderName}
+          eventDate={eventDate}
+          eventTime={eventTime}
+          eventLocation={eventLocation}
+          photoUrl1={photoUrl1}
+          photoUrl2={photoUrl2}
+        />
+      )}
+
+      {/* Floating toolbar - only show after splash */}
+      {!showSplash && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-4 py-3 border border-gray-200"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to edit
-        </Button>
-        <Button
-          onClick={onGenerate}
-          className={`h-11 px-5 rounded-xl font-semibold ${accentGradient} text-white`}
-        >
-          <Heart className="w-4 h-4 mr-2" />
-          Generate my link
-        </Button>
-      </motion.div>
+          <Button
+            onClick={onBack}
+            variant="outline"
+            className="h-11 px-5 rounded-xl font-semibold"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to edit
+          </Button>
+          <Button
+            onClick={onGenerate}
+            className={`h-11 px-5 rounded-xl font-semibold ${accentGradient} text-white`}
+          >
+            <Heart className="w-4 h-4 mr-2" />
+            Generate my link
+          </Button>
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -1763,7 +1851,7 @@ function ElegantInvitationFullPreview({
   accentGradient: string;
 }) {
   return (
-    <div className="fixed inset-0 z-40" style={{ top: 0 }}>
+    <div className="fixed inset-0 z-40 overflow-y-auto" style={{ top: 0 }}>
       {/* Render actual ElegantInvitation with photos */}
       <ElegantInvitation
         senderName={senderName}
@@ -1809,89 +1897,382 @@ function ElegantInvitationFullPreview({
 // ============================================
 
 function SplashPreview({ name, templateId, photoUrl1 }: { name: string; templateId: string; photoUrl1?: string }) {
-  // Theme the splash preview to match the template
-  const getBg = () => {
-    switch (templateId) {
-      case "stargazer": return "bg-gradient-to-br from-[#0a0a2e] via-[#1a1a4e] to-[#0a0a2e]";
-      case "premiere": return "bg-gradient-to-br from-[#0a0a0a] via-[#1a0a0a] to-[#0a0a0a]";
-      case "neon-arcade": return "bg-[#0a0a1a]";
-      case "y2k-digital-crush": return "bg-[#000080]";
-      case "cozy-scrapbook": return "bg-[#f5ebe0]";
-      case "avocado-valentine": return "bg-white";
-      case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] via-[#2d5a2d] to-[#1a3c1a]";
-      case "elegant-invitation": return "bg-[#fdfbf7]";
-      default: return "bg-gradient-to-br from-rose-100 via-pink-50 to-purple-100";
-    }
-  };
-
-  const getTextColor = () => {
-    switch (templateId) {
-      case "stargazer":
-      case "premiere":
-      case "neon-arcade":
-      case "y2k-digital-crush":
-      case "forest-adventure":
-        return "text-white/60";
-      case "elegant-invitation":
-        return "text-[#7a6f6f]";
-      default:
-        return "text-gray-600";
-    }
-  };
-
-  const getNameColor = () => {
-    switch (templateId) {
-      case "stargazer": return "from-purple-400 to-pink-400";
-      case "premiere": return "from-amber-400 to-yellow-300";
-      case "neon-arcade": return "from-cyan-400 to-magenta-400";
-      case "y2k-digital-crush": return "from-green-400 to-lime-300";
-      case "cozy-scrapbook": return "from-amber-700 to-orange-600";
-      case "avocado-valentine": return "from-green-500 to-emerald-500";
-      case "forest-adventure": return "from-emerald-400 to-lime-300";
-      case "elegant-invitation": return "from-[#b76e79] to-[#d4a5a5]";
-      default: return "from-pink-500 to-purple-500";
-    }
-  };
-
-  // Cozy Scrapbook with photo - special layout
-  if (templateId === "cozy-scrapbook" && photoUrl1) {
+  // Love Letter Mailbox - Wax seal style
+  if (templateId === "love-letter-mailbox") {
     return (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 flex items-center justify-center bg-[#f5ebe0]"
-        style={{
-          backgroundImage: `url(${photoUrl1})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        className="absolute inset-0 flex flex-col items-center justify-center"
+        style={{ background: "#f5f0e8" }}
       >
-        {/* Overlay for readability */}
-        <div className="absolute inset-0 bg-[#f5ebe0]/60" />
+        {/* Airmail stripes - top */}
+        <div className="absolute top-0 left-0 right-0 h-3 flex">
+          {Array.from({ length: 12 }, (_, i) => (
+            <div key={i} className="flex-1 h-full" style={{ background: i % 2 === 0 ? "#c62828" : "#1565c0" }} />
+          ))}
+        </div>
+        {/* Airmail stripes - bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-3 flex">
+          {Array.from({ length: 12 }, (_, i) => (
+            <div key={i} className="flex-1 h-full" style={{ background: i % 2 === 0 ? "#1565c0" : "#c62828" }} />
+          ))}
+        </div>
 
-        <div className="text-center px-6 relative z-10">
-          {/* Polaroid-style frame */}
-          <motion.div
-            initial={{ scale: 0.8, rotate: -5 }}
-            animate={{ scale: 1, rotate: -3 }}
-            className="bg-white p-2 pb-8 rounded shadow-lg mb-4 inline-block"
+        {/* Wax seal */}
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 150, damping: 12 }}
+          className="mb-4"
+        >
+          <div
+            className="relative flex items-center justify-center"
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: "50%",
+              background: "radial-gradient(circle at 35% 30%, #ef5350 0%, #c62828 35%, #8b0000 70%, #5d0000 100%)",
+              boxShadow: "0 4px 12px rgba(139,0,0,0.3)",
+            }}
           >
-            <img
-              src={photoUrl1}
-              alt="Memory"
-              className="w-20 h-20 object-cover rounded-sm"
-            />
-          </motion.div>
+            <Heart className="w-6 h-6 text-white/90 fill-white/90" />
+          </div>
+        </motion.div>
 
-          <p className="text-[#6b5240]/70 mb-1 text-sm">Wholeheartedly made by</p>
-          <h2 className={`text-2xl font-bold bg-gradient-to-r ${getNameColor()} bg-clip-text text-transparent`}>
+        <p className="text-xs text-[#6d4c41] tracking-wider uppercase mb-1">Sealed with love by</p>
+        <h2 className="text-xl font-bold text-[#880e4f]" style={{ fontFamily: "'Dancing Script', cursive" }}>
+          {name || "Your Name"}
+        </h2>
+      </motion.div>
+    );
+  }
+
+  // Stargazer - Celestial style
+  if (templateId === "stargazer") {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 flex flex-col items-center justify-center"
+        style={{ background: "#050514" }}
+      >
+        {/* Stars */}
+        {Array.from({ length: 15 }, (_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              left: `${(i * 37 + 13) % 100}%`,
+              top: `${(i * 53 + 7) % 100}%`,
+              width: 1 + (i % 2),
+              height: 1 + (i % 2),
+              background: i % 5 === 0 ? "#fbbf24" : "#e8e4ff",
+            }}
+            animate={{ opacity: [0.2, 0.8, 0.2] }}
+            transition={{ duration: 1.5 + (i % 2), delay: i * 0.1, repeat: Infinity }}
+          />
+        ))}
+
+        {/* Pulsing star */}
+        <motion.div
+          animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="mb-4"
+          style={{
+            width: 16,
+            height: 16,
+            borderRadius: "50%",
+            background: "#fbbf24",
+            boxShadow: "0 0 20px #fbbf24, 0 0 40px rgba(124,58,237,0.5)",
+          }}
+        />
+
+        <p className="text-[10px] text-[#e8e4ff]/60 tracking-widest uppercase mb-1">written in the stars by</p>
+        <h2 className="text-lg font-semibold italic text-[#e8e4ff]" style={{ fontFamily: "'Playfair Display', serif", textShadow: "0 0 20px rgba(124,58,237,0.6)" }}>
+          {name || "Your Name"}
+        </h2>
+      </motion.div>
+    );
+  }
+
+  // Premiere - Cinematic style
+  if (templateId === "premiere") {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 flex flex-col items-center justify-center"
+        style={{ background: "#0a0a0a" }}
+      >
+        {/* Spotlight */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-full pointer-events-none"
+          style={{ background: "radial-gradient(ellipse 50% 40% at 50% 0%, rgba(212,160,23,0.08) 0%, transparent 70%)" }} />
+
+        {/* Vignette */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.7) 100%)" }} />
+
+        <motion.div
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 2.5, repeat: Infinity }}
+          className="text-3xl mb-4"
+        >
+          🎬
+        </motion.div>
+
+        <p className="text-[10px] text-[#d4a017]/50 tracking-widest uppercase mb-1" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>a film by</p>
+        <h2 className="text-lg font-semibold italic text-[#f5e6d0]" style={{ fontFamily: "'Cormorant Garamond', serif", textShadow: "0 0 20px rgba(212,160,23,0.4)" }}>
+          {name || "Your Name"}
+        </h2>
+      </motion.div>
+    );
+  }
+
+  // Y2K - BIOS style
+  if (templateId === "y2k-digital-crush") {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 flex flex-col items-center justify-center"
+        style={{ background: "#000080" }}
+      >
+        {/* Scanlines */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)" }} />
+
+        <div className="text-left px-4 w-full max-w-[200px]">
+          <p style={{ fontFamily: "'Courier New', monospace", fontSize: "8px", color: "#c0c0c0", lineHeight: 1.6 }}>
+            BIOS v2.14 — Heart Edition
+          </p>
+          <p style={{ fontFamily: "'Courier New', monospace", fontSize: "8px", color: "#c0c0c0", lineHeight: 1.6 }}>
+            Loading crush.sys...
+          </p>
+          <p style={{ fontFamily: "'Courier New', monospace", fontSize: "8px", color: "#00ff00", lineHeight: 1.6 }}>
+            STATUS: READY ♥
+          </p>
+        </div>
+
+        <div className="mt-4 text-center">
+          <p style={{ fontFamily: "'Courier New', monospace", fontSize: "7px", color: "#808080", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            Programmed with love by
+          </p>
+          <h2 style={{ fontFamily: "'Courier New', monospace", fontSize: "14px", fontWeight: 700, color: "#00ff00", textShadow: "0 0 10px rgba(0,255,0,0.4)" }}>
             {name || "Your Name"}
           </h2>
         </div>
       </motion.div>
     );
   }
+
+  // Cozy Scrapbook - Craft paper style
+  if (templateId === "cozy-scrapbook") {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 flex flex-col items-center justify-center"
+        style={{ background: "#f5ebe0" }}
+      >
+        {/* Scattered decorations */}
+        <motion.span className="absolute top-4 left-4 text-sm opacity-25" style={{ transform: "rotate(-30deg)" }}>🌿</motion.span>
+        <motion.span className="absolute top-6 right-4 text-sm opacity-25" style={{ transform: "rotate(20deg)" }}>🍂</motion.span>
+        <motion.span className="absolute bottom-8 left-6 text-xs opacity-25" style={{ transform: "rotate(15deg)" }}>🌸</motion.span>
+
+        {/* Polaroid frame - always shown */}
+        <motion.div
+          initial={{ scale: 0.8, rotate: -5 }}
+          animate={{ scale: 1, rotate: -3 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15 }}
+          className="mb-3"
+          style={{
+            width: 70,
+            padding: "4px 4px 16px 4px",
+            background: "#fff",
+            boxShadow: "0 3px 8px rgba(92,58,33,0.2)",
+          }}
+        >
+          {photoUrl1 ? (
+            <img src={photoUrl1} alt="Memory" className="w-full aspect-square object-cover" />
+          ) : (
+            <div className="w-full aspect-square flex items-center justify-center" style={{ background: "linear-gradient(135deg, #f5ebe0 0%, #e8ddd0 100%)" }}>
+              <span className="text-[8px] text-[#a08060]/60 italic">photo</span>
+            </div>
+          )}
+        </motion.div>
+
+        <motion.div
+          animate={{ y: [0, -2, 0], rotate: [0, 2, -2, 0] }}
+          transition={{ duration: 3, repeat: Infinity }}
+          className="text-xl mb-2"
+        >
+          ✉️
+        </motion.div>
+
+        <p className="text-[10px] text-[#c27256]/60 mb-0.5" style={{ fontFamily: "'Dancing Script', cursive" }}>lovingly crafted by</p>
+        <h2 className="text-lg font-bold text-[#5c3a21]" style={{ fontFamily: "'Dancing Script', cursive" }}>
+          {name || "Your Name"}
+        </h2>
+      </motion.div>
+    );
+  }
+
+  // Forest Adventure - Pixel RPG style
+  if (templateId === "forest-adventure") {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 flex flex-col items-center justify-center"
+        style={{ background: "linear-gradient(180deg, #0c1445 0%, #1a237e 40%, #283593 70%, #3949ab 100%)" }}
+      >
+        {/* Pixel stars */}
+        {Array.from({ length: 10 }, (_, i) => (
+          <motion.div
+            key={i}
+            className="absolute"
+            style={{
+              left: `${(i * 41 + 7) % 100}%`,
+              top: `${(i * 31 + 3) % 50}%`,
+              width: i % 3 === 0 ? 3 : 2,
+              height: i % 3 === 0 ? 3 : 2,
+              background: i % 4 === 0 ? "#ffd54f" : "#fff",
+            }}
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.5, delay: i * 0.15, repeat: Infinity }}
+          />
+        ))}
+
+        {/* Forest silhouette */}
+        <div className="absolute bottom-0 left-0 right-0 h-6" style={{ background: "#1a3d1a" }} />
+
+        {/* RPG dialog box frame */}
+        <div
+          className="relative px-4 py-3 mx-3"
+          style={{
+            background: "linear-gradient(180deg, #8b5a2b 0%, #6b4423 50%, #5c3a1d 100%)",
+            border: "3px solid #3d2314",
+            boxShadow: "inset 0 0 0 1px #a0522d, 2px 2px 0 #1a0f0a",
+          }}
+        >
+          <div
+            style={{
+              background: "linear-gradient(180deg, #1a237e 0%, #0d1445 100%)",
+              border: "2px solid #3949ab",
+              padding: "10px 12px",
+            }}
+          >
+            <motion.div
+              animate={{ y: [0, -2, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="text-xl mb-2 text-center"
+            >
+              💌
+            </motion.div>
+            <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "6px", color: "#90caf9", textAlign: "center", marginBottom: 4 }}>
+              A QUEST FROM
+            </p>
+            <h2 style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "10px", color: "#ffd54f", textAlign: "center", textShadow: "1px 1px 0 #5d4037" }}>
+              {name || "Your Name"}
+            </h2>
+          </div>
+        </div>
+
+        {/* Scanlines */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px)", opacity: 0.3 }} />
+      </motion.div>
+    );
+  }
+
+  // Elegant Invitation - Envelope with wax seal style
+  if (templateId === "elegant-invitation") {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 flex flex-col items-center justify-center"
+        style={{ background: "linear-gradient(180deg, #f5ebe0 0%, #e8d5c4 100%)" }}
+      >
+        {/* Envelope */}
+        <motion.div
+          initial={{ scale: 0.8, rotateX: 20 }}
+          animate={{ scale: 1, rotateX: 0 }}
+          transition={{ delay: 0.1, duration: 0.6 }}
+          className="relative mb-3"
+          style={{
+            width: 120,
+            height: 80,
+            background: "linear-gradient(180deg, #fdfbf7 0%, #f8f4f0 100%)",
+            borderRadius: 4,
+            boxShadow: "0 8px 20px rgba(139, 90, 90, 0.15)",
+            border: "1px solid rgba(183, 110, 121, 0.1)",
+          }}
+        >
+          {/* Envelope flap */}
+          <div
+            className="absolute -top-0.5 left-0 right-0"
+            style={{
+              height: "40%",
+              background: "linear-gradient(180deg, #f8e8e4 0%, #fdfbf7 100%)",
+              clipPath: "polygon(0 100%, 50% 0, 100% 100%)",
+            }}
+          />
+
+          {/* Wax seal */}
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
+            className="absolute left-1/2 -translate-x-1/2"
+            style={{ top: "15%" }}
+          >
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center"
+              style={{
+                background: "radial-gradient(circle at 30% 30%, #c9787e 0%, #b76e79 50%, #9a5a63 100%)",
+                boxShadow: "0 2px 6px rgba(183, 110, 121, 0.3)",
+              }}
+            >
+              <Heart className="w-4 h-4 text-white/90 fill-white/90" />
+            </div>
+          </motion.div>
+        </motion.div>
+
+        <p className="text-[9px] text-[#9a8a8a] tracking-wider uppercase mb-0.5">sealed with love by</p>
+        <h2 className="text-lg italic text-[#b76e79]" style={{ fontFamily: "'Playfair Display', serif" }}>
+          {name || "Your Name"}
+        </h2>
+      </motion.div>
+    );
+  }
+
+  // Default fallback for other templates
+  const getBg = () => {
+    switch (templateId) {
+      case "neon-arcade": return "bg-[#0a0a1a]";
+      case "avocado-valentine": return "bg-white";
+      default: return "bg-gradient-to-br from-rose-100 via-pink-50 to-purple-100";
+    }
+  };
+
+  const getNameColor = () => {
+    switch (templateId) {
+      case "neon-arcade": return "from-cyan-400 to-magenta-400";
+      case "avocado-valentine": return "from-green-500 to-emerald-500";
+      default: return "from-pink-500 to-purple-500";
+    }
+  };
+
+  const isDark = templateId === "neon-arcade";
 
   return (
     <motion.div
@@ -1906,14 +2287,10 @@ function SplashPreview({ name, templateId, photoUrl1 }: { name: string; template
           transition={{ duration: 1, repeat: Infinity }}
           className="mb-4"
         >
-          <Heart className={`w-12 h-12 mx-auto ${
-            ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush", "forest-adventure"].includes(templateId)
-              ? "text-white/80 fill-white/80"
-              : "text-pink-500 fill-pink-500"
-          }`} />
+          <Heart className={`w-12 h-12 mx-auto ${isDark ? "text-white/80 fill-white/80" : "text-pink-500 fill-pink-500"}`} />
         </motion.div>
 
-        <p className={`${getTextColor()} mb-1`}>Wholeheartedly made by</p>
+        <p className={`mb-1 ${isDark ? "text-white/60" : "text-gray-600"}`}>Wholeheartedly made by</p>
         <h2 className={`text-2xl font-bold bg-gradient-to-r ${getNameColor()} bg-clip-text text-transparent`}>
           {name || "Your Name"}
         </h2>
@@ -1927,49 +2304,108 @@ function SplashPreview({ name, templateId, photoUrl1 }: { name: string; template
 // ============================================
 
 function MiniSplashPreview({ name, templateId, photoUrl1 }: { name: string; templateId: string; photoUrl1?: string }) {
-  const getBg = () => {
-    switch (templateId) {
-      case "stargazer": return "bg-gradient-to-br from-[#0a0a2e] to-[#1a1a4e]";
-      case "premiere": return "bg-gradient-to-br from-[#0a0a0a] to-[#1a0a0a]";
-      case "neon-arcade": return "bg-[#0a0a1a]";
-      case "y2k-digital-crush": return "bg-[#000080]";
-      case "cozy-scrapbook": return "bg-[#f5ebe0]";
-      case "avocado-valentine": return "bg-white";
-      case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] to-[#2d5a2d]";
-      case "elegant-invitation": return "bg-[#fdfbf7]";
-      default: return "bg-gradient-to-br from-rose-100 to-pink-100";
-    }
-  };
-
-  const isDark = ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush", "forest-adventure"].includes(templateId);
-  const isElegantInvitation = templateId === "elegant-invitation";
-
-  // Cozy scrapbook with photo
-  if (templateId === "cozy-scrapbook" && photoUrl1) {
+  // Love Letter - Mini wax seal
+  if (templateId === "love-letter-mailbox") {
     return (
-      <div
-        className="absolute inset-0 flex items-center justify-center"
-        style={{
-          backgroundImage: `url(${photoUrl1})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-[#f5ebe0]/50" />
-        <div className="text-center relative z-10">
-          <p className="text-[6px] truncate max-w-[50px] text-[#6b5240]">
-            {name || "Name"}
-          </p>
+      <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "#f5f0e8" }}>
+        <div className="w-5 h-5 rounded-full flex items-center justify-center mb-0.5"
+          style={{ background: "radial-gradient(circle at 35% 30%, #ef5350 0%, #c62828 50%, #8b0000 100%)" }}>
+          <Heart className="w-2.5 h-2.5 text-white/90 fill-white/90" />
         </div>
+        <p className="text-[4px] text-[#6d4c41] uppercase tracking-wide">Sealed with love</p>
+        <p className="text-[5px] text-[#880e4f] font-medium truncate max-w-[50px]">{name || "Name"}</p>
       </div>
     );
   }
 
+  // Stargazer - Mini star
+  if (templateId === "stargazer") {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "#050514" }}>
+        <div className="w-2.5 h-2.5 rounded-full mb-0.5" style={{ background: "#fbbf24", boxShadow: "0 0 6px #fbbf24" }} />
+        <p className="text-[4px] text-[#e8e4ff]/50 uppercase tracking-wide">In the stars</p>
+        <p className="text-[5px] text-[#e8e4ff]/80 italic truncate max-w-[50px]">{name || "Name"}</p>
+      </div>
+    );
+  }
+
+  // Premiere - Mini clapperboard
+  if (templateId === "premiere") {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "#0a0a0a" }}>
+        <span className="text-xs mb-0.5">🎬</span>
+        <p className="text-[4px] text-[#d4a017]/50 uppercase tracking-wide">A film by</p>
+        <p className="text-[5px] text-[#f5e6d0] italic truncate max-w-[50px]">{name || "Name"}</p>
+      </div>
+    );
+  }
+
+  // Y2K - Mini BIOS
+  if (templateId === "y2k-digital-crush") {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "#000080" }}>
+        <p className="text-[4px] text-[#c0c0c0] mb-0.5">STATUS: READY ♥</p>
+        <p className="text-[4px] text-[#808080] uppercase">With love by</p>
+        <p className="text-[5px] text-[#00ff00] truncate max-w-[50px]">{name || "Name"}</p>
+      </div>
+    );
+  }
+
+  // Cozy Scrapbook - Mini envelope style (matching actual splash)
+  if (templateId === "cozy-scrapbook") {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "#f5ebe0" }}>
+        <span className="text-sm mb-0.5">✉️</span>
+        <p className="text-[4px] text-[#c27256]/60">Lovingly crafted by</p>
+        <p className="text-[5px] text-[#5c3a21] truncate max-w-[50px]">{name || "Name"}</p>
+      </div>
+    );
+  }
+
+  // Forest Adventure - Mini RPG
+  if (templateId === "forest-adventure") {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "linear-gradient(180deg, #0c1445 0%, #283593 100%)" }}>
+        <div className="px-1 py-0.5 mb-0.5" style={{ background: "#1a237e", border: "1px solid #3949ab" }}>
+          <span className="text-[8px]">💌</span>
+        </div>
+        <p className="text-[4px] text-[#90caf9]" style={{ fontFamily: "monospace" }}>A QUEST FROM</p>
+        <p className="text-[5px] text-[#ffd54f] truncate max-w-[50px]" style={{ fontFamily: "monospace" }}>{name || "Name"}</p>
+      </div>
+    );
+  }
+
+  // Elegant Invitation - Mini envelope
+  if (templateId === "elegant-invitation") {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "linear-gradient(180deg, #f5ebe0 0%, #e8d5c4 100%)" }}>
+        <div className="relative w-7 h-4 mb-0.5" style={{ background: "#fdfbf7", borderRadius: 2, boxShadow: "0 1px 3px rgba(139, 90, 90, 0.1)" }}>
+          <div className="absolute -top-0 left-0 right-0" style={{ height: "40%", background: "#f8e8e4", clipPath: "polygon(0 100%, 50% 0, 100% 100%)" }} />
+          <div className="absolute left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full" style={{ top: "15%", background: "#b76e79" }} />
+        </div>
+        <p className="text-[4px] text-[#9a8a8a] uppercase tracking-wide">Sealed with love</p>
+        <p className="text-[5px] text-[#b76e79] italic truncate max-w-[50px]">{name || "Name"}</p>
+      </div>
+    );
+  }
+
+  // Default fallback
+  const getBg = () => {
+    switch (templateId) {
+      case "neon-arcade": return "bg-[#0a0a1a]";
+      case "avocado-valentine": return "bg-white";
+      default: return "bg-gradient-to-br from-rose-100 to-pink-100";
+    }
+  };
+
+  const isDark = templateId === "neon-arcade";
+
   return (
     <div className={`absolute inset-0 flex items-center justify-center ${getBg()}`}>
       <div className="text-center">
-        <Heart className={`w-4 h-4 mx-auto mb-1 ${isDark ? "text-white/80 fill-white/80" : isElegantInvitation ? "text-[#b76e79] fill-[#b76e79]" : "text-pink-500 fill-pink-500"}`} />
-        <p className={`text-[6px] truncate max-w-[50px] ${isDark ? "text-white/70" : isElegantInvitation ? "text-[#7a6f6f]" : "text-gray-700"}`}>
+        <Heart className={`w-3 h-3 mx-auto mb-0.5 ${isDark ? "text-white/80 fill-white/80" : "text-pink-500 fill-pink-500"}`} />
+        <p className={`text-[4px] mb-0 ${isDark ? "text-white/50" : "text-gray-500"}`}>Made with love</p>
+        <p className={`text-[6px] truncate max-w-[50px] ${isDark ? "text-white/70" : "text-gray-700"}`}>
           {name || "Name"}
         </p>
       </div>
@@ -2036,10 +2472,12 @@ function ConfirmModal({
   name,
   onConfirm,
   onCancel,
+  isLoading = false,
 }: {
   name: string;
   onConfirm: () => void;
   onCancel: () => void;
+  isLoading?: boolean;
 }) {
   return (
     <motion.div
@@ -2047,7 +2485,7 @@ function ConfirmModal({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-      onClick={onCancel}
+      onClick={isLoading ? undefined : onCancel}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -2059,10 +2497,13 @@ function ConfirmModal({
         <div className="text-center mb-6">
           <AlertCircle className="w-12 h-12 mx-auto text-amber-500 mb-4" />
           <h3 className="text-xl font-bold text-gray-900 mb-2">
-            Ready to generate?
+            {isLoading ? "Creating your invite..." : "Ready to generate?"}
           </h3>
           <p className="text-gray-600">
-            Your invite will be created for <strong>{name}</strong>. You can&apos;t change this once submitted.
+            {isLoading
+              ? "Please wait while we set up your invite link."
+              : <>Your invite will be created for <strong>{name}</strong>. You can&apos;t change this once submitted.</>
+            }
           </p>
         </div>
 
@@ -2071,14 +2512,25 @@ function ConfirmModal({
             onClick={onCancel}
             variant="outline"
             className="flex-1 h-12 rounded-xl"
+            disabled={isLoading}
           >
             Go back
           </Button>
           <Button
             onClick={onConfirm}
             className="flex-1 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+            disabled={isLoading}
           >
-            Generate link
+            {isLoading ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              >
+                <Heart className="w-5 h-5" />
+              </motion.div>
+            ) : (
+              "Generate link"
+            )}
           </Button>
         </div>
       </motion.div>

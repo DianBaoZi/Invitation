@@ -1,42 +1,65 @@
 "use client";
 
 import { useState, useEffect, Suspense, lazy } from "react";
-import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, HeartCrack } from "lucide-react";
+import { Heart, HeartCrack, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
+import { Invite, TemplateConfig } from "@/lib/supabase/types";
 
 // Dynamic imports for templates - reduces initial bundle size
 const Y2KDigitalCrush = lazy(() => import("@/components/templates/Y2KDigitalCrush").then(m => ({ default: m.Y2KDigitalCrush })));
 const CozyScrapbook = lazy(() => import("@/components/templates/CozyScrapbook").then(m => ({ default: m.CozyScrapbook })));
 const LoveLetterMailbox = lazy(() => import("@/components/templates/LoveLetterMailbox").then(m => ({ default: m.LoveLetterMailbox })));
 const ScratchReveal = lazy(() => import("@/components/templates/ScratchReveal").then(m => ({ default: m.ScratchReveal })));
+const Stargazer = lazy(() => import("@/components/templates/Stargazer").then(m => ({ default: m.Stargazer })));
+const Premiere = lazy(() => import("@/components/templates/Premiere").then(m => ({ default: m.Premiere })));
+const ForestAdventure = lazy(() => import("@/components/templates/ForestAdventure").then(m => ({ default: m.ForestAdventure })));
+const ElegantInvitation = lazy(() => import("@/components/templates/ElegantInvitation").then(m => ({ default: m.ElegantInvitation })));
 
 function InvitePageContent() {
   const params = useParams();
-  const searchParams = useSearchParams();
   const router = useRouter();
-
   const slug = params.slug as string;
-  const name = searchParams.get("name") || "Someone Special";
-  const message = searchParams.get("message") || "Will you be my Valentine?";
-  const template = searchParams.get("template") || "runaway-button";
-  const photoUrl1 = searchParams.get("photoUrl1") || undefined;
-  const photoUrl2 = searchParams.get("photoUrl2") || undefined;
 
-  // Mock expired state - check URL param for testing
-  const isExpired = searchParams.get("expired") === "true";
+  const [invite, setInvite] = useState<Invite | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [showSplash, setShowSplash] = useState(true);
   const [splashPhase, setSplashPhase] = useState<"enter" | "hold" | "exit">("enter");
 
-  // Splash screen timing (skip if expired)
+  // Fetch invite from API
   useEffect(() => {
-    if (isExpired) {
-      setShowSplash(false);
-      return;
+    async function fetchInvite() {
+      try {
+        const response = await fetch(`/api/invites/${slug}`);
+        const data = await response.json();
+
+        if (!data.success || !data.invite) {
+          setError(data.error || "Invite not found");
+          setLoading(false);
+          return;
+        }
+
+        setInvite(data.invite);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching invite:", err);
+        setError("Failed to load invite");
+        setLoading(false);
+      }
     }
+
+    if (slug) {
+      fetchInvite();
+    }
+  }, [slug]);
+
+  // Splash screen timing
+  useEffect(() => {
+    if (loading || error) return;
 
     // Phase 1: Enter animation (1s)
     const holdTimer = setTimeout(() => {
@@ -58,12 +81,29 @@ function InvitePageContent() {
       clearTimeout(exitTimer);
       clearTimeout(hideTimer);
     };
-  }, [isExpired]);
+  }, [loading, error]);
 
-  // Show expired state
-  if (isExpired) {
-    return <ExpiredState />;
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <Loader2 className="w-12 h-12 text-pink-500" />
+        </motion.div>
+      </div>
+    );
   }
+
+  // Show error/not found state
+  if (error || !invite) {
+    return <NotFoundState />;
+  }
+
+  const config = invite.configuration as TemplateConfig;
+  const senderName = invite.creator_name || "Someone Special";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 relative overflow-hidden">
@@ -73,7 +113,7 @@ function InvitePageContent() {
       {/* Splash Screen */}
       <AnimatePresence>
         {showSplash && (
-          <SplashScreen name={name} phase={splashPhase} />
+          <SplashScreen name={senderName} phase={splashPhase} />
         )}
       </AnimatePresence>
 
@@ -86,7 +126,11 @@ function InvitePageContent() {
             transition={{ duration: 0.5 }}
             className="relative z-10 min-h-screen flex items-center justify-center p-4"
           >
-            <InteractiveTemplate template={template} message={message} photoUrl1={photoUrl1} photoUrl2={photoUrl2} />
+            <InteractiveTemplate
+              templateId={invite.template_id}
+              config={config}
+              senderName={senderName}
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -95,10 +139,10 @@ function InvitePageContent() {
 }
 
 // ============================================
-// EXPIRED STATE
+// NOT FOUND STATE
 // ============================================
 
-function ExpiredState() {
+function NotFoundState() {
   const router = useRouter();
 
   return (
@@ -154,7 +198,7 @@ function ExpiredState() {
           transition={{ delay: 0.3 }}
           className="text-2xl font-semibold text-gray-700 mb-3"
         >
-          This link has expired 💔
+          Invite not found 💔
         </motion.h1>
 
         <motion.p
@@ -163,7 +207,7 @@ function ExpiredState() {
           transition={{ delay: 0.4 }}
           className="text-gray-500 mb-8"
         >
-          Links are only valid for 1 month
+          This invite may have expired or doesn't exist
         </motion.p>
 
         {/* CTA */}
@@ -291,18 +335,102 @@ function TemplateLoader() {
   );
 }
 
-function InteractiveTemplate({ template, message, photoUrl1, photoUrl2 }: { template: string; message: string; photoUrl1?: string; photoUrl2?: string }) {
+function InteractiveTemplate({
+  templateId,
+  config,
+  senderName
+}: {
+  templateId: string;
+  config: TemplateConfig;
+  senderName: string;
+}) {
+  // Extract common fields from config
+  const configAny = config as Record<string, unknown>;
+  const message = (configAny.questionText || configAny.message || "Will you be my Valentine?") as string;
+  const personalMessage = (configAny.personalMessage || "") as string;
+  const date = (configAny.date || configAny.eventDate || "") as string;
+  const time = (configAny.time || configAny.eventTime || "") as string;
+  const location = (configAny.location || configAny.eventLocation || "") as string;
+
   // Wrap lazy-loaded templates in Suspense
   const renderTemplate = () => {
-    switch (template) {
+    switch (templateId) {
       case "scratch-reveal":
-        return <ScratchRevealTemplate message={message} />;
+        return <ScratchReveal message={message} />;
       case "y2k-digital-crush":
-        return <Y2KDigitalCrushTemplate message={message} />;
+        return (
+          <Y2KDigitalCrush
+            message={message}
+            personalMessage={personalMessage}
+            date={date}
+            time={time}
+            location={location}
+          />
+        );
       case "cozy-scrapbook":
-        return <CozyScrapbookTemplate message={message} photoUrl1={photoUrl1} photoUrl2={photoUrl2} />;
+        return (
+          <CozyScrapbook
+            senderName={senderName}
+            eventDate={date}
+            eventTime={time}
+            eventLocation={location}
+          />
+        );
       case "love-letter-mailbox":
-        return <LoveLetterMailboxTemplate message={message} />;
+        return (
+          <LoveLetterMailbox
+            senderName={senderName}
+            date={date}
+            location={location}
+            personalMessage={personalMessage}
+          />
+        );
+      case "stargazer":
+        return (
+          <Stargazer
+            senderName={senderName}
+            personalMessage={personalMessage}
+            date={date}
+            time={time}
+            location={location}
+          />
+        );
+      case "premiere":
+        return (
+          <Premiere
+            senderName={senderName}
+            personalMessage={personalMessage}
+            date={date}
+            time={time}
+            location={location}
+          />
+        );
+      case "forest-adventure":
+        return (
+          <ForestAdventure
+            senderName={senderName}
+            personalMessage={personalMessage}
+            date={date}
+            time={time}
+            location={location}
+          />
+        );
+      case "elegant-invitation":
+        return (
+          <ElegantInvitation
+            senderName={senderName}
+            personalMessage={personalMessage}
+            date={date}
+            time={time}
+            location={location}
+            photo1Url={(configAny.photo1Url || "") as string}
+            photo1Caption={(configAny.photo1Caption || "") as string}
+            photo2Url={(configAny.photo2Url || "") as string}
+            photo2Caption={(configAny.photo2Caption || "") as string}
+            photo3Url={(configAny.photo3Url || "") as string}
+            photo3Caption={(configAny.photo3Caption || "") as string}
+          />
+        );
       default:
         return <RunawayButtonTemplate message={message} />;
     }
@@ -422,14 +550,6 @@ function RunawayButtonTemplate({ message }: { message: string }) {
 }
 
 // ============================================
-// SCRATCH REVEAL TEMPLATE
-// ============================================
-
-function ScratchRevealTemplate({ message }: { message: string }) {
-  return <ScratchReveal message={message} />;
-}
-
-// ============================================
 // FLOATING HEARTS BACKGROUND
 // ============================================
 
@@ -462,22 +582,6 @@ function FloatingHearts() {
       ))}
     </div>
   );
-}
-
-// ============================================
-// NEW TEMPLATE WRAPPERS
-// ============================================
-
-function Y2KDigitalCrushTemplate({ message }: { message: string }) {
-  return <Y2KDigitalCrush message={message} />;
-}
-
-function CozyScrapbookTemplate({ message, photoUrl1, photoUrl2 }: { message: string; photoUrl1?: string; photoUrl2?: string }) {
-  return <CozyScrapbook message={message} photoUrl1={photoUrl1} photoUrl2={photoUrl2} />;
-}
-
-function LoveLetterMailboxTemplate({ message }: { message: string }) {
-  return <LoveLetterMailbox message={message} />;
 }
 
 // ============================================

@@ -522,6 +522,8 @@ export function Y2KDigitalCrush({
                     textAlign: "center",
                     color: "#000",
                     lineHeight: "1.6",
+                    wordBreak: "break-word",
+                    overflowWrap: "break-word",
                   }}
                 >
                   {message}
@@ -531,7 +533,7 @@ export function Y2KDigitalCrush({
                 {personalMessage && (
                   <p
                     className="text-xs text-center mb-4 italic"
-                    style={{ fontFamily: FONT_MONO, color: "#666", lineHeight: "1.5" }}
+                    style={{ fontFamily: FONT_MONO, color: "#666", lineHeight: "1.5", wordBreak: "break-word", overflowWrap: "break-word" }}
                   >
                     "{personalMessage}"
                   </p>
@@ -551,9 +553,9 @@ export function Y2KDigitalCrush({
                     <p className="text-center font-bold mb-1" style={{ color: "#000080" }}>
                       📅 EVENT DETAILS
                     </p>
-                    {date && <p className="text-center" style={{ color: "#000" }}>Date: {date}</p>}
-                    {time && <p className="text-center" style={{ color: "#000" }}>Time: {time}</p>}
-                    {location && <p className="text-center" style={{ color: "#000" }}>Location: {location}</p>}
+                    {date && <p className="text-center" style={{ color: "#000", wordBreak: "break-word" }}>Date: {date}</p>}
+                    {time && <p className="text-center" style={{ color: "#000", wordBreak: "break-word" }}>Time: {time}</p>}
+                    {location && <p className="text-center" style={{ color: "#000", wordBreak: "break-word" }}>Location: {location}</p>}
                   </div>
                 )}
 
