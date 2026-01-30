@@ -26,7 +26,7 @@ export interface Template {
   badge?: "Most Popular" | "Staff Pick" | "New" | "Trending";
 }
 
-export type TemplateId = "runaway-button" | "y2k-digital-crush" | "cozy-scrapbook" | "love-letter-mailbox" | "stargazer" | "premiere" | "avocado-valentine" | "forest-adventure" | "ocean-dreams";
+export type TemplateId = "runaway-button" | "y2k-digital-crush" | "cozy-scrapbook" | "love-letter-mailbox" | "stargazer" | "premiere" | "avocado-valentine" | "forest-adventure" | "elegant-invitation";
 
 // Configuration for each template type
 export interface RunawayButtonConfig {
@@ -89,7 +89,7 @@ export interface ForestAdventureConfig {
   location: string;
 }
 
-export interface OceanDreamsConfig {
+export interface ElegantInvitationConfig {
   message: string;
   personalMessage: string;
   date: string;
@@ -111,7 +111,7 @@ export type TemplateConfig =
   | StargazerConfig
   | PremiereConfig
   | ForestAdventureConfig
-  | OceanDreamsConfig;
+  | ElegantInvitationConfig;
 
 // ============================================
 // INVITE TYPES

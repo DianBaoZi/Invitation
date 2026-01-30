@@ -7,7 +7,7 @@ import {
   StargazerConfig,
   PremiereConfig,
   ForestAdventureConfig,
-  OceanDreamsConfig,
+  ElegantInvitationConfig,
 } from "./types";
 
 // ============================================
@@ -76,7 +76,7 @@ export const DEFAULT_FOREST_ADVENTURE_CONFIG: ForestAdventureConfig = {
   location: "The Enchanted Forest",
 };
 
-export const DEFAULT_OCEAN_DREAMS_CONFIG: OceanDreamsConfig = {
+export const DEFAULT_ELEGANT_INVITATION_CONFIG: ElegantInvitationConfig = {
   message: "Will you be my Valentine?",
   personalMessage: "Every moment with you feels like a beautiful story unfolding.",
   date: "February 14th",
@@ -163,15 +163,15 @@ export const TEMPLATES: Template[] = [
     default_config: DEFAULT_COZY_SCRAPBOOK_CONFIG,
   },
   {
-    id: "ocean-dreams",
+    id: "elegant-invitation",
     name: "Elegant Invitation",
     description:
       "A refined scroll-through invitation with photo frames, rose gold accents, and delicate floral details.",
     emoji: "💐",
     is_free: false,
     price_cents: 99, // $0.99 charm pricing
-    default_config: DEFAULT_OCEAN_DREAMS_CONFIG,
-    badge: "New",
+    default_config: DEFAULT_ELEGANT_INVITATION_CONFIG,
+    badge: "Staff Pick",
   },
 ];
 

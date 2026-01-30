@@ -11,11 +11,11 @@ import { AvocadoValentine } from "@/components/templates/AvocadoValentine";
 import { Stargazer } from "@/components/templates/Stargazer";
 import { Premiere } from "@/components/templates/Premiere";
 import { ForestAdventure } from "@/components/templates/ForestAdventure";
-import { OceanDreams } from "@/components/templates/OceanDreams";
+import { ElegantInvitation } from "@/components/templates/ElegantInvitation";
 import { SplashScreen } from "@/components/invite/SplashScreen";
 
 // Templates that manage their own full-screen layout
-const FULLSCREEN_TEMPLATES = ["y2k-digital-crush", "cozy-scrapbook", "love-letter-mailbox", "avocado-valentine", "stargazer", "premiere", "forest-adventure", "ocean-dreams"];
+const FULLSCREEN_TEMPLATES = ["y2k-digital-crush", "cozy-scrapbook", "love-letter-mailbox", "avocado-valentine", "stargazer", "premiere", "forest-adventure", "elegant-invitation"];
 
 export default function TestTemplatePage() {
   const params = useParams();
@@ -135,9 +135,9 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
           {...(overrides.location && { location: overrides.location })}
         />
       );
-    case "ocean-dreams":
+    case "elegant-invitation":
       return (
-        <OceanDreams
+        <ElegantInvitation
           senderName={overrides.name || "Daniel"}
           {...(overrides.message && { message: overrides.message })}
           {...(overrides.personalMessage && { personalMessage: overrides.personalMessage })}

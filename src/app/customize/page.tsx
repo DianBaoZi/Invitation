@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getTemplateById } from "@/lib/supabase/templates";
 import { CozyScrapbook } from "@/components/templates/CozyScrapbook";
-import { OceanDreams } from "@/components/templates/OceanDreams";
+import { ElegantInvitation } from "@/components/templates/ElegantInvitation";
 
 // Format date from YYYY-MM-DD to readable format
 function formatDate(dateStr: string): string {
@@ -436,7 +436,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
         ],
       };
 
-    case "ocean-dreams":
+    case "elegant-invitation":
       return {
         sectionTitle: "Elegant Invitation Details",
         sectionIcon: "heart",
@@ -630,7 +630,7 @@ function getPageBackground(templateId: string): string {
       return "bg-gradient-to-br from-pink-50 via-rose-50 to-red-50";
     case "forest-adventure":
       return "bg-gradient-to-br from-emerald-50 via-green-50 to-lime-50";
-    case "ocean-dreams":
+    case "elegant-invitation":
       return "bg-gradient-to-br from-rose-50 via-pink-50 to-amber-50";
     default:
       return "bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50";
@@ -647,7 +647,7 @@ function getHeaderBorder(templateId: string): string {
     case "cozy-scrapbook": return "border-amber-100";
     case "avocado-valentine": return "border-green-100";
     case "forest-adventure": return "border-emerald-100";
-    case "ocean-dreams": return "border-rose-100";
+    case "elegant-invitation": return "border-rose-100";
     default: return "border-gray-100";
   }
 }
@@ -668,7 +668,7 @@ function CustomizePageContent() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [photoUrl1, setPhotoUrl1] = useState<string>(""); // First photo - splash/cover
   const [photoUrl2, setPhotoUrl2] = useState<string>(""); // Second photo - inside scrapbook
-  const [photoUrl3, setPhotoUrl3] = useState<string>(""); // Third photo - for ocean-dreams
+  const [photoUrl3, setPhotoUrl3] = useState<string>(""); // Third photo - for elegant-invitation
 
   // Template-specific field values with defaults
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({
@@ -724,7 +724,7 @@ function CustomizePageContent() {
       if (fieldValues.date.trim()) params.set("eventDate", fieldValues.date.trim());
       if (fieldValues.time.trim()) params.set("eventTime", fieldValues.time.trim());
       if (fieldValues.location.trim()) params.set("eventLocation", fieldValues.location.trim());
-    } else if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure" || templateId === "ocean-dreams") {
+    } else if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure" || templateId === "elegant-invitation") {
       if (fieldValues.message.trim()) params.set("message", fieldValues.message.trim());
       if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
       if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
@@ -791,7 +791,7 @@ function CustomizePageContent() {
       if (fieldValues.time.trim()) params.set("eventTime", fieldValues.time.trim());
       if (fieldValues.location.trim()) params.set("eventLocation", fieldValues.location.trim());
     }
-    if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure" || templateId === "ocean-dreams") {
+    if (templateId === "stargazer" || templateId === "premiere" || templateId === "forest-adventure" || templateId === "elegant-invitation") {
       if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
       if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
       if (fieldValues.time.trim()) params.set("time", fieldValues.time.trim());
@@ -858,8 +858,8 @@ function CustomizePageContent() {
               onGenerate={handleSubmit}
               accentGradient={accent.bgGradient}
             />
-          ) : templateId === "ocean-dreams" ? (
-            <OceanDreamsFullPreview
+          ) : templateId === "elegant-invitation" ? (
+            <ElegantInvitationFullPreview
               senderName={name}
               message={fieldValues.message || "Will you be my Valentine?"}
               personalMessage={fieldValues.personalMessage}
@@ -1055,8 +1055,8 @@ function CustomizePageContent() {
                     </div>
                   )}
 
-                  {/* Photo uploads for ocean-dreams (Elegant Invitation) - 3 photos */}
-                  {templateId === "ocean-dreams" && (
+                  {/* Photo uploads for elegant-invitation (Elegant Invitation) - 3 photos */}
+                  {templateId === "elegant-invitation" && (
                     <div className="space-y-4">
                       {/* Photo 1 - First frame */}
                       <div className="space-y-2">
@@ -1450,7 +1450,7 @@ function DetailsPreview({
       case "cozy-scrapbook": return "linear-gradient(180deg, #f5ebe0 0%, #eddcd2 50%, #e3d5ca 100%)";
       case "avocado-valentine": return "linear-gradient(180deg, #f0fdf4 0%, #dcfce7 50%, #f0fdf4 100%)";
       case "forest-adventure": return "linear-gradient(180deg, #1a3c1a 0%, #2d5a2d 50%, #1a3c1a 100%)";
-      case "ocean-dreams": return "linear-gradient(180deg, #fdfbf7 0%, #f8e8e4 50%, #fdfbf7 100%)";
+      case "elegant-invitation": return "linear-gradient(180deg, #fdfbf7 0%, #f8e8e4 50%, #fdfbf7 100%)";
       default: return "linear-gradient(180deg, #fce4ec 0%, #f8bbd0 100%)";
     }
   };
@@ -1473,7 +1473,7 @@ function DetailsPreview({
       case "avocado-valentine": return "🥑";
       case "runaway-button": return "💕";
       case "forest-adventure": return "🌲";
-      case "ocean-dreams": return "💐";
+      case "elegant-invitation": return "💐";
       default: return "💌";
     }
   };
@@ -1735,7 +1735,7 @@ function CozyScrapbookFullPreview({
 // OCEAN DREAMS FULL PREVIEW (renders directly with photos)
 // ============================================
 
-function OceanDreamsFullPreview({
+function ElegantInvitationFullPreview({
   senderName,
   message,
   personalMessage,
@@ -1764,8 +1764,8 @@ function OceanDreamsFullPreview({
 }) {
   return (
     <div className="fixed inset-0 z-40" style={{ top: 0 }}>
-      {/* Render actual OceanDreams with photos */}
-      <OceanDreams
+      {/* Render actual ElegantInvitation with photos */}
+      <ElegantInvitation
         senderName={senderName}
         message={message}
         personalMessage={personalMessage}
@@ -1819,7 +1819,7 @@ function SplashPreview({ name, templateId, photoUrl1 }: { name: string; template
       case "cozy-scrapbook": return "bg-[#f5ebe0]";
       case "avocado-valentine": return "bg-white";
       case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] via-[#2d5a2d] to-[#1a3c1a]";
-      case "ocean-dreams": return "bg-[#fdfbf7]";
+      case "elegant-invitation": return "bg-[#fdfbf7]";
       default: return "bg-gradient-to-br from-rose-100 via-pink-50 to-purple-100";
     }
   };
@@ -1832,7 +1832,7 @@ function SplashPreview({ name, templateId, photoUrl1 }: { name: string; template
       case "y2k-digital-crush":
       case "forest-adventure":
         return "text-white/60";
-      case "ocean-dreams":
+      case "elegant-invitation":
         return "text-[#7a6f6f]";
       default:
         return "text-gray-600";
@@ -1848,7 +1848,7 @@ function SplashPreview({ name, templateId, photoUrl1 }: { name: string; template
       case "cozy-scrapbook": return "from-amber-700 to-orange-600";
       case "avocado-valentine": return "from-green-500 to-emerald-500";
       case "forest-adventure": return "from-emerald-400 to-lime-300";
-      case "ocean-dreams": return "from-[#b76e79] to-[#d4a5a5]";
+      case "elegant-invitation": return "from-[#b76e79] to-[#d4a5a5]";
       default: return "from-pink-500 to-purple-500";
     }
   };
@@ -1936,13 +1936,13 @@ function MiniSplashPreview({ name, templateId, photoUrl1 }: { name: string; temp
       case "cozy-scrapbook": return "bg-[#f5ebe0]";
       case "avocado-valentine": return "bg-white";
       case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] to-[#2d5a2d]";
-      case "ocean-dreams": return "bg-[#fdfbf7]";
+      case "elegant-invitation": return "bg-[#fdfbf7]";
       default: return "bg-gradient-to-br from-rose-100 to-pink-100";
     }
   };
 
   const isDark = ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush", "forest-adventure"].includes(templateId);
-  const isOceanDreams = templateId === "ocean-dreams";
+  const isElegantInvitation = templateId === "elegant-invitation";
 
   // Cozy scrapbook with photo
   if (templateId === "cozy-scrapbook" && photoUrl1) {
@@ -1968,8 +1968,8 @@ function MiniSplashPreview({ name, templateId, photoUrl1 }: { name: string; temp
   return (
     <div className={`absolute inset-0 flex items-center justify-center ${getBg()}`}>
       <div className="text-center">
-        <Heart className={`w-4 h-4 mx-auto mb-1 ${isDark ? "text-white/80 fill-white/80" : isOceanDreams ? "text-[#b76e79] fill-[#b76e79]" : "text-pink-500 fill-pink-500"}`} />
-        <p className={`text-[6px] truncate max-w-[50px] ${isDark ? "text-white/70" : isOceanDreams ? "text-[#7a6f6f]" : "text-gray-700"}`}>
+        <Heart className={`w-4 h-4 mx-auto mb-1 ${isDark ? "text-white/80 fill-white/80" : isElegantInvitation ? "text-[#b76e79] fill-[#b76e79]" : "text-pink-500 fill-pink-500"}`} />
+        <p className={`text-[6px] truncate max-w-[50px] ${isDark ? "text-white/70" : isElegantInvitation ? "text-[#7a6f6f]" : "text-gray-700"}`}>
           {name || "Name"}
         </p>
       </div>
@@ -2004,18 +2004,18 @@ function MiniDetailsPreview({
       case "cozy-scrapbook": return "bg-[#f5ebe0]";
       case "avocado-valentine": return "bg-green-50";
       case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] to-[#2d5a2d]";
-      case "ocean-dreams": return "bg-[#fdfbf7]";
+      case "elegant-invitation": return "bg-[#fdfbf7]";
       default: return "bg-gradient-to-br from-pink-100 to-rose-100";
     }
   };
 
   const isDark = ["stargazer", "premiere", "neon-arcade", "y2k-digital-crush", "forest-adventure"].includes(templateId);
-  const isOceanDreams = templateId === "ocean-dreams";
+  const isElegantInvitation = templateId === "elegant-invitation";
 
   return (
     <div className={`absolute inset-0 flex flex-col items-center justify-center p-1 ${getBg()}`}>
       {fieldValues.message && (
-        <p className={`text-[5px] text-center leading-tight line-clamp-2 ${isDark ? "text-white/80" : isOceanDreams ? "text-[#b76e79]" : "text-gray-700"}`}>
+        <p className={`text-[5px] text-center leading-tight line-clamp-2 ${isDark ? "text-white/80" : isElegantInvitation ? "text-[#b76e79]" : "text-gray-700"}`}>
           {fieldValues.message}
         </p>
       )}

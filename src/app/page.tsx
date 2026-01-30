@@ -1250,7 +1250,7 @@ function TemplatePreviewScene({ templateId, isHovered = false }: { templateId: s
         </div>
       );
 
-    case "ocean-dreams":
+    case "elegant-invitation":
       return (
         <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf7] via-[#f8e8e4] to-[#fdfbf7] flex items-center justify-center overflow-hidden">
           {/* Subtle floral pattern overlay */}

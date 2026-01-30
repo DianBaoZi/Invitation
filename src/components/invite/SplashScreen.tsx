@@ -47,7 +47,7 @@ export function SplashScreen({ creatorName, isPaid, onComplete, templateId, phot
     "cozy-scrapbook": <ScrapbookSplash {...splashProps} />,
     "forest-adventure": <ForestAdventureSplash {...splashProps} />,
     "love-letter-mailbox": <LoveLetterSplash {...splashProps} />,
-    "ocean-dreams": <OceanDreamsSplash {...splashProps} />,
+    "elegant-invitation": <ElegantInvitationSplash {...splashProps} />,
   };
 
   const customSplash = templateId && splashMap[templateId];
@@ -1829,10 +1829,10 @@ function FloatingHearts() {
 }
 
 // ============================================
-// OCEAN DREAMS — ELEGANT INVITATION SPLASH
+// ELEGANT INVITATION SPLASH
 // ============================================
 
-function OceanDreamsSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps) {
+function ElegantInvitationSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps) {
   const displayName = isPaid && creatorName ? creatorName : appName;
 
   return (
