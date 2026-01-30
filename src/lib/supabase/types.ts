@@ -122,6 +122,7 @@ export interface Invite {
   slug: string;
   template_id: TemplateId;
   configuration: TemplateConfig;
+  user_id: string | null;
   creator_email: string | null;
   creator_name: string | null;
   recipient_name: string | null;
@@ -134,6 +135,7 @@ export interface Invite {
 export interface CreateInviteInput {
   template_id: TemplateId;
   configuration?: TemplateConfig;
+  user_id?: string;
   creator_email?: string;
   creator_name?: string;
   recipient_name?: string;

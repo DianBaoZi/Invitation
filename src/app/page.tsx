@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Monitor, Play, ArrowRight, Clock, Heart, Users, Zap } from "lucide-react";
 import { PreviewModal } from "@/components/landing/PreviewModal";
+import { Navbar } from "@/components/Navbar";
 import { TEMPLATES, PRICING, formatPrice } from "@/lib/supabase/templates";
 import { Template } from "@/lib/supabase/types";
 
@@ -121,6 +122,9 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#faf9f7] relative">
+      {/* Navbar */}
+      <Navbar />
+
       {/* Warm paper texture background */}
       <div
         className="fixed inset-0 opacity-40 pointer-events-none"

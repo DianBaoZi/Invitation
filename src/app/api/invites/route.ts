@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = (await request.json()) as CreateInviteInput;
-    const { template_id, configuration, creator_email, creator_name, recipient_name, is_paid } =
+    const { template_id, configuration, user_id, creator_email, creator_name, recipient_name, is_paid } =
       body;
 
     // Validate template exists
@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
         slug,
         template_id: template_id as TemplateId,
         configuration: sanitizedConfig,
+        user_id: user_id || null,
         creator_email: sanitizedEmail,
         creator_name: sanitizedCreatorName,
         recipient_name: sanitizedRecipientName,

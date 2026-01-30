@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Sparkles, AlertCircle, ArrowLeft, ArrowRight, Calendar, Clock, MapPin, PenLine, Eye, MessageSquare, ImagePlus, X } from "lucide-react";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getTemplateById } from "@/lib/supabase/templates";
+import { createClient } from "@/lib/supabase/client";
 import { CozyScrapbook } from "@/components/templates/CozyScrapbook";
 import { ElegantInvitation } from "@/components/templates/ElegantInvitation";
 import { SplashScreen } from "@/components/invite/SplashScreen";
@@ -670,6 +671,17 @@ function CustomizePageContent() {
   const [photoUrl1, setPhotoUrl1] = useState<string>(""); // First photo - splash/cover
   const [photoUrl2, setPhotoUrl2] = useState<string>(""); // Second photo - inside scrapbook
   const [photoUrl3, setPhotoUrl3] = useState<string>(""); // Third photo - for elegant-invitation
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Get current user if logged in
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setUserId(user.id);
+      }
+    });
+  }, []);
 
   // Template-specific field values with defaults
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({
@@ -827,6 +839,7 @@ function CustomizePageContent() {
           template_id: templateId,
           configuration,
           creator_name: name.trim(),
+          user_id: userId,
         }),
       });
 
