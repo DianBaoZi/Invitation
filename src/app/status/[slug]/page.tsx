@@ -1,10 +1,24 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, Copy, Check, Eye, Clock, Calendar, RefreshCw } from "lucide-react";
+import { Heart, Copy, Check, Eye, Clock, Calendar, RefreshCw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
+
+interface InviteStatus {
+  id: string;
+  slug: string;
+  template_id: string;
+  creator_name: string | null;
+  recipient_name: string | null;
+  is_paid: boolean;
+  created_at: string;
+  expires_at: string;
+  view_count: number;
+  first_viewed_at: string | null;
+}
 
 function StatusPageContent() {
   const params = useParams();
@@ -12,23 +26,69 @@ function StatusPageContent() {
   const slug = params.slug as string;
 
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<InviteStatus | null>(null);
 
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const shareUrl = `${baseUrl}/i/${slug}`;
 
-  // Mock data - will be replaced with real database queries
-  const mockStatus = {
-    opened: true,
-    firstOpenedAt: new Date(2025, 0, 27, 22, 42), // Jan 27, 2025 at 10:42 PM
-    totalViews: 3,
+  useEffect(() => {
+    loadInviteStatus();
+  }, [slug]);
+
+  const loadInviteStatus = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const supabase = createClient() as any;
+
+      // Get invite data
+      const { data: invite, error: inviteError } = await supabase
+        .from("invites")
+        .select("id, slug, template_id, creator_name, recipient_name, is_paid, created_at, expires_at")
+        .eq("slug", slug)
+        .single();
+
+      if (inviteError || !invite) {
+        setError("Invite not found");
+        setLoading(false);
+        return;
+      }
+
+      // Get view count
+      const { count: viewCount } = await supabase
+        .from("invite_views")
+        .select("*", { count: "exact", head: true })
+        .eq("invite_id", invite.id);
+
+      // Get first view timestamp
+      const { data: firstView } = await supabase
+        .from("invite_views")
+        .select("viewed_at")
+        .eq("invite_id", invite.id)
+        .order("viewed_at", { ascending: true })
+        .limit(1)
+        .single();
+
+      setStatus({
+        ...invite,
+        view_count: viewCount || 0,
+        first_viewed_at: firstView?.viewed_at || null,
+      });
+    } catch (err) {
+      console.error("Error loading status:", err);
+      setError("Failed to load invite status");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Calculate expiry date (1 month from now)
-  const expiryDate = new Date();
-  expiryDate.setMonth(expiryDate.getMonth() + 1);
-
   // Format date helper
-  const formatDate = (date: Date) => {
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -36,7 +96,8 @@ function StatusPageContent() {
     });
   };
 
-  const formatDateTime = (date: Date) => {
+  const formatDateTime = (dateStr: string) => {
+    const date = new Date(dateStr);
     return date.toLocaleString("en-US", {
       month: "short",
       day: "numeric",
@@ -53,6 +114,47 @@ function StatusPageContent() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  // Check if expired
+  const isExpired = status?.expires_at ? new Date(status.expires_at) < new Date() : false;
+  const hasBeenViewed = status && status.view_count > 0;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <RefreshCw className="w-8 h-8 text-gray-400" />
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (error || !status) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 p-4">
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white rounded-3xl shadow-xl p-8 max-w-md w-full text-center"
+        >
+          <div className="w-14 h-14 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+            <AlertCircle className="w-7 h-7 text-red-600" />
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">Invite Not Found</h1>
+          <p className="text-gray-500 mb-6">{error || "This invite doesn't exist or has been deleted."}</p>
+          <Button
+            onClick={() => router.push("/")}
+            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+          >
+            Create New Invite
+          </Button>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 flex items-center justify-center p-4">
@@ -73,6 +175,9 @@ function StatusPageContent() {
             <Eye className="w-7 h-7 text-blue-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Link Status</h1>
+          {status.recipient_name && (
+            <p className="text-gray-500 mt-1">For {status.recipient_name}</p>
+          )}
         </motion.div>
 
         {/* Shareable link */}
@@ -113,78 +218,110 @@ function StatusPageContent() {
           className="mb-6"
         >
           <div className={`p-5 rounded-2xl border-2 ${
-            mockStatus.opened
+            isExpired
+              ? "bg-gradient-to-br from-red-50 to-orange-50 border-red-200"
+              : hasBeenViewed
               ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
               : "bg-gradient-to-br from-gray-50 to-slate-50 border-gray-200"
           }`}>
             {/* Status badge */}
             <div className="flex items-center gap-2 mb-4">
-              <span className={`text-2xl ${mockStatus.opened ? "" : "grayscale"}`}>
-                {mockStatus.opened ? "✅" : "⏳"}
+              <span className={`text-2xl`}>
+                {isExpired ? "⏰" : hasBeenViewed ? "✅" : "⏳"}
               </span>
               <span className={`text-lg font-semibold ${
-                mockStatus.opened ? "text-green-700" : "text-gray-600"
+                isExpired
+                  ? "text-red-700"
+                  : hasBeenViewed
+                  ? "text-green-700"
+                  : "text-gray-600"
               }`}>
-                {mockStatus.opened ? "Opened" : "Not opened yet"}
+                {isExpired ? "Expired" : hasBeenViewed ? "Opened" : "Not opened yet"}
               </span>
             </div>
 
             {/* Stats */}
-            {mockStatus.opened && (
+            {hasBeenViewed && (
               <div className="space-y-3">
-                <div className="flex items-center gap-3 text-sm">
-                  <Clock className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-600">First opened:</span>
-                  <span className="text-gray-900 font-medium">
-                    {formatDateTime(mockStatus.firstOpenedAt)}
-                  </span>
-                </div>
+                {status.first_viewed_at && (
+                  <div className="flex items-center gap-3 text-sm">
+                    <Clock className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-600">First opened:</span>
+                    <span className="text-gray-900 font-medium">
+                      {formatDateTime(status.first_viewed_at)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center gap-3 text-sm">
                   <Eye className="w-4 h-4 text-gray-400" />
                   <span className="text-gray-600">Total views:</span>
                   <span className="text-gray-900 font-medium">
-                    {mockStatus.totalViews}
+                    {status.view_count}
                   </span>
                 </div>
               </div>
             )}
 
-            {!mockStatus.opened && (
+            {!hasBeenViewed && !isExpired && (
               <p className="text-sm text-gray-500">
                 We'll show you when they open your invite
+              </p>
+            )}
+
+            {isExpired && (
+              <p className="text-sm text-red-600">
+                This invite has expired and is no longer accessible
               </p>
             )}
           </div>
         </motion.div>
 
-        {/* Refresh hint */}
+        {/* Refresh button */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="flex items-center justify-center gap-2 text-sm text-gray-400 mb-6"
+          className="flex items-center justify-center gap-2 mb-6"
         >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>Refresh this page to check for updates</span>
+          <Button
+            onClick={loadInviteStatus}
+            variant="ghost"
+            size="sm"
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh status
+          </Button>
         </motion.div>
 
         {/* Expiry note */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-6"
-        >
-          <Calendar className="w-4 h-4" />
-          <span>This link expires on {formatDate(expiryDate)}</span>
-        </motion.div>
+        {!isExpired && status.expires_at && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-6"
+          >
+            <Calendar className="w-4 h-4" />
+            <span>Expires on {formatDate(status.expires_at)}</span>
+          </motion.div>
+        )}
 
-        {/* Create another button */}
+        {/* Action buttons */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
+          className="space-y-3"
         >
+          <Button
+            onClick={() => window.open(`/i/${slug}`, "_blank")}
+            variant="outline"
+            className="w-full h-12 text-base font-medium rounded-xl"
+          >
+            <Eye className="w-4 h-4 mr-2" />
+            Preview Invite
+          </Button>
           <Button
             onClick={() => router.push("/")}
             className="w-full h-12 text-base font-medium rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg"

@@ -503,7 +503,7 @@ function RevealScreen({
         }}
       />
 
-      <div className="max-w-[280px] md:max-w-sm mx-auto relative z-10">
+      <div className="max-w-[320px] sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto relative z-10">
         {/* Card 1: Valentine Header — takes full viewport to force scroll */}
         <div className="min-h-[70vh] flex flex-col items-center justify-center px-5 py-12">
           <motion.div

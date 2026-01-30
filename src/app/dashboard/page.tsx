@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { motion } from "framer-motion";
-import { Heart, Plus, Eye, Calendar, ExternalLink, Copy, CheckCircle, LogOut, Trash2, Edit3 } from "lucide-react";
+import { Heart, Plus, Eye, Calendar, ExternalLink, Copy, CheckCircle, LogOut, Trash2, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTemplateById } from "@/lib/supabase/templates";
 import type { User } from "@supabase/supabase-js";
@@ -263,9 +263,18 @@ export default function DashboardPage() {
                       {copiedSlug === invite.slug ? "Copied!" : "Copy Link"}
                     </Button>
                     <Button
+                      onClick={() => router.push(`/status/${invite.slug}`)}
+                      variant="outline"
+                      size="sm"
+                      title="View Status"
+                    >
+                      <BarChart3 className="w-4 h-4" />
+                    </Button>
+                    <Button
                       onClick={() => window.open(`/i/${invite.slug}`, "_blank")}
                       variant="outline"
                       size="sm"
+                      title="Preview Invite"
                     >
                       <ExternalLink className="w-4 h-4" />
                     </Button>
@@ -274,6 +283,7 @@ export default function DashboardPage() {
                       variant="outline"
                       size="sm"
                       className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                      title="Delete"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

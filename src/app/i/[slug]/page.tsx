@@ -27,6 +27,18 @@ function InvitePageContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Templates that have their own built-in intro/splash screens
+  const templatesWithOwnSplash = [
+    "stargazer",
+    "premiere",
+    "love-letter-mailbox",
+    "cozy-scrapbook",
+    "y2k-digital-crush",
+    "forest-adventure",
+    "elegant-invitation",
+    "avocado-valentine",
+  ];
+
   const [showSplash, setShowSplash] = useState(true);
   const [splashPhase, setSplashPhase] = useState<"enter" | "hold" | "exit">("enter");
 
@@ -61,6 +73,12 @@ function InvitePageContent() {
   useEffect(() => {
     if (loading || error) return;
 
+    // Skip generic splash for templates that have their own intro/splash
+    if (invite && templatesWithOwnSplash.includes(invite.template_id)) {
+      setShowSplash(false);
+      return;
+    }
+
     // Phase 1: Enter animation (1s)
     const holdTimer = setTimeout(() => {
       setSplashPhase("hold");
@@ -81,7 +99,7 @@ function InvitePageContent() {
       clearTimeout(exitTimer);
       clearTimeout(hideTimer);
     };
-  }, [loading, error]);
+  }, [loading, error, invite]);
 
   // Show loading state
   if (loading) {
@@ -105,6 +123,21 @@ function InvitePageContent() {
   const config = invite.configuration as TemplateConfig;
   const senderName = invite.creator_name || "Someone Special";
 
+  // Check if template has its own full-screen experience
+  const hasOwnFullScreen = templatesWithOwnSplash.includes(invite.template_id);
+
+  // For templates with their own intro, render directly without wrapper
+  if (hasOwnFullScreen) {
+    return (
+      <InteractiveTemplate
+        templateId={invite.template_id}
+        config={config}
+        senderName={senderName}
+      />
+    );
+  }
+
+  // For simple templates (like runaway-button), use the generic splash and wrapper
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 relative overflow-hidden">
       {/* Floating hearts background (visible after splash) */}

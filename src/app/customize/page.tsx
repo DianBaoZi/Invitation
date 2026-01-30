@@ -849,7 +849,31 @@ function CustomizePageContent() {
         throw new Error(result.error || "Failed to create invite");
       }
 
-      // Build URL params for success page
+      // Check if this is a paid template - redirect to Stripe checkout
+      if (template && !template.is_free) {
+        // Create Stripe checkout session
+        const checkoutResponse = await fetch("/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            inviteSlug: result.invite.slug,
+            templateId: templateId,
+            templateName: template.name,
+          }),
+        });
+
+        const checkoutResult = await checkoutResponse.json();
+
+        if (!checkoutResult.success || !checkoutResult.url) {
+          throw new Error(checkoutResult.error || "Failed to create checkout session");
+        }
+
+        // Redirect to Stripe checkout
+        window.location.href = checkoutResult.url;
+        return;
+      }
+
+      // Free template - go directly to success page
       const params = new URLSearchParams({
         slug: result.invite.slug,
         name: name.trim(),
