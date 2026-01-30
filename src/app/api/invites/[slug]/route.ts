@@ -3,6 +3,7 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { getTemplateById } from "@/lib/supabase/templates";
 import { checkRateLimit, getClientIp, rateLimitConfigs } from "@/lib/security/rate-limiter";
 import { isValidSlug } from "@/lib/security/sanitize";
+import type { Invite } from "@/lib/supabase/types";
 
 // ============================================
 // GET /api/invites/[slug] - Fetch invite by slug
@@ -36,11 +37,13 @@ export async function GET(
 
     // Fetch invite from Supabase
     const supabase = createServiceClient();
-    const { data: invite, error } = await supabase
+    const { data, error } = await supabase
       .from("invites")
       .select("*")
       .eq("slug", slug)
       .single();
+
+    const invite = data as Invite | null;
 
     if (error || !invite) {
       return NextResponse.json(
@@ -63,9 +66,9 @@ export async function GET(
       .insert({
         invite_id: invite.id,
         ip_address: clientIp,
-      })
+      } as { invite_id: string; ip_address: string })
       .then(() => {})
-      .catch((err) => console.error("Failed to record view:", err));
+      .catch((err: Error) => console.error("Failed to record view:", err));
 
     // Get template info
     const template = getTemplateById(invite.template_id);
