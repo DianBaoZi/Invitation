@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/client";
+import { createServiceClient } from "@/lib/supabase/server";
 import { getTemplateById } from "@/lib/supabase/templates";
 import { checkRateLimit, getClientIp, rateLimitConfigs } from "@/lib/security/rate-limiter";
 import { isValidSlug } from "@/lib/security/sanitize";
-import type { Invite } from "@/lib/supabase/types";
 
 // ============================================
 // GET /api/invites/[slug] - Fetch invite by slug
@@ -36,14 +35,12 @@ export async function GET(
     }
 
     // Fetch invite from Supabase
-    const supabase = createClient();
-    const { data, error } = await supabase
+    const supabase = createServiceClient();
+    const { data: invite, error } = await supabase
       .from("invites")
       .select("*")
       .eq("slug", slug)
       .single();
-
-    const invite = data as Invite | null;
 
     if (error || !invite) {
       return NextResponse.json(
