@@ -118,11 +118,11 @@ export function Navbar() {
                 Sign In
               </Button>
               <Button
-                onClick={() => router.push("/login")}
+                onClick={() => router.push("/login?mode=signup")}
                 size="sm"
                 className="bg-gradient-to-r from-pink-500 to-rose-500 text-white"
               >
-                Get Started
+                Sign Up
               </Button>
             </>
           )}

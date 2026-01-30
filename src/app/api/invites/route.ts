@@ -106,8 +106,9 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error creating invite:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { success: false, error: "Failed to create invite" },
+      { success: false, error: `Failed to create invite: ${errorMessage}` },
       { status: 500 }
     );
   }
