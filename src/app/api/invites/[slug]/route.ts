@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/client";
 import { getTemplateById } from "@/lib/supabase/templates";
 import { checkRateLimit, getClientIp, rateLimitConfigs } from "@/lib/security/rate-limiter";
 import { isValidSlug } from "@/lib/security/sanitize";
+import type { Invite } from "@/lib/supabase/types";
 
 // ============================================
 // GET /api/invites/[slug] - Fetch invite by slug
@@ -36,11 +37,13 @@ export async function GET(
 
     // Fetch invite from Supabase
     const supabase = createClient();
-    const { data: invite, error } = await supabase
+    const { data, error } = await supabase
       .from("invites")
       .select("*")
       .eq("slug", slug)
       .single();
+
+    const invite = data as Invite | null;
 
     if (error || !invite) {
       return NextResponse.json(
