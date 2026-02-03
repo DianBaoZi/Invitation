@@ -511,6 +511,14 @@ function TemplateCard({
           <TemplatePreviewScene templateId={template.id} isHovered={isHovered} />
         </div>
 
+        {/* Blur overlay on hover */}
+        <motion.div
+          className="absolute inset-0 backdrop-blur-sm bg-black/20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+        />
+
         {/* Gradient overlay for text legibility */}
         <div
           className="absolute inset-0 transition-opacity duration-300"
@@ -521,9 +529,9 @@ function TemplateCard({
           }}
         />
 
-        {/* Play button on hover */}
+        {/* Click to preview on hover */}
         <motion.div
-          className="absolute inset-0 flex items-center justify-center"
+          className="absolute inset-0 flex flex-col items-center justify-center gap-3"
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
           transition={{ duration: 0.2 }}
@@ -536,6 +544,15 @@ function TemplateCard({
           >
             <Play className="w-6 h-6 text-stone-800 ml-1" fill="currentColor" />
           </motion.div>
+          <motion.span
+            className="text-white text-sm font-medium tracking-wide px-4 py-1.5 rounded-full bg-black/40 backdrop-blur-sm"
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: isHovered ? 0 : 10, opacity: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+          >
+            Click to preview
+          </motion.span>
         </motion.div>
 
         {/* Social proof badge */}
@@ -562,22 +579,19 @@ function TemplateCard({
           </div>
         )}
 
-        {/* Price badge */}
+        {/* Price badge - More prominent */}
         <div className="absolute top-4 right-4 z-10">
           {template.is_free ? (
             <span
-              className="px-3 py-1.5 bg-white/95 backdrop-blur-sm text-emerald-600 rounded-full text-[10px] font-semibold uppercase tracking-wider shadow-lg"
+              className="px-4 py-2 bg-emerald-500 text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-xl"
               style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
             >
-              Free
+              ✨ Free
             </span>
           ) : (
             <span
-              className="px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-[10px] font-semibold shadow-lg"
-              style={{
-                fontFamily: "'Inter', system-ui, sans-serif",
-                color: "#92400e",
-              }}
+              className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full text-xs font-bold shadow-xl"
+              style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
             >
               {formatPrice(template.price_cents)}
             </span>
@@ -645,22 +659,24 @@ function MobileCard({
       />
 
       {/* Tap indicator */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div className="w-10 h-10 rounded-full bg-white/80 flex items-center justify-center shadow-lg">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
+        <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
           <Play className="w-4 h-4 text-stone-700 ml-0.5" fill="currentColor" />
         </div>
+        <span className="text-white text-xs font-medium px-3 py-1 rounded-full bg-black/40 backdrop-blur-sm" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          Tap to preview
+        </span>
       </div>
 
-      {/* Price badge */}
+      {/* Price badge - More prominent */}
       <div className="absolute top-2.5 right-2.5">
         {template.is_free ? (
-          <span className="px-2 py-1 bg-white/90 text-emerald-600 rounded-full text-[9px] font-semibold uppercase tracking-wide">
-            Free
+          <span className="px-3 py-1.5 bg-emerald-500 text-white rounded-full text-[10px] font-bold uppercase tracking-wide shadow-lg">
+            ✨ Free
           </span>
         ) : (
           <span
-            className="px-2 py-1 bg-white/90 rounded-full text-[9px] font-semibold"
-            style={{ color: "#92400e" }}
+            className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full text-[10px] font-bold shadow-lg"
           >
             {formatPrice(template.price_cents)}
           </span>

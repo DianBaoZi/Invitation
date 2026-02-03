@@ -70,7 +70,7 @@ export function Footer() {
               <Link href="/" className="flex items-center gap-3 mb-6 group">
                 <Image
                   src="/logo.svg"
-                  alt="XYI"
+                  alt="YoursInvite"
                   width={120}
                   height={48}
                   className="h-10 w-auto brightness-0 invert group-hover:scale-105 transition-transform duration-300"
@@ -152,7 +152,7 @@ export function Footer() {
           <div className="mt-16 pt-8 border-t border-gray-800">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <p className="text-sm text-gray-500 font-sans">
-                © {new Date().getFullYear()} XYI. All rights reserved.
+                © {new Date().getFullYear()} YoursInvite. All rights reserved.
               </p>
               <p className="text-sm text-gray-500 font-sans flex items-center gap-2">
                 Made with

@@ -708,6 +708,8 @@ function RevealScreen({
                   color: "#fff0f3",
                   lineHeight: 1.7,
                   textShadow: "0 1px 4px rgba(0,0,0,0.15)",
+                  wordBreak: "break-word",
+                  overflowWrap: "break-word",
                 }}
               >
                 {personalMessage}
@@ -877,7 +879,7 @@ function HoldToConfirmButton({ onConfirm }: { onConfirm: () => void }) {
   const circumference = 2 * Math.PI * 42;
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center gap-3 select-none" style={{ WebkitUserSelect: "none", userSelect: "none" }}>
       {/* Heart button */}
       <motion.button
         onMouseDown={startHold}
@@ -890,7 +892,12 @@ function HoldToConfirmButton({ onConfirm }: { onConfirm: () => void }) {
           scale: completed ? [1.3, 1] : isHolding ? 0.92 : 1,
         }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        style={{ WebkitTapHighlightColor: "transparent" }}
+        style={{
+          WebkitTapHighlightColor: "transparent",
+          WebkitUserSelect: "none",
+          userSelect: "none",
+          WebkitTouchCallout: "none",
+        }}
       >
         {/* Glow ring */}
         <div
@@ -939,12 +946,14 @@ function HoldToConfirmButton({ onConfirm }: { onConfirm: () => void }) {
 
       {/* Dynamic label */}
       <motion.p
-        className="text-sm"
+        className="text-sm select-none"
         style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontWeight: 600,
           color: progress > 0 ? "#e91e63" : "#880e4f",
           letterSpacing: "0.05em",
+          WebkitUserSelect: "none",
+          userSelect: "none",
         }}
         animate={{ opacity: completed ? 0 : 1 }}
       >

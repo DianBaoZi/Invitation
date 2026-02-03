@@ -54,6 +54,17 @@ export function CozyScrapbook({
     }, 700);
   }, [flippingPage]);
 
+  const handleFlipBack = useCallback(() => {
+    if (flippingPage !== null || currentPage === 0) return;
+    const prevPage = currentPage - 1;
+    setFlippingPage(prevPage); // Use same flipping state to prevent multiple clicks
+    setFlippedPages(prev => prev.filter(p => p !== prevPage));
+    setTimeout(() => {
+      setCurrentPage(prevPage);
+      setFlippingPage(null);
+    }, 700);
+  }, [flippingPage, currentPage]);
+
   const handleYes = () => {
     setShowSuccess(true);
     // Save RSVP response
@@ -92,6 +103,7 @@ export function CozyScrapbook({
             flippingPage={flippingPage}
             flippedPages={flippedPages}
             onFlipPage={handleFlipPage}
+            onFlipBack={handleFlipBack}
             message={message}
             senderName={senderName}
             photoUrl1={photoUrl1}
@@ -110,6 +122,7 @@ export function CozyScrapbook({
             flippingPage={flippingPage}
             flippedPages={flippedPages}
             onFlipPage={handleFlipPage}
+            onFlipBack={handleFlipBack}
             message={message}
             senderName={senderName}
             photoUrl1={photoUrl1}
@@ -137,6 +150,7 @@ function DesktopScrapbook({
   flippingPage,
   flippedPages,
   onFlipPage,
+  onFlipBack,
   message,
   senderName,
   photoUrl1,
@@ -153,6 +167,7 @@ function DesktopScrapbook({
   flippingPage: number | null;
   flippedPages: number[];
   onFlipPage: (page: number) => void;
+  onFlipBack: () => void;
   message: string;
   senderName: string;
   photoUrl1?: string;
@@ -203,13 +218,39 @@ function DesktopScrapbook({
 
         {/* === LEFT SIDE: Turned pages stack here === */}
         <div
+          onClick={currentPage > 0 && flippingPage === null ? onFlipBack : undefined}
           style={{
             width: pageWidth,
             height: pageHeight,
             position: "relative",
             transformStyle: "preserve-3d",
+            cursor: currentPage > 0 && flippingPage === null ? "pointer" : "default",
           }}
         >
+          {/* Back navigation hint (visible when there are flipped pages) */}
+          {currentPage > 0 && flippingPage === null && (
+            <div
+              style={{
+                position: "absolute",
+                bottom: 20,
+                left: 20,
+                zIndex: 100,
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "6px 12px",
+                background: "rgba(92,58,33,0.08)",
+                borderRadius: 20,
+                fontSize: 11,
+                color: "#a08060",
+                fontFamily: "'Cormorant Garamond', serif",
+                fontStyle: "italic",
+                pointerEvents: "none",
+              }}
+            >
+              <span style={{ fontSize: 14 }}>←</span> tap to go back
+            </div>
+          )}
           {/* Inside of cover (visible when cover is flipped) */}
           <AnimatePresence>
             {(flippedPages.includes(0) || currentPage >= 1) && (
@@ -327,6 +368,7 @@ function MobileScrapbook({
   flippingPage,
   flippedPages,
   onFlipPage,
+  onFlipBack,
   message,
   senderName,
   photoUrl1,
@@ -343,6 +385,7 @@ function MobileScrapbook({
   flippingPage: number | null;
   flippedPages: number[];
   onFlipPage: (page: number) => void;
+  onFlipBack: () => void;
   message: string;
   senderName: string;
   photoUrl1?: string;
@@ -364,10 +407,11 @@ function MobileScrapbook({
     >
       {/* Stacked pages - flipped pages stay visible above */}
       <div style={{ position: "relative" }}>
-        {/* Flipped cover (shows at top when flipped) */}
+        {/* Flipped cover (shows at top when flipped) - tap to go back */}
         <AnimatePresence>
           {currentPage >= 1 && (
             <motion.div
+              onClick={flippingPage === null && currentPage === 1 ? onFlipBack : undefined}
               initial={{ height: 0, opacity: 0, marginBottom: 0 }}
               animate={{ height: 80, opacity: 1, marginBottom: 12 }}
               exit={{ height: 0, opacity: 0, marginBottom: 0 }}
@@ -377,13 +421,21 @@ function MobileScrapbook({
                 borderRadius: 12,
                 overflow: "hidden",
                 boxShadow: "0 4px 12px rgba(92,58,33,0.15)",
+                cursor: flippingPage === null && currentPage === 1 ? "pointer" : "default",
               }}
             >
-              <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontSize: 24 }}>📖</span>
-                <span style={{ fontFamily: "'Dancing Script', cursive", fontSize: 16, color: "#5c3a21" }}>
-                  A Scrapbook
-                </span>
+              <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 12, justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 24 }}>📖</span>
+                  <span style={{ fontFamily: "'Dancing Script', cursive", fontSize: 16, color: "#5c3a21" }}>
+                    A Scrapbook
+                  </span>
+                </div>
+                {currentPage === 1 && flippingPage === null && (
+                  <span style={{ fontSize: 11, color: "#8b6914", fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic" }}>
+                    ← tap to go back
+                  </span>
+                )}
               </div>
             </motion.div>
           )}
@@ -666,9 +718,9 @@ function MessagePage({ message, senderName, photoUrl2, showHint }: { message: st
       )}
 
       <motion.h3 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ fontFamily: "'Dancing Script', cursive", fontSize: 24, color: "#5c3a21", marginBottom: 6, position: "relative", zIndex: 1 }}>A Little Something</motion.h3>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 13, color: "#8b7355", fontStyle: "italic", marginBottom: 12 }}>from {senderName}</motion.p>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 13, color: "#8b7355", fontStyle: "italic", marginBottom: 12, wordBreak: "break-word", overflowWrap: "break-word" }}>from {senderName}</motion.p>
       <div style={{ width: 50, height: 2, background: "linear-gradient(90deg, transparent, #c27256, transparent)", marginBottom: 12 }} />
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: "#6b5240", fontStyle: "italic", textAlign: "center", lineHeight: 1.65, padding: "0 8px", maxHeight: 100, overflow: "hidden", position: "relative", zIndex: 1 }}>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: "#6b5240", fontStyle: "italic", textAlign: "center", lineHeight: 1.65, padding: "0 8px", maxHeight: 100, overflow: "hidden", position: "relative", zIndex: 1, wordBreak: "break-word", overflowWrap: "break-word" }}>
         {message.length > 100 ? message.slice(0, 100) + "..." : message}
       </motion.p>
 
@@ -816,7 +868,7 @@ function SuccessState({ senderName }: { senderName: string }) {
         <h2 style={{ fontFamily: "'Dancing Script', cursive", fontSize: 34, color: "#5c3a21", marginBottom: 10, fontWeight: 700 }}>You said yes!</h2>
         <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 17, color: "#8b7355", fontStyle: "italic", lineHeight: 1.65 }}>This is the beginning of<br />something beautiful...</p>
         <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid rgba(212,196,176,0.4)" }}>
-          <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 15, color: "#a08060" }}>with love, {senderName} 💕</p>
+          <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 15, color: "#a08060", wordBreak: "break-word", overflowWrap: "break-word" }}>with love, {senderName} 💕</p>
         </div>
       </motion.div>
     </div>

@@ -59,7 +59,7 @@ export function Navbar() {
         >
           <Image
             src="/logo.svg"
-            alt="XYI"
+            alt="YoursInvite"
             width={100}
             height={40}
             className="h-8 w-auto"
