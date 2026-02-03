@@ -483,15 +483,6 @@ function TemplateCard({
   onLeave: () => void;
   onClick: () => void;
 }) {
-  const [iframeLoaded, setIframeLoaded] = useState(false);
-
-  // Reset iframe loaded state when unhovered
-  useEffect(() => {
-    if (!isHovered) {
-      setIframeLoaded(false);
-    }
-  }, [isHovered]);
-
   // Standardized larger card height (3x original ~200px)
   const getCardHeight = () => {
     return 600;
@@ -520,26 +511,6 @@ function TemplateCard({
         <div className="absolute inset-0">
           <TemplatePreviewScene templateId={template.id} isHovered={isHovered} />
         </div>
-
-        {/* Live iframe preview on hover */}
-        <AnimatePresence>
-          {isHovered && (
-            <motion.div
-              className="absolute inset-0 z-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: iframeLoaded ? 1 : 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <iframe
-                src={`/test/${template.id}`}
-                className="w-full h-full border-0 pointer-events-none"
-                title={`Preview of ${template.name}`}
-                onLoad={() => setIframeLoaded(true)}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Gradient overlay for text legibility */}
         <div

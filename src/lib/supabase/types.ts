@@ -130,6 +130,8 @@ export interface Invite {
   stripe_payment_id: string | null;
   created_at: string;
   expires_at: string;
+  response: string | null;
+  responded_at: string | null;
 }
 
 export interface CreateInviteInput {

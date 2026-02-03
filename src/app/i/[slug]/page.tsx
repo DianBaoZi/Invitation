@@ -133,6 +133,7 @@ function InvitePageContent() {
         templateId={invite.template_id}
         config={config}
         senderName={senderName}
+        slug={slug}
       />
     );
   }
@@ -163,6 +164,7 @@ function InvitePageContent() {
               templateId={invite.template_id}
               config={config}
               senderName={senderName}
+              slug={slug}
             />
           </motion.div>
         )}

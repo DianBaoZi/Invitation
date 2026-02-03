@@ -18,6 +18,8 @@ interface InviteStatus {
   expires_at: string;
   view_count: number;
   first_viewed_at: string | null;
+  response: string | null;
+  responded_at: string | null;
 }
 
 function StatusPageContent() {
@@ -48,7 +50,7 @@ function StatusPageContent() {
       // Get invite data
       const { data: invite, error: inviteError } = await supabase
         .from("invites")
-        .select("id, slug, template_id, creator_name, recipient_name, is_paid, created_at, expires_at")
+        .select("id, slug, template_id, creator_name, recipient_name, is_paid, created_at, expires_at, response, responded_at")
         .eq("slug", slug)
         .single();
 
@@ -259,6 +261,20 @@ function StatusPageContent() {
                     {status.view_count}
                   </span>
                 </div>
+                {status.response && (
+                  <div className="flex items-center gap-3 text-sm pt-2 border-t border-gray-200">
+                    <Heart className={`w-4 h-4 ${status.response.toLowerCase().includes('yes') ? 'text-green-500 fill-green-500' : 'text-gray-400'}`} />
+                    <span className="text-gray-600">Response:</span>
+                    <span className={`font-semibold ${status.response.toLowerCase().includes('yes') ? 'text-green-600' : 'text-gray-600'}`}>
+                      {status.response}
+                    </span>
+                    {status.responded_at && (
+                      <span className="text-gray-400 text-xs">
+                        ({formatDateTime(status.responded_at)})
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
