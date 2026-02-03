@@ -88,6 +88,12 @@ export function Navbar() {
           >
             Disclaimer
           </button>
+          <button
+            onClick={() => router.push("/privacy")}
+            className="text-sm text-gray-600 hover:text-gray-900 transition"
+          >
+            Privacy
+          </button>
         </div>
 
         {/* Right side */}

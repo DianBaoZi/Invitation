@@ -130,8 +130,8 @@ export function Footer() {
               <ul className="space-y-4">
                 {[
                   { label: "Privacy Policy", href: "/privacy" },
-                  { label: "Terms of Service", href: "/terms" },
-                  { label: "Cookie Policy", href: "/cookies" },
+                  { label: "Terms of Use", href: "/terms" },
+                  { label: "Disclaimer", href: "/disclaimer" },
                 ].map((link) => (
                   <li key={link.label}>
                     <Link
