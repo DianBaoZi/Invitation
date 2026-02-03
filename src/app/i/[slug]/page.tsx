@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
 import { Invite, TemplateConfig } from "@/lib/supabase/types";
 import { saveResponse } from "@/lib/api/saveResponse";
+import { SplashScreen } from "@/components/invite/SplashScreen";
 
 // Dynamic imports for templates - reduces initial bundle size
 const Y2KDigitalCrush = lazy(() => import("@/components/templates/Y2KDigitalCrush").then(m => ({ default: m.Y2KDigitalCrush })));
@@ -27,8 +28,8 @@ function InvitePageContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Templates that have their own built-in intro/splash screens (skip generic splash for these)
-  const templatesWithOwnSplash = [
+  // Templates that have custom splash screens in SplashScreen.tsx
+  const templatesWithCustomSplash = [
     "stargazer",
     "premiere",
     "love-letter-mailbox",
@@ -36,8 +37,10 @@ function InvitePageContent() {
     "y2k-digital-crush",
     "forest-adventure",
     "elegant-invitation",
-    "avocado-valentine",
   ];
+
+  // Only runaway-button uses the simple inline splash (no custom splash)
+  const templatesWithNoCustomSplash = ["runaway-button", "avocado-valentine"];
 
   const [showSplash, setShowSplash] = useState(true);
   const [splashPhase, setSplashPhase] = useState<"enter" | "hold" | "exit">("enter");
@@ -69,16 +72,19 @@ function InvitePageContent() {
     }
   }, [slug]);
 
-  // Check if this template has its own splash
-  const hasOwnSplash = invite ? templatesWithOwnSplash.includes(invite.template_id) : false;
+  // Check if this template has a custom splash in SplashScreen.tsx
+  const hasCustomSplash = invite ? templatesWithCustomSplash.includes(invite.template_id) : false;
+  // Check if this template uses the simple inline splash (no custom splash)
+  const usesInlineSplash = invite ? templatesWithNoCustomSplash.includes(invite.template_id) : false;
 
-  // Splash screen timing - only show for templates WITHOUT their own splash (like runaway button)
+  // Splash screen timing - only for templates using the simple inline splash
   useEffect(() => {
     if (loading || error) return;
 
-    // Skip generic splash for templates with their own intro
-    if (hasOwnSplash) {
-      setShowSplash(false);
+    // Templates with custom splash are handled by SplashScreen component's onComplete
+    // Templates using inline splash need the phase timing
+    if (hasCustomSplash || !usesInlineSplash) {
+      // Don't run phase timing for custom splash templates
       return;
     }
 
@@ -102,7 +108,7 @@ function InvitePageContent() {
       clearTimeout(exitTimer);
       clearTimeout(hideTimer);
     };
-  }, [loading, error, hasOwnSplash]);
+  }, [loading, error, hasCustomSplash, usesInlineSplash]);
 
   // Show loading state
   if (loading) {
@@ -126,27 +132,44 @@ function InvitePageContent() {
   const config = invite.configuration as TemplateConfig;
   const senderName = invite.creator_name || "Someone Special";
 
-  // Templates with own splash have full-screen experience (no wrapper needed)
-  return (
-    <div className={`min-h-screen relative overflow-hidden ${hasOwnSplash ? '' : 'bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50'}`}>
-      {/* Floating hearts background (only for runaway button, visible after splash) */}
-      {!showSplash && !hasOwnSplash && <FloatingHearts />}
+  // Handle splash completion for custom splash screens
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
 
-      {/* Generic Splash Screen - only for templates without their own intro (e.g., runaway button) */}
+  // Check if template has full-screen experience (custom splash or template's own intro)
+  const isFullScreenTemplate = hasCustomSplash;
+
+  return (
+    <div className={`min-h-screen relative overflow-hidden ${isFullScreenTemplate ? '' : 'bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50'}`}>
+      {/* Floating hearts background (only for runaway button, visible after splash) */}
+      {!showSplash && usesInlineSplash && <FloatingHearts />}
+
+      {/* Custom Splash Screen - for templates with custom splash in SplashScreen.tsx */}
+      {showSplash && hasCustomSplash && (
+        <SplashScreen
+          creatorName={senderName}
+          isPaid={invite.is_paid}
+          onComplete={handleSplashComplete}
+          templateId={invite.template_id}
+        />
+      )}
+
+      {/* Simple Inline Splash Screen - only for runaway button and avocado */}
       <AnimatePresence>
-        {showSplash && !hasOwnSplash && (
-          <SplashScreen name={senderName} phase={splashPhase} />
+        {showSplash && usesInlineSplash && (
+          <InlineSplashScreen name={senderName} phase={splashPhase} />
         )}
       </AnimatePresence>
 
       {/* Main content */}
       <AnimatePresence>
-        {(!showSplash || hasOwnSplash) && (
+        {!showSplash && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className={hasOwnSplash ? '' : 'relative z-10 min-h-screen flex items-center justify-center p-4'}
+            className={isFullScreenTemplate ? '' : 'relative z-10 min-h-screen flex items-center justify-center p-4'}
           >
             <InteractiveTemplate
               templateId={invite.template_id}
@@ -253,10 +276,10 @@ function NotFoundState() {
 }
 
 // ============================================
-// PREMIUM SPLASH SCREEN
+// SIMPLE INLINE SPLASH SCREEN (for runaway button, etc.)
 // ============================================
 
-function SplashScreen({ name, phase }: { name: string; phase: "enter" | "hold" | "exit" }) {
+function InlineSplashScreen({ name, phase }: { name: string; phase: "enter" | "hold" | "exit" }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
