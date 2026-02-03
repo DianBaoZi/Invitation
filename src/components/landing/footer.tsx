@@ -108,6 +108,8 @@ export function Footer() {
                   { label: "How It Works", href: "#how-it-works" },
                   { label: "Pricing", href: "#pricing" },
                   { label: "Create Invite", href: "/create" },
+                  { label: "About", href: "/about" },
+                  { label: "FAQ", href: "/faq" },
                 ].map((link) => (
                   <li key={link.label}>
                     <Link

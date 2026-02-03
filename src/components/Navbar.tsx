@@ -62,40 +62,6 @@ export function Navbar() {
           </span>
         </button>
 
-        {/* Navigation Links */}
-        <div className="hidden md:flex items-center gap-6">
-          <button
-            onClick={() => router.push("/about")}
-            className="text-sm text-gray-600 hover:text-gray-900 transition"
-          >
-            About
-          </button>
-          <button
-            onClick={() => router.push("/faq")}
-            className="text-sm text-gray-600 hover:text-gray-900 transition"
-          >
-            FAQ
-          </button>
-          <button
-            onClick={() => router.push("/terms")}
-            className="text-sm text-gray-600 hover:text-gray-900 transition"
-          >
-            Terms of Use
-          </button>
-          <button
-            onClick={() => router.push("/disclaimer")}
-            className="text-sm text-gray-600 hover:text-gray-900 transition"
-          >
-            Disclaimer
-          </button>
-          <button
-            onClick={() => router.push("/privacy")}
-            className="text-sm text-gray-600 hover:text-gray-900 transition"
-          >
-            Privacy
-          </button>
-        </div>
-
         {/* Right side */}
         <div className="flex items-center gap-3">
           {loading ? (
