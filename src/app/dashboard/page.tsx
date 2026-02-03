@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { motion } from "framer-motion";
-import { Heart, Plus, Eye, Calendar, ExternalLink, Copy, CheckCircle, LogOut, Trash2, BarChart3 } from "lucide-react";
+import { Heart, Plus, Calendar, ExternalLink, Copy, CheckCircle, LogOut, Trash2, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTemplateById } from "@/lib/supabase/templates";
 import type { User } from "@supabase/supabase-js";
 
-interface InviteWithViews {
+interface InviteData {
   id: string;
   slug: string;
   template_id: string;
@@ -18,13 +18,12 @@ interface InviteWithViews {
   is_paid: boolean;
   created_at: string;
   expires_at: string;
-  view_count: number;
 }
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [invites, setInvites] = useState<InviteWithViews[]>([]);
+  const [invites, setInvites] = useState<InviteData[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
 
@@ -46,7 +45,6 @@ export default function DashboardPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const supabase = createClient() as any;
 
-    // Get invites with view counts
     const { data: invitesData, error } = await supabase
       .from("invites")
       .select(`
@@ -68,22 +66,7 @@ export default function DashboardPage() {
       return;
     }
 
-    // Get view counts for each invite
-    const invitesWithViews = await Promise.all(
-      ((invitesData || []) as InviteWithViews[]).map(async (invite) => {
-        const { count } = await supabase
-          .from("invite_views")
-          .select("*", { count: "exact", head: true })
-          .eq("invite_id", invite.id);
-
-        return {
-          ...invite,
-          view_count: count || 0,
-        };
-      })
-    );
-
-    setInvites(invitesWithViews);
+    setInvites((invitesData || []) as InviteData[]);
     setLoading(false);
   };
 
@@ -118,10 +101,10 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Heart className="w-12 h-12 text-pink-500" />
+          <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
         </motion.div>
       </div>
     );
@@ -233,18 +216,12 @@ export default function DashboardPage() {
                     )}
                   </div>
 
-                  {/* Stats */}
-                  <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <Eye className="w-4 h-4" />
-                      <span>{invite.view_count} views</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>
-                        {new Date(invite.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
+                  {/* Date */}
+                  <div className="flex items-center gap-1 mb-4 text-sm text-gray-600">
+                    <Calendar className="w-4 h-4" />
+                    <span>
+                      Created {new Date(invite.created_at).toLocaleDateString()}
+                    </span>
                   </div>
 
                   {/* Actions */}

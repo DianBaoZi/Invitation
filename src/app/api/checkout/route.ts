@@ -33,8 +33,9 @@ export async function POST(request: NextRequest) {
     const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
     // Create Stripe checkout session
+    // Note: Not specifying payment_method_types allows Stripe to automatically
+    // enable Apple Pay, Google Pay, and other methods based on Dashboard settings
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
       line_items: [
         {
           price_data: {

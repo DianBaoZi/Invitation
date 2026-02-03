@@ -17,11 +17,17 @@ import { SplashScreen } from "@/components/invite/SplashScreen";
 // Templates that manage their own full-screen layout
 const FULLSCREEN_TEMPLATES = ["y2k-digital-crush", "cozy-scrapbook", "love-letter-mailbox", "avocado-valentine", "stargazer", "premiere", "forest-adventure", "elegant-invitation"];
 
+// Templates that have their own built-in splash/intro sequence (don't show external SplashScreen)
+const TEMPLATES_WITH_BUILTIN_SPLASH = ["stargazer", "avocado-valentine", "premiere", "y2k-digital-crush", "forest-adventure"];
+
 export default function TestTemplatePage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const templateId = params.templateId as string;
-  const skipSplash = searchParams.get("nosplash") === "true";
+
+  // Skip external SplashScreen for templates with built-in splash/intro
+  const hasBuiltinSplash = TEMPLATES_WITH_BUILTIN_SPLASH.includes(templateId);
+  const skipSplash = searchParams.get("nosplash") === "true" || hasBuiltinSplash;
   const [showSplash, setShowSplash] = useState(!skipSplash);
 
   // Customization overrides from query params

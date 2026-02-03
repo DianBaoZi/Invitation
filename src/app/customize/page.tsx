@@ -1750,22 +1750,24 @@ function FullPreview({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-4 py-3 border border-gray-200"
+        className="fixed bottom-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
       >
         <Button
           onClick={onBack}
           variant="outline"
-          className="h-11 px-5 rounded-xl font-semibold"
+          className="h-10 sm:h-11 px-3 sm:px-5 rounded-xl font-semibold text-sm sm:text-base"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to edit
+          <ArrowLeft className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Back to edit</span>
+          <span className="sm:hidden">Back</span>
         </Button>
         <Button
           onClick={onGenerate}
-          className={`h-11 px-5 rounded-xl font-semibold ${accentGradient} text-white`}
+          className={`h-10 sm:h-11 px-3 sm:px-5 rounded-xl font-semibold text-sm sm:text-base ${accentGradient} text-white`}
         >
-          <Heart className="w-4 h-4 mr-2" />
-          Generate my link
+          <Heart className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Generate my link</span>
+          <span className="sm:hidden">Generate</span>
         </Button>
       </motion.div>
     </div>
@@ -1833,22 +1835,24 @@ function CozyScrapbookFullPreview({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-4 py-3 border border-gray-200"
+          className="fixed bottom-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
         >
           <Button
             onClick={onBack}
             variant="outline"
-            className="h-11 px-5 rounded-xl font-semibold"
+            className="h-11 px-3 sm:px-5 rounded-xl font-semibold"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to edit
+            <ArrowLeft className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Back to edit</span>
+            <span className="sm:hidden">Back</span>
           </Button>
           <Button
             onClick={onGenerate}
-            className={`h-11 px-5 rounded-xl font-semibold ${accentGradient} text-white`}
+            className={`h-11 px-3 sm:px-5 rounded-xl font-semibold ${accentGradient} text-white`}
           >
-            <Heart className="w-4 h-4 mr-2" />
-            Generate my link
+            <Heart className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Generate my link</span>
+            <span className="sm:hidden">Generate</span>
           </Button>
         </motion.div>
       )}
@@ -1907,22 +1911,24 @@ function ElegantInvitationFullPreview({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-4 py-3 border border-gray-200"
+        className="fixed bottom-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
       >
         <Button
           onClick={onBack}
           variant="outline"
-          className="h-11 px-5 rounded-xl font-semibold"
+          className="h-11 px-3 sm:px-5 rounded-xl font-semibold"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to edit
+          <ArrowLeft className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Back to edit</span>
+          <span className="sm:hidden">Back</span>
         </Button>
         <Button
           onClick={onGenerate}
-          className={`h-11 px-5 rounded-xl font-semibold ${accentGradient} text-white`}
+          className={`h-11 px-3 sm:px-5 rounded-xl font-semibold ${accentGradient} text-white`}
         >
-          <Heart className="w-4 h-4 mr-2" />
-          Generate my link
+          <Heart className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Generate my link</span>
+          <span className="sm:hidden">Generate</span>
         </Button>
       </motion.div>
     </div>
