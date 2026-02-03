@@ -519,15 +519,14 @@ function RevealScreen({
           <motion.div
             variants={cardDramaticDrop}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-40px" }}
+            animate="visible"
             className="rounded-2xl overflow-hidden w-full relative"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
             <motion.div
               className="absolute inset-0 rounded-2xl pointer-events-none z-10"
               initial={{ opacity: 0 }}
-              whileInView={{
+              animate={{
                 opacity: [0, 0.6, 0],
                 boxShadow: [
                   "0 0 0px rgba(233,30,99,0)",
@@ -535,7 +534,6 @@ function RevealScreen({
                   "0 0 0px rgba(233,30,99,0)",
                 ],
               }}
-              viewport={{ once: true }}
               transition={{ duration: 1.8, delay: 0.5, ease: "easeOut" }}
             />
             <img

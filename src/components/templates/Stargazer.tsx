@@ -832,6 +832,8 @@ function LetterScene({
                 color: PALETTE.starWhite,
                 lineHeight: 1.8,
                 textShadow: "0 0 30px rgba(124,58,237,0.3), 0 1px 3px rgba(0,0,0,0.5)",
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
               }}
             >
               {personalMessage}

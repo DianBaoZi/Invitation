@@ -935,6 +935,8 @@ function ScrollContent({
               color: P.cream,
               lineHeight: 1.8,
               textShadow: `0 0 20px rgba(212,160,23,0.15)`,
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
             }}
           >
             &ldquo;{personalMessage}&rdquo;
