@@ -106,7 +106,7 @@ export const TEMPLATES: Template[] = [
       "Open the mailbox to reveal a multi-card love letter with event ticket and shy RSVP button.",
     emoji: "📬",
     is_free: false,
-    price_cents: 99, // $0.99 charm pricing
+    price_cents: 399, // $3.99
     default_config: DEFAULT_LOVE_LETTER_CONFIG,
     badge: "Most Popular",
   },
@@ -117,7 +117,7 @@ export const TEMPLATES: Template[] = [
       "Embark on a pixelated quest through the Enchanted Forest — make choices, befriend a bear, and discover a magical invitation!",
     emoji: "🌲",
     is_free: false,
-    price_cents: 99, // $0.99 charm pricing
+    price_cents: 399, // $3.99
     default_config: DEFAULT_FOREST_ADVENTURE_CONFIG,
     badge: "New",
   },
@@ -128,7 +128,7 @@ export const TEMPLATES: Template[] = [
       "Written in the stars — a cinematic night sky experience with constellations, shooting stars, and a supernova finale.",
     emoji: "🌌",
     is_free: false,
-    price_cents: 99, // $0.99 charm pricing
+    price_cents: 399, // $3.99
     default_config: DEFAULT_STARGAZER_CONFIG,
     badge: "Trending",
   },
@@ -139,7 +139,7 @@ export const TEMPLATES: Template[] = [
       "You're the star of my movie — a cinematic experience with film countdown, velvet curtains, and a movie ticket invite.",
     emoji: "🎬",
     is_free: false,
-    price_cents: 99, // $0.99 charm pricing
+    price_cents: 399, // $3.99
     default_config: DEFAULT_PREMIERE_CONFIG,
   },
   {
@@ -149,7 +149,7 @@ export const TEMPLATES: Template[] = [
       "Retro desktop vibes! Click 'No' and watch the system crash with escalating glitch errors.",
     emoji: "💾",
     is_free: false,
-    price_cents: 99, // $0.99 charm pricing
+    price_cents: 399, // $3.99
     default_config: DEFAULT_Y2K_CONFIG,
   },
     {
@@ -159,7 +159,7 @@ export const TEMPLATES: Template[] = [
       "Flip through a handmade scrapbook with torn paper pages, washi tape, and a ticket-stub invite.",
     emoji: "📒",
     is_free: false,
-    price_cents: 99, // $0.99 charm pricing
+    price_cents: 399, // $3.99
     default_config: DEFAULT_COZY_SCRAPBOOK_CONFIG,
   },
   {
@@ -169,7 +169,7 @@ export const TEMPLATES: Template[] = [
       "A refined scroll-through invitation with photo frames, rose gold accents, and delicate floral details.",
     emoji: "💐",
     is_free: false,
-    price_cents: 99, // $0.99 charm pricing
+    price_cents: 399, // $3.99
     default_config: DEFAULT_ELEGANT_INVITATION_CONFIG,
     badge: "Staff Pick",
   },
@@ -201,9 +201,8 @@ export function getDefaultConfig(templateId: string) {
 // ============================================
 
 export const PRICING = {
-  single: 99, // $0.99 in cents (charm pricing)
-  membership: 299, // $2.99 one-time in cents - all templates + future releases
-  originalMembership: 799, // $7.99 "original" price for anchoring
+  single: 399, // $3.99 in cents - single template, 30-day access
+  lifetime: 799, // $7.99 one-time in cents - all templates + future releases forever
 };
 
 export function formatPrice(cents: number): string {

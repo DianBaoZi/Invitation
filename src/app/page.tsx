@@ -436,9 +436,8 @@ export default function Home() {
           />
           <Sparkles className="w-4 h-4 text-white relative z-10" />
           <span className="text-sm tracking-wide relative z-10">
-            <span className="line-through text-white/60 mr-2">{formatPrice(PRICING.originalMembership)}</span>
-            <span className="font-semibold">{formatPrice(PRICING.membership)}</span>
-            <span className="hidden sm:inline"> — Get All Templates</span>
+            <span className="font-semibold">{formatPrice(PRICING.lifetime)}</span>
+            <span className="hidden sm:inline"> — Lifetime Access to All Templates</span>
           </span>
           <ArrowRight className="w-4 h-4 text-white/80 relative z-10" />
         </button>
@@ -1471,27 +1470,21 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
             ))}
           </div>
 
-          {/* Price with Anchoring */}
+          {/* Price */}
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-3">
-              <span
-                className="text-xl text-stone-400 line-through"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
-                {formatPrice(PRICING.originalMembership)}
-              </span>
               <span
                 className="text-4xl text-stone-900"
                 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
               >
-                {formatPrice(PRICING.membership)}
+                {formatPrice(PRICING.lifetime)}
               </span>
             </div>
             <span
               className="text-stone-400 text-sm"
               style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
             >
-              one-time payment • less than a latte ☕
+              one-time payment • lifetime access
             </span>
           </div>
 

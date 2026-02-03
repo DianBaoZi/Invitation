@@ -26,9 +26,18 @@ export const stripe = {
   },
 };
 
-// Price for premium invites (in cents)
-export const INVITE_PRICE_CENTS = 99; // $0.99 USD
+// Price for single template (in cents)
+export const SINGLE_TEMPLATE_PRICE_CENTS = 399; // $3.99 USD
 
-// Product name shown in Stripe checkout
+// Price for lifetime access (in cents)
+export const LIFETIME_PRICE_CENTS = 799; // $7.99 USD
+
+// Legacy export for backwards compatibility
+export const INVITE_PRICE_CENTS = SINGLE_TEMPLATE_PRICE_CENTS; // $3.99
+
+// Product names shown in Stripe checkout
 export const PRODUCT_NAME = "Premium Valentine's Invite";
 export const PRODUCT_DESCRIPTION = "Your invite stays active for 30 days";
+
+export const LIFETIME_PRODUCT_NAME = "Lifetime Access - All Templates";
+export const LIFETIME_PRODUCT_DESCRIPTION = "Access all templates forever, including future designs";

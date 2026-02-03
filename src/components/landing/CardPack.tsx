@@ -165,7 +165,7 @@ export function CardPack() {
             <span className="font-bold text-gray-900">all templates</span>
             <span className="text-gray-600">for just</span>
             <span className="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-bold">
-              {formatPrice(PRICING.membership)}/mo
+              {formatPrice(PRICING.lifetime)}
             </span>
           </div>
         </motion.div>

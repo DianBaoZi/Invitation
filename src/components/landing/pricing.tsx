@@ -6,57 +6,42 @@ import { Check, Sparkles, Heart, Crown, Zap, Star } from "lucide-react";
 
 const plans = [
   {
-    name: "Free",
-    price: "$0",
-    description: "Perfect for trying things out",
+    name: "Single Template",
+    price: "$3.99",
+    period: "one-time",
+    description: "Perfect for your special occasion",
     features: [
-      "Basic text & button elements",
-      "5 beautiful backgrounds",
-      "Standard animations",
-      "Share via unique link",
-      "Mobile-responsive design",
+      "1 premium interactive template",
+      "Full customization options",
+      "Runaway button & animations",
+      "Confetti explosions",
+      "Custom music upload",
+      "No watermark",
+      "Invite active for 30 days",
     ],
-    cta: "Start Free",
+    cta: "Get Template",
     popular: false,
     icon: Heart,
   },
   {
-    name: "Premium",
-    price: "$2.99",
-    period: "one-time",
-    description: "Everything you need for the perfect invite",
-    features: [
-      "All interactive elements",
-      "Runaway button magic",
-      "Confetti explosions",
-      "Custom music upload",
-      "No watermark",
-      "Priority support",
-      "Unlimited edits forever",
-    ],
-    cta: "Get Premium",
-    popular: true,
-    icon: Crown,
-  },
-  {
-    name: "Premium Plus",
+    name: "Lifetime Access",
     price: "$7.99",
     period: "one-time",
-    description: "Ultimate features for special occasions",
+    description: "Best value - all templates forever",
     features: [
-      "Everything in Premium",
-      "Exclusive premium templates",
-      "Custom domain for invites",
+      "All premium templates included",
+      "Future templates included free",
+      "Unlimited invites forever",
+      "All interactive elements",
       "RSVP tracking & analytics",
-      "Guest list management",
-      "Multiple invite variations",
-      "White-glove support",
-      "Early access to new features",
+      "Priority support",
+      "No expiration - lifetime access",
+      "Early access to new designs",
     ],
-    cta: "Go Premium Plus",
-    popular: false,
+    cta: "Get Lifetime Access",
+    popular: true,
     highlight: true,
-    icon: Star,
+    icon: Crown,
   },
 ];
 
@@ -101,7 +86,7 @@ export function Pricing() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.name}
