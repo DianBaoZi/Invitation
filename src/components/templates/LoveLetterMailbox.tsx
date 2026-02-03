@@ -514,17 +514,16 @@ function RevealScreen({
       />
 
       <div className="max-w-[320px] sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto relative z-10">
-        {/* Card 1: Valentine Header — starts with a bit of top padding */}
-        <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-5 py-8 sm:py-12 pt-16 sm:pt-20">
+        {/* Spacer to require scroll for first card */}
+        <div className="h-[20vh]" />
+
+        {/* Card 1: Valentine Header */}
+        <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 sm:px-5 py-8 sm:py-12">
           <motion.div
-            initial={{ opacity: 0, y: -100, scale: 0.8, rotate: 8 }}
-            animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
-            transition={{
-              duration: 1.2,
-              delay: 0.3,
-              ease: [0.16, 1, 0.3, 1],
-              scale: { type: "spring", stiffness: 200, damping: 15 },
-            }}
+            variants={cardDramaticDrop}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
             className="rounded-2xl overflow-hidden w-full relative"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
