@@ -1,321 +1,277 @@
 "use client";
 
-import { Navbar } from "@/components/Navbar";
-import { Shield } from "lucide-react";
+import { LegalPageLayout } from "@/components/legal/LegalPageLayout";
+import Link from "next/link";
+
+const sections = [
+  { id: "collection", title: "Information We Collect" },
+  { id: "usage", title: "How We Use Your Information" },
+  { id: "legal-basis", title: "Legal Basis (GDPR)" },
+  { id: "sharing", title: "Information Sharing" },
+  { id: "security", title: "Data Security" },
+  { id: "retention", title: "Data Retention" },
+  { id: "rights", title: "Your Rights" },
+  { id: "cookies", title: "Cookies & Tracking" },
+  { id: "do-not-sell", title: "Do Not Sell" },
+  { id: "children", title: "Children's Privacy" },
+  { id: "international", title: "International Transfers" },
+  { id: "changes", title: "Policy Changes" },
+  { id: "contact", title: "Contact Us" },
+];
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-[#faf9f7]">
-      <Navbar />
+    <LegalPageLayout
+      title="Privacy Policy"
+      subtitle="Your Privacy Matters"
+      effectiveDate="February 1, 2025"
+      icon="privacy"
+      sections={sections}
+    >
+      <p className="section-intro">
+        Invitely is committed to protecting your privacy. This Privacy Policy explains how we
+        collect, use, disclose, and safeguard your personal information when you use our Service.
+      </p>
 
-      {/* Background texture */}
-      <div
-        className="fixed inset-0 opacity-40 pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-        }}
-      />
+      <h2 id="collection">1. Information We Collect</h2>
+      <p>We collect several types of information from and about users of our Service:</p>
 
-      <div className="relative z-10 max-w-3xl mx-auto px-4 pt-24 pb-16">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full mb-6">
-            <Shield className="w-4 h-4 text-emerald-500" />
-            <span
-              className="text-sm text-emerald-600"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-            >
-              Your Privacy Matters
-            </span>
-          </div>
-          <h1
-            className="text-4xl sm:text-5xl text-stone-900 mb-4"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
-            Privacy Policy
-          </h1>
-          <p
-            className="text-stone-500 text-lg"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-          >
-            Last updated: February 2025
-          </p>
-        </div>
+      <h3>1.1 Information You Provide Directly</h3>
+      <ul>
+        <li>
+          <strong>Account Information:</strong> Name, email address, and password when you create an
+          account
+        </li>
+        <li>
+          <strong>Profile Information:</strong> Profile picture and display name (if you sign in
+          with Google)
+        </li>
+        <li>
+          <strong>Invitation Content:</strong> Messages, recipient names, dates, locations, and
+          other details you include in your invitations
+        </li>
+        <li>
+          <strong>Payment Information:</strong> Billing details processed securely by our payment
+          processor (Stripe); we do not store your complete credit card number
+        </li>
+        <li>
+          <strong>Communications:</strong> Information you provide when you contact us for support
+        </li>
+      </ul>
 
-        {/* Content */}
-        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-stone-100 space-y-8">
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              1. Introduction
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              Invitely (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is committed to
-              protecting your privacy. This Privacy Policy explains how we collect, use, disclose,
-              and safeguard your information when you use our service.
-            </p>
-          </section>
+      <h3>1.2 Information Collected Automatically</h3>
+      <ul>
+        <li>
+          <strong>Usage Data:</strong> Pages visited, features used, time spent on the Service, and
+          interaction patterns
+        </li>
+        <li>
+          <strong>Device Information:</strong> Browser type, operating system, device type, and
+          screen resolution
+        </li>
+        <li>
+          <strong>Log Data:</strong> IP address, access times, referring URLs, and error logs
+        </li>
+        <li>
+          <strong>Invitation Analytics:</strong> Views, responses, and interaction data for your
+          invitations
+        </li>
+      </ul>
 
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              2. Information We Collect
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed mb-3"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              We collect information that you provide directly to us:
-            </p>
-            <ul
-              className="list-disc list-inside text-stone-600 space-y-2"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              <li>
-                <strong>Account Information:</strong> Email address, name, and password when you
-                create an account
-              </li>
-              <li>
-                <strong>Invitation Content:</strong> The messages, names, dates, and other details
-                you include in your invitations
-              </li>
-              <li>
-                <strong>Payment Information:</strong> Payment details are processed securely by
-                Stripe; we do not store your full credit card information
-              </li>
-              <li>
-                <strong>Usage Data:</strong> Information about how you interact with our Service,
-                including invitation views and responses
-              </li>
-            </ul>
-          </section>
+      <h2 id="usage">2. How We Use Your Information</h2>
+      <p>We use the information we collect for the following purposes:</p>
+      <ul>
+        <li>To provide, operate, and maintain the Service</li>
+        <li>To process transactions and send related information (receipts, confirmations)</li>
+        <li>To create and manage your account</li>
+        <li>To track invitation delivery, views, and responses for your dashboard</li>
+        <li>To send you technical notices, security alerts, and support messages</li>
+        <li>To respond to your comments, questions, and customer service requests</li>
+        <li>To analyze usage patterns and improve the Service</li>
+        <li>To detect, prevent, and address technical issues, fraud, or abuse</li>
+        <li>To comply with legal obligations</li>
+      </ul>
 
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              3. How We Use Your Information
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed mb-3"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              We use the information we collect to:
-            </p>
-            <ul
-              className="list-disc list-inside text-stone-600 space-y-2"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              <li>Provide, maintain, and improve our Service</li>
-              <li>Process transactions and send related information</li>
-              <li>Send you technical notices and support messages</li>
-              <li>Respond to your comments and questions</li>
-              <li>Track invitation delivery and responses for your dashboard</li>
-              <li>Detect and prevent fraudulent or unauthorized activity</li>
-            </ul>
-          </section>
+      <h2 id="legal-basis">3. Legal Basis for Processing (GDPR)</h2>
+      <p>
+        If you are located in the European Economic Area (EEA), we process your personal data based
+        on the following legal grounds:
+      </p>
+      <ul>
+        <li>
+          <strong>Contract Performance:</strong> Processing necessary to provide you with the
+          Service you requested
+        </li>
+        <li>
+          <strong>Legitimate Interests:</strong> Processing necessary for our legitimate business
+          interests, such as fraud prevention and service improvement
+        </li>
+        <li>
+          <strong>Consent:</strong> Where you have given us explicit consent to process your data
+          for specific purposes
+        </li>
+        <li>
+          <strong>Legal Obligation:</strong> Processing necessary to comply with applicable laws
+        </li>
+      </ul>
 
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              4. Information Sharing
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed mb-3"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              We do not sell your personal information. We may share your information only in the
-              following circumstances:
-            </p>
-            <ul
-              className="list-disc list-inside text-stone-600 space-y-2"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              <li>
-                <strong>Service Providers:</strong> With third-party vendors who assist us in
-                providing the Service (e.g., Stripe for payments, Supabase for data storage)
-              </li>
-              <li>
-                <strong>Legal Requirements:</strong> When required by law or to protect our rights
-              </li>
-              <li>
-                <strong>Business Transfers:</strong> In connection with a merger, acquisition, or
-                sale of assets
-              </li>
-              <li>
-                <strong>With Your Consent:</strong> When you explicitly agree to share information
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              5. Data Security
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              We implement appropriate technical and organizational measures to protect your
-              personal information against unauthorized access, alteration, disclosure, or
-              destruction. However, no method of transmission over the Internet is 100% secure,
-              and we cannot guarantee absolute security.
-            </p>
-          </section>
-
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              6. Data Retention
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              We retain your personal information for as long as your account is active or as
-              needed to provide you services. You may request deletion of your account and
-              associated data at any time by contacting us.
-            </p>
-          </section>
-
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              7. Your Rights
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed mb-3"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              Depending on your location, you may have the following rights:
-            </p>
-            <ul
-              className="list-disc list-inside text-stone-600 space-y-2"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              <li>Access the personal information we hold about you</li>
-              <li>Request correction of inaccurate data</li>
-              <li>Request deletion of your data</li>
-              <li>Object to or restrict processing of your data</li>
-              <li>Request portability of your data</li>
-              <li>Withdraw consent at any time</li>
-            </ul>
-            <p
-              className="text-stone-600 leading-relaxed mt-3"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              To exercise these rights, please contact us at the email below.
-            </p>
-          </section>
-
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              8. Cookies and Tracking
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              We use essential cookies to maintain your session and remember your preferences.
-              We may also use analytics tools to understand how users interact with our Service.
-              You can control cookie settings through your browser preferences.
-            </p>
-          </section>
-
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              9. Children&apos;s Privacy
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              Our Service is not intended for children under 13 years of age. We do not knowingly
-              collect personal information from children under 13. If we learn we have collected
-              such information, we will take steps to delete it promptly.
-            </p>
-          </section>
-
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              10. International Data Transfers
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              Your information may be transferred to and processed in countries other than your
-              own. We ensure appropriate safeguards are in place to protect your information in
-              accordance with this Privacy Policy.
-            </p>
-          </section>
-
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              11. Changes to This Policy
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              We may update this Privacy Policy from time to time. We will notify you of any
-              changes by posting the new Privacy Policy on this page and updating the &quot;Last
-              updated&quot; date. We encourage you to review this Policy periodically.
-            </p>
-          </section>
-
-          <section>
-            <h2
-              className="text-xl text-stone-800 mb-3"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              12. Contact Us
-            </h2>
-            <p
-              className="text-stone-600 leading-relaxed"
-              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px" }}
-            >
-              If you have any questions about this Privacy Policy or our data practices, please
-              contact us at{" "}
-              <a
-                href="mailto:privacy@invitely.app"
-                className="text-rose-500 hover:text-rose-600 underline"
-              >
-                privacy@invitely.app
-              </a>
-            </p>
-          </section>
-        </div>
+      <h2 id="sharing">4. Information Sharing and Disclosure</h2>
+      <div className="legal-notice">
+        <p style={{ marginBottom: 0 }}>
+          <strong>We do not sell your personal information.</strong>
+        </p>
       </div>
-    </main>
+      <p>We may share your information only in the following circumstances:</p>
+      <ul>
+        <li>
+          <strong>Service Providers:</strong> With third-party vendors who perform services on our
+          behalf:
+          <ul className="nested-list">
+            <li>Stripe, Inc. — Payment processing</li>
+            <li>Supabase, Inc. — Database and authentication services</li>
+            <li>Vercel, Inc. — Website hosting</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Legal Requirements:</strong> When required by law, subpoena, or other legal
+          process, or to protect our rights, privacy, safety, or property
+        </li>
+        <li>
+          <strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of
+          all or a portion of our assets
+        </li>
+        <li>
+          <strong>With Your Consent:</strong> When you explicitly authorize us to share your
+          information
+        </li>
+      </ul>
+
+      <h2 id="security">5. Data Security</h2>
+      <p>
+        We implement appropriate technical and organizational security measures to protect your
+        personal information against unauthorized access, alteration, disclosure, or destruction.
+        These measures include encryption in transit (TLS/SSL), secure data storage, and access
+        controls. However, no method of transmission over the Internet or electronic storage is 100%
+        secure, and we cannot guarantee absolute security.
+      </p>
+
+      <h2 id="retention">6. Data Retention</h2>
+      <p>
+        We retain your personal information for as long as your account is active or as needed to
+        provide you services. We will also retain and use your information as necessary to comply
+        with legal obligations, resolve disputes, and enforce our agreements. You may request
+        deletion of your account and associated data at any time by contacting us. Upon deletion, we
+        will remove your personal data within 30 days, except where retention is required by law.
+      </p>
+
+      <h2 id="rights">7. Your Rights</h2>
+      <p>
+        Depending on your location, you may have the following rights regarding your personal
+        information:
+      </p>
+
+      <h3>7.1 Rights for All Users</h3>
+      <ul>
+        <li>Access the personal information we hold about you</li>
+        <li>Request correction of inaccurate or incomplete data</li>
+        <li>Request deletion of your data</li>
+        <li>Withdraw consent at any time (where processing is based on consent)</li>
+      </ul>
+
+      <h3>7.2 Additional Rights for EEA Residents (GDPR)</h3>
+      <ul>
+        <li>Right to data portability (receive your data in a structured format)</li>
+        <li>Right to object to processing based on legitimate interests</li>
+        <li>Right to restrict processing in certain circumstances</li>
+        <li>Right to lodge a complaint with a supervisory authority</li>
+      </ul>
+
+      <h3>7.3 Additional Rights for California Residents (CCPA/CPRA)</h3>
+      <ul>
+        <li>Right to know what personal information is collected, used, shared, or sold</li>
+        <li>Right to delete personal information held by us</li>
+        <li>Right to opt-out of the sale of personal information (we do not sell your data)</li>
+        <li>Right to non-discrimination for exercising your privacy rights</li>
+      </ul>
+
+      <p>
+        To exercise any of these rights, please contact us at{" "}
+        <a href="mailto:privacy@invitely.app">privacy@invitely.app</a>. We will respond to your
+        request within 30 days.
+      </p>
+
+      <h2 id="cookies">8. Cookies and Tracking Technologies</h2>
+      <p>
+        We use cookies and similar tracking technologies to collect and track information about your
+        use of the Service. Types of cookies we use:
+      </p>
+      <ul>
+        <li>
+          <strong>Essential Cookies:</strong> Necessary for the Service to function (e.g.,
+          authentication, security)
+        </li>
+        <li>
+          <strong>Preference Cookies:</strong> Remember your settings and preferences
+        </li>
+        <li>
+          <strong>Analytics Cookies:</strong> Help us understand how users interact with the Service
+        </li>
+      </ul>
+      <p>
+        You can control cookie settings through your browser preferences. Note that disabling
+        certain cookies may affect the functionality of the Service.
+      </p>
+
+      <h2 id="do-not-sell">9. Do Not Sell My Personal Information</h2>
+      <p>
+        We do not sell, rent, or trade your personal information to third parties for their
+        marketing purposes. We do not engage in the &quot;sale&quot; of personal information as
+        defined by the California Consumer Privacy Act (CCPA).
+      </p>
+
+      <h2 id="children">10. Children&apos;s Privacy</h2>
+      <p>
+        Our Service is not intended for children under the age of 13. We do not knowingly collect
+        personal information from children under 13. If we learn that we have collected personal
+        information from a child under 13, we will take steps to delete such information promptly.
+        If you believe we have collected information from a child under 13, please contact us
+        immediately.
+      </p>
+
+      <h2 id="international">11. International Data Transfers</h2>
+      <p>
+        Your information may be transferred to and processed in countries other than your country of
+        residence, including the United States, where data protection laws may differ. When we
+        transfer your data internationally, we ensure appropriate safeguards are in place, such as
+        Standard Contractual Clauses approved by the European Commission, to protect your
+        information in accordance with this Privacy Policy.
+      </p>
+
+      <h2 id="changes">12. Changes to This Privacy Policy</h2>
+      <p>
+        We may update this Privacy Policy from time to time. We will notify you of any changes by
+        posting the new Privacy Policy on this page and updating the &quot;Effective Date&quot;
+        above. For material changes, we will provide additional notice, such as via email. We
+        encourage you to review this Privacy Policy periodically for any changes.
+      </p>
+
+      <h2 id="contact">13. Contact Us</h2>
+      <p>
+        If you have any questions about this Privacy Policy, your personal data, or wish to exercise
+        your privacy rights, please contact us:
+      </p>
+      <div className="contact-box">
+        <p style={{ marginBottom: "0.5rem" }}>
+          <strong>Invitely Privacy Team</strong>
+        </p>
+        <p style={{ marginBottom: 0 }}>
+          Email: <a href="mailto:privacy@invitely.app">privacy@invitely.app</a>
+        </p>
+      </div>
+      <p>
+        For information about our terms of use, please see our{" "}
+        <Link href="/terms">Terms of Service</Link>.
+      </p>
+    </LegalPageLayout>
   );
 }
