@@ -61,9 +61,8 @@ const BACKGROUNDS = {
 
 interface ScreenData {
   background: string;
-  title?: string;
   dialogue: string[];
-  choices?: { text: string; next: GameScreen; variant?: "primary" | "secondary" | "danger" | "success" }[];
+  choices?: { text: string; next: GameScreen; variant?: "primary" | "secondary" | "yes" | "no" | "dark" | "sunny" }[];
   continueButton?: { text: string; next: GameScreen };
   mood?: "neutral" | "magical" | "danger" | "happy" | "sad";
 }
@@ -72,122 +71,121 @@ const getScreenData = (screen: GameScreen, senderName: string): ScreenData => {
   const screens: Record<GameScreen, ScreenData> = {
     start: {
       background: BACKGROUNDS.start,
-      title: "The Enchanted Forest",
       dialogue: [
+        "Welcome, brave adventurer!",
         `${senderName} has sent you on a quest...`,
-        "Deep within the Enchanted Forest lies something special.",
-        "Are you brave enough to find it?",
+        "A quest to find something special in the Enchanted Forest!",
+        "Are you ready to begin?",
       ],
-      choices: [{ text: "Begin the Journey", next: "fork", variant: "primary" }],
+      choices: [{ text: "Begin Adventure!", next: "fork", variant: "primary" }],
       mood: "magical",
     },
     fork: {
       background: BACKGROUNDS.fork,
-      title: "A Fork in the Road",
       dialogue: [
-        "Two paths stretch before you...",
-        "One shrouded in shadow, the other bathed in golden light.",
+        "You come to a fork in the road...",
+        "The left path looks dark and mysterious.",
+        "The right path is sunny and inviting.",
+        "Which way will you go?",
       ],
       choices: [
-        { text: "Into the Shadows", next: "dark_path", variant: "secondary" },
-        { text: "Follow the Light", next: "sunny_path", variant: "primary" },
+        { text: "Take the Dark Path", next: "dark_path", variant: "dark" },
+        { text: "Take the Sunny Path", next: "sunny_path", variant: "sunny" },
       ],
       mood: "neutral",
     },
     dark_path: {
       background: BACKGROUNDS.dark_path,
-      title: "Dead End",
       dialogue: [
-        "The shadows close in around you...",
-        "This path leads nowhere but back.",
+        "Oh no! The path leads to a dead end!",
+        "Spooky shadows surround you...",
       ],
-      continueButton: { text: "Turn Back", next: "fork" },
+      continueButton: { text: "Run Back!", next: "fork" },
       mood: "danger",
     },
     sunny_path: {
       background: BACKGROUNDS.sunny_path,
-      title: "The Sunny Path",
       dialogue: [
-        "Warmth embraces you as you walk.",
-        "Birds sing overhead, flowers bloom at your feet.",
+        "The sunny path is beautiful!",
+        "Birds are singing, flowers are blooming...",
       ],
-      continueButton: { text: "Continue Forward", next: "river" },
+      continueButton: { text: "Keep Going!", next: "river" },
       mood: "happy",
     },
     river: {
       background: BACKGROUNDS.bridge,
-      title: "The Rushing River",
       dialogue: [
-        "A mighty river blocks your path.",
-        "An old wooden bridge sways in the wind...",
+        "You arrive at a rushing river!",
+        "The water looks deep and fast...",
+        "There's a rickety bridge ahead. Do you trust it?",
       ],
       choices: [
-        { text: "Swim Across", next: "drowning", variant: "danger" },
-        { text: "Trust the Bridge", next: "bridge", variant: "primary" },
+        { text: "Try to Swim", next: "drowning", variant: "secondary" },
+        { text: "Cross the Bridge", next: "bridge", variant: "primary" },
       ],
       mood: "neutral",
     },
     drowning: {
       background: BACKGROUNDS.drowning,
-      title: "Too Strong!",
       dialogue: [
-        "The current pulls you under!",
-        "You barely make it back to shore...",
+        "SPLASH! The current is too strong!",
+        "You're swept downstream...",
+        "Luckily, you grab onto a log and float back to shore!",
       ],
       continueButton: { text: "Try Again", next: "river" },
       mood: "danger",
     },
     bridge: {
       background: BACKGROUNDS.bridge,
-      title: "Crossing Over",
       dialogue: [
-        "Each step creaks beneath you...",
-        "But the bridge holds true.",
+        "You carefully cross the old bridge...",
+        "CREAK... CREAK...",
+        "Made it! The bridge holds!",
       ],
-      continueButton: { text: "Onward", next: "bear_encounter" },
+      continueButton: { text: "Continue", next: "bear_encounter" },
       mood: "neutral",
     },
     bear_encounter: {
       background: BACKGROUNDS.bear_encounter,
-      title: "A Guardian Appears",
       dialogue: [
-        "A great bear blocks the forest path!",
-        "Its eyes study you carefully...",
-        "You notice wild berries growing nearby.",
+        "ROARRR!!!",
+        "A hungry bear blocks your path!",
+        "It looks angry... but also hungry.",
+        "You notice some berries nearby...",
       ],
       choices: [
-        { text: "Run Away!", next: "bear_attack", variant: "danger" },
-        { text: "Offer the Berries", next: "bear_happy", variant: "success" },
+        { text: "Run Away!", next: "bear_attack", variant: "no" },
+        { text: "Offer Berries", next: "bear_happy", variant: "yes" },
       ],
       mood: "danger",
     },
     bear_attack: {
       background: BACKGROUNDS.bear_attack,
-      title: "Wrong Move!",
       dialogue: [
-        "The bear gives chase!",
-        "It just wanted to play... but you're too scared to notice.",
+        "The bear chases you!",
+        "You trip and fall...",
+        "But wait! The bear just wanted to play tag!",
       ],
       continueButton: { text: "Try Again", next: "bear_encounter" },
       mood: "danger",
     },
     bear_happy: {
       background: BACKGROUNDS.bear_happy,
-      title: "A New Friend",
       dialogue: [
-        "The bear accepts your gift with gentle paws.",
-        "It steps aside, revealing a hidden path...",
+        "You offer the berries to the bear...",
+        "NOM NOM NOM!",
+        "The bear is happy and lets you pass!",
       ],
-      continueButton: { text: "Enter the Clearing", next: "magic_clearing" },
+      continueButton: { text: "Continue", next: "magic_clearing" },
       mood: "happy",
     },
     magic_clearing: {
       background: BACKGROUNDS.magic_clearing,
-      title: "The Magic Clearing",
       dialogue: [
-        "Sparkles dance through the air...",
-        "In the center, a glowing envelope awaits.",
-        "It has your name written upon it.",
+        "You enter a magical clearing...",
+        "Sparkles float through the air!",
+        "In the center, you see a glowing letter...",
+        "It has your name on it!",
       ],
       choices: [{ text: "Open the Letter", next: "invitation", variant: "primary" }],
       mood: "magical",
@@ -200,8 +198,10 @@ const getScreenData = (screen: GameScreen, senderName: string): ScreenData => {
     happy_ending: {
       background: BACKGROUNDS.happy_ending,
       dialogue: [
-        "The forest erupts in celebration!",
-        "Fireworks paint the sky with color.",
+        "YAYYY!!!",
+        "Fireworks light up the sky!",
+        "The forest creatures celebrate with you!",
+        "This is the best adventure ever!",
       ],
       mood: "happy",
     },
@@ -218,13 +218,13 @@ const getScreenData = (screen: GameScreen, senderName: string): ScreenData => {
 // Guilt trip messages
 const GUILT_MESSAGES = [
   "Are you sure...?",
-  "But... I planned this whole adventure for you...",
+  "But... but I planned this whole adventure for you...",
   "The forest creatures will be so sad...",
   "Even the bear is crying now...",
   "Please? Pretty please?",
   "I'll give you extra berries!",
   "The happy ending is SO much better...",
-  "You're breaking my heart...",
+  "You're breaking my pixelated heart...",
   "One more chance?",
   "I believe in us!",
 ];
@@ -287,7 +287,7 @@ function FloatingParticles({ mood }: { mood?: string }) {
 function TypewriterText({
   text,
   onComplete,
-  speed = 35,
+  speed = 40,
 }: {
   text: string;
   onComplete?: () => void;
@@ -322,20 +322,19 @@ function TypewriterText({
         <motion.span
           animate={{ opacity: [1, 0] }}
           transition={{ duration: 0.5, repeat: Infinity }}
-          className="inline-block w-0.5 h-5 bg-white/80 ml-1 align-middle"
-        />
+        >
+          |
+        </motion.span>
       )}
     </span>
   );
 }
 
-// Dialogue display with elegant styling
-function DialogueOverlay({
-  title,
+// Original pixel-art dialogue box
+function DialogueBox({
   messages,
   onComplete,
 }: {
-  title?: string;
   messages: string[];
   onComplete?: () => void;
 }) {
@@ -351,7 +350,7 @@ function DialogueOverlay({
         } else {
           onComplete?.();
         }
-      }, 1200);
+      }, 800);
       return () => clearTimeout(timer);
     }
   }, [isTyping, currentIndex, messages.length, onComplete]);
@@ -364,133 +363,95 @@ function DialogueOverlay({
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="absolute inset-0 flex flex-col items-center justify-end pb-8 px-4 cursor-pointer"
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      className="absolute bottom-4 left-4 right-4 cursor-pointer"
       onClick={handleClick}
     >
-      {/* Gradient overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      <div
+        className="relative p-4 rounded-lg bg-white/95 border-4 border-amber-800"
+        style={{
+          boxShadow: "4px 4px 0 #5c4033",
+          imageRendering: "pixelated",
+        }}
+      >
+        {/* Corner decorations */}
+        <div className="absolute -top-2 -left-2 w-4 h-4 bg-amber-600 rounded-sm" style={{ boxShadow: "2px 2px 0 #5c4033" }} />
+        <div className="absolute -top-2 -right-2 w-4 h-4 bg-amber-600 rounded-sm" style={{ boxShadow: "2px 2px 0 #5c4033" }} />
+        <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-amber-600 rounded-sm" style={{ boxShadow: "2px 2px 0 #5c4033" }} />
+        <div className="absolute -bottom-2 -right-2 w-4 h-4 bg-amber-600 rounded-sm" style={{ boxShadow: "2px 2px 0 #5c4033" }} />
 
-      <div className="relative z-10 max-w-lg w-full text-center">
-        {title && (
-          <motion.h2
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="text-3xl md:text-4xl font-bold text-white mb-4"
-            style={{
-              fontFamily: "'Cinzel', serif",
-              textShadow: "0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(168, 85, 247, 0.3)",
-            }}
-          >
-            {title}
-          </motion.h2>
-        )}
-
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
+        <p
+          className="text-lg md:text-xl leading-relaxed text-amber-900"
+          style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "14px", lineHeight: "1.8" }}
         >
-          <p
-            className="text-lg md:text-xl text-white/90 leading-relaxed"
-            style={{
-              fontFamily: "'Crimson Text', Georgia, serif",
-              textShadow: "0 1px 3px rgba(0,0,0,0.5)",
-            }}
-          >
-            {isTyping ? (
-              <TypewriterText
-                text={messages[currentIndex]}
-                onComplete={() => setIsTyping(false)}
-              />
-            ) : (
-              messages[currentIndex]
-            )}
-          </p>
+          {isTyping ? (
+            <TypewriterText
+              text={messages[currentIndex]}
+              onComplete={() => setIsTyping(false)}
+            />
+          ) : (
+            messages[currentIndex]
+          )}
+        </p>
 
-          {/* Progress dots */}
-          <div className="flex justify-center gap-2 mt-4">
-            {messages.map((_, i) => (
-              <div
-                key={i}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  i === currentIndex
-                    ? "bg-white scale-125"
-                    : i < currentIndex
-                    ? "bg-white/60"
-                    : "bg-white/20"
-                }`}
-              />
-            ))}
-          </div>
-        </motion.div>
+        {/* Continue indicator */}
+        {!isTyping && currentIndex < messages.length - 1 && (
+          <motion.div
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 0.8, repeat: Infinity }}
+            className="absolute bottom-2 right-4 text-amber-600"
+          >
+            ▼
+          </motion.div>
+        )}
       </div>
     </motion.div>
   );
 }
 
-// Choice buttons
-function ChoiceButtons({
-  choices,
-  onChoice,
+// Original pixel-art choice button
+function ChoiceButton({
+  text,
+  onClick,
+  variant = "primary",
 }: {
-  choices: { text: string; next: GameScreen; variant?: string }[];
-  onChoice: (next: GameScreen) => void;
+  text: string;
+  onClick: () => void;
+  variant?: "primary" | "secondary" | "yes" | "no" | "dark" | "sunny";
 }) {
-  const getVariantStyles = (variant?: string) => {
-    switch (variant) {
-      case "success":
-        return "from-emerald-500/90 to-green-600/90 border-emerald-400/50 hover:from-emerald-400 hover:to-green-500";
-      case "danger":
-        return "from-red-500/90 to-rose-600/90 border-red-400/50 hover:from-red-400 hover:to-rose-500";
-      case "secondary":
-        return "from-slate-500/90 to-slate-600/90 border-slate-400/50 hover:from-slate-400 hover:to-slate-500";
-      default:
-        return "from-violet-500/90 to-purple-600/90 border-violet-400/50 hover:from-violet-400 hover:to-purple-500";
-    }
+  const colors = {
+    primary: "from-amber-400 to-amber-500 border-amber-700 hover:from-amber-300",
+    secondary: "from-gray-400 to-gray-500 border-gray-700 hover:from-gray-300",
+    yes: "from-green-400 to-green-500 border-green-700 hover:from-green-300",
+    no: "from-red-400 to-red-500 border-red-700 hover:from-red-300",
+    dark: "from-gray-600 to-gray-700 border-gray-900 hover:from-gray-500",
+    sunny: "from-yellow-400 to-amber-400 border-amber-600 hover:from-yellow-300",
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="absolute inset-0 flex items-center justify-center"
+    <motion.button
+      onClick={onClick}
+      whileHover={{ scale: 1.05, y: -2 }}
+      whileTap={{ scale: 0.95 }}
+      className={`
+        px-6 py-3 bg-gradient-to-b ${colors[variant]}
+        border-4 rounded-lg text-white font-bold
+        transition-all
+      `}
+      style={{
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: "12px",
+        boxShadow: "4px 4px 0 rgba(0,0,0,0.3)",
+        textShadow: "2px 2px 0 rgba(0,0,0,0.3)",
+      }}
     >
-      <div className="absolute inset-0 bg-black/30" />
-      <div className="relative z-10 flex flex-col sm:flex-row gap-4 px-4">
-        {choices.map((choice, index) => (
-          <motion.button
-            key={index}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => onChoice(choice.next)}
-            className={`
-              px-8 py-4 rounded-xl
-              bg-gradient-to-br ${getVariantStyles(choice.variant)}
-              border backdrop-blur-sm
-              text-white font-semibold text-lg
-              shadow-lg shadow-black/30
-              transition-all duration-200
-            `}
-            style={{
-              fontFamily: "'Cinzel', serif",
-              textShadow: "0 1px 2px rgba(0,0,0,0.3)",
-            }}
-          >
-            {choice.text}
-          </motion.button>
-        ))}
-      </div>
-    </motion.div>
+      {text}
+    </motion.button>
   );
 }
 
-// Invitation reveal card
+// Original pixel-art invitation reveal
 function InvitationReveal({
   senderName,
   message,
@@ -512,120 +473,85 @@ function InvitationReveal({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="absolute inset-0 flex items-center justify-center p-4"
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      className="absolute inset-4 md:inset-8 flex items-center justify-center z-10"
     >
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0, rotateX: -15 }}
-        animate={{ scale: 1, opacity: 1, rotateX: 0 }}
-        transition={{ type: "spring", damping: 20 }}
-        className="relative z-10 max-w-md w-full"
+      <div
+        className="bg-gradient-to-br from-pink-100 to-rose-200 p-6 rounded-xl max-w-md w-full"
+        style={{
+          border: "4px solid #ec4899",
+          boxShadow: "8px 8px 0 rgba(236, 72, 153, 0.3), 0 0 30px rgba(236, 72, 153, 0.4)",
+        }}
       >
-        <div
-          className="bg-gradient-to-br from-violet-900/90 to-purple-950/90 p-8 rounded-2xl border border-violet-400/30 backdrop-blur-md"
+        {/* Letter emoji */}
+        <motion.div
+          animate={{ rotate: [-5, 5, -5], y: [0, -5, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="text-center mb-6"
+        >
+          <span className="text-7xl">💌</span>
+        </motion.div>
+
+        <h2
+          className="text-xl md:text-2xl text-center text-pink-700 mb-4"
           style={{
-            boxShadow: "0 0 60px rgba(139, 92, 246, 0.3), 0 25px 50px rgba(0,0,0,0.5)",
+            fontFamily: "'Press Start 2P', monospace",
+            textShadow: "2px 2px 0 rgba(236, 72, 153, 0.3)",
           }}
         >
-          {/* Decorative sparkles */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute -top-4 -right-4 text-4xl"
-          >
-            ✨
-          </motion.div>
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="absolute -bottom-4 -left-4 text-3xl"
-          >
-            ✨
-          </motion.div>
+          {message}
+        </h2>
 
-          {/* Envelope icon */}
-          <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="text-center mb-6"
-          >
-            <span className="text-6xl">💌</span>
-          </motion.div>
+        <p
+          className="text-center text-pink-600 mb-4"
+          style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "10px",
+            lineHeight: "1.8",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
+          }}
+        >
+          {personalMessage}
+        </p>
 
-          <h2
-            className="text-2xl md:text-3xl text-center text-white mb-4"
+        {(date || time || location) && (
+          <div
+            className="bg-white/50 rounded-lg p-3 mb-4"
             style={{
-              fontFamily: "'Cinzel', serif",
-              textShadow: "0 0 20px rgba(168, 85, 247, 0.5)",
-            }}
-          >
-            {message}
-          </h2>
-
-          <p
-            className="text-center text-violet-200/90 mb-6 leading-relaxed"
-            style={{
-              fontFamily: "'Crimson Text', Georgia, serif",
-              fontSize: "1.1rem",
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "10px",
               wordBreak: "break-word",
               overflowWrap: "break-word",
             }}
           >
-            {personalMessage}
-          </p>
-
-          {(date || time || location) && (
-            <div
-              className="bg-white/10 rounded-xl p-4 mb-6 space-y-2"
-              style={{
-                fontFamily: "'Crimson Text', Georgia, serif",
-                wordBreak: "break-word",
-                overflowWrap: "break-word",
-              }}
-            >
-              {date && <p className="text-violet-200">📅 {date}</p>}
-              {time && <p className="text-violet-200">🕐 {time}</p>}
-              {location && <p className="text-violet-200">📍 {location}</p>}
-            </div>
-          )}
-
-          <p
-            className="text-center text-violet-300/80 mb-8 italic"
-            style={{ fontFamily: "'Crimson Text', Georgia, serif" }}
-          >
-            — {senderName}
-          </p>
-
-          <div className="flex justify-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onYes}
-              className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl text-white font-semibold text-lg shadow-lg shadow-emerald-500/30"
-              style={{ fontFamily: "'Cinzel', serif" }}
-            >
-              Yes! ✨
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onNo}
-              className="px-8 py-3 bg-gradient-to-r from-slate-500 to-slate-600 rounded-xl text-white font-semibold text-lg shadow-lg shadow-slate-500/30"
-              style={{ fontFamily: "'Cinzel', serif" }}
-            >
-              No...
-            </motion.button>
+            {date && <p className="text-pink-700">📅 {date}</p>}
+            {time && <p className="text-pink-700">⏰ {time}</p>}
+            {location && <p className="text-pink-700">📍 {location}</p>}
           </div>
+        )}
+
+        <p
+          className="text-center text-pink-500 mb-6"
+          style={{
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "10px",
+          }}
+        >
+          - {senderName}
+        </p>
+
+        <div className="flex justify-center gap-4">
+          <ChoiceButton text="YES!" onClick={onYes} variant="yes" />
+          <ChoiceButton text="No..." onClick={onNo} variant="no" />
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
 
-// Guilt trip screen
+// Guilt trip screen with pixel styling
 function GuiltTripScreen({
   guiltIndex,
   onYes,
@@ -636,7 +562,7 @@ function GuiltTripScreen({
   onNoAgain: () => void;
 }) {
   const message = GUILT_MESSAGES[guiltIndex % GUILT_MESSAGES.length];
-  const yesScale = Math.pow(1.5, guiltIndex);
+  const yesScale = Math.pow(1.6, guiltIndex);
   const isOverwhelming = guiltIndex >= 5;
 
   if (isOverwhelming) {
@@ -644,20 +570,27 @@ function GuiltTripScreen({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="absolute inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-emerald-500 to-green-600"
+        className="absolute inset-0 z-50 flex items-center justify-center"
       >
         <motion.button
           onClick={onYes}
-          animate={{ scale: [1, 1.05, 1] }}
+          initial={{ scale: yesScale * 0.8 }}
+          animate={{ scale: [yesScale, yesScale * 1.05, yesScale] }}
           transition={{ duration: 1, repeat: Infinity }}
-          className="text-white font-bold cursor-pointer"
+          className="bg-gradient-to-b from-green-400 to-green-500 border-8 border-green-700 rounded-3xl text-white font-bold cursor-pointer"
           style={{
-            fontFamily: "'Cinzel', serif",
-            fontSize: "min(20vw, 120px)",
-            textShadow: "0 4px 20px rgba(0,0,0,0.3)",
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: `${Math.min(120, 20 * yesScale)}px`,
+            padding: `${Math.min(200, 30 * yesScale)}px ${Math.min(400, 60 * yesScale)}px`,
+            boxShadow: "8px 8px 0 rgba(0,0,0,0.4)",
+            textShadow: "4px 4px 0 rgba(0,0,0,0.3)",
+            minWidth: "100vw",
+            minHeight: "100vh",
           }}
+          whileHover={{ filter: "brightness(1.1)" }}
+          whileTap={{ scale: yesScale * 0.95 }}
         >
-          YES! ✨
+          YES!
         </motion.button>
       </motion.div>
     );
@@ -667,68 +600,87 @@ function GuiltTripScreen({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="absolute inset-0 flex items-center justify-center p-4"
+      className="absolute inset-4 md:inset-8 flex items-center justify-center z-10 overflow-visible"
     >
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-
-      <div className="relative z-10 max-w-md w-full text-center">
+      <div
+        className="bg-gradient-to-br from-gray-100 to-gray-200 p-6 rounded-xl max-w-md w-full text-center relative overflow-visible"
+        style={{
+          border: "4px solid #6b7280",
+          boxShadow: "8px 8px 0 rgba(0, 0, 0, 0.2)",
+        }}
+      >
+        {/* Sad emoji */}
         <motion.div
           animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="text-6xl mb-6"
+          transition={{ duration: 1, repeat: Infinity }}
+          className="mb-4"
         >
-          🥺
+          <span className="text-6xl">😢</span>
         </motion.div>
 
         <motion.p
           key={guiltIndex}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-2xl text-white mb-8"
+          className="text-gray-700 mb-6"
           style={{
-            fontFamily: "'Crimson Text', Georgia, serif",
-            textShadow: "0 2px 10px rgba(0,0,0,0.5)",
+            fontFamily: "'Press Start 2P', monospace",
+            fontSize: "12px",
+            lineHeight: "1.8",
           }}
         >
           {message}
         </motion.p>
 
-        <div className="flex justify-center items-center gap-4">
-          <motion.button
+        <div className="flex justify-center gap-4 items-center overflow-visible">
+          <motion.div
+            key={`yes-${guiltIndex}`}
+            initial={{ scale: yesScale * 0.8 }}
             animate={{ scale: [yesScale, yesScale * 1.05, yesScale] }}
             transition={{ duration: 1, repeat: Infinity }}
-            onClick={onYes}
-            className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl text-white font-semibold shadow-lg shadow-emerald-500/30"
-            style={{
-              fontFamily: "'Cinzel', serif",
-              fontSize: `${Math.min(24, 16 + guiltIndex * 2)}px`,
-            }}
+            className="z-20"
+            style={{ transformOrigin: "center center" }}
           >
-            Okay, YES! ✨
-          </motion.button>
+            <motion.button
+              onClick={onYes}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-gradient-to-b from-green-400 to-green-500 border-4 border-green-700 rounded-lg text-white font-bold"
+              style={{
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: `${Math.min(24, 12 + guiltIndex * 2)}px`,
+                boxShadow: "4px 4px 0 rgba(0,0,0,0.3)",
+                textShadow: "2px 2px 0 rgba(0,0,0,0.3)",
+                padding: `${12 + guiltIndex * 4}px ${24 + guiltIndex * 8}px`,
+              }}
+            >
+              OK, YES!
+            </motion.button>
+          </motion.div>
 
-          <motion.button
+          <motion.div
             animate={{
               opacity: Math.max(0.3, 1 - guiltIndex * 0.15),
-              scale: Math.max(0.6, 1 - guiltIndex * 0.08),
+              scale: Math.max(0.5, 1 - guiltIndex * 0.1),
             }}
-            onClick={onNoAgain}
-            className="px-6 py-3 bg-gradient-to-r from-slate-500 to-slate-600 rounded-xl text-white font-semibold shadow-lg"
-            style={{ fontFamily: "'Cinzel', serif" }}
           >
-            Still no...
-          </motion.button>
+            <ChoiceButton text="Still no..." onClick={onNoAgain} variant="no" />
+          </motion.div>
         </div>
 
         {guiltIndex >= 2 && (
           <motion.p
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.6 }}
-            className="mt-6 text-white/60 text-sm italic"
+            animate={{ opacity: 1 }}
+            className="mt-4 text-gray-500"
+            style={{
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "8px",
+            }}
           >
             {guiltIndex >= 4
-              ? "(The YES button grows stronger...)"
-              : "(Something is happening...)"}
+              ? "(THE YES BUTTON IS INEVITABLE...)"
+              : "(the YES button is getting bigger...)"}
           </motion.p>
         )}
       </div>
@@ -742,39 +694,35 @@ function HappyEnding() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="absolute inset-0 flex flex-col items-center justify-center z-10"
+      className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none"
     >
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-
       <motion.div
-        animate={{ scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="text-8xl mb-6 relative z-10"
+        animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+        transition={{ duration: 1, repeat: Infinity }}
+        className="text-6xl md:text-8xl mb-4"
       >
         🎉
       </motion.div>
-
-      <motion.h2
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", delay: 0.3 }}
-        className="text-4xl md:text-5xl text-white text-center px-4 relative z-10"
+      <h2
+        className="text-2xl md:text-4xl text-white text-center px-4"
         style={{
-          fontFamily: "'Cinzel', serif",
-          textShadow: "0 0 40px rgba(168, 85, 247, 0.8), 0 4px 20px rgba(0,0,0,0.5)",
+          fontFamily: "'Press Start 2P', monospace",
+          textShadow: "4px 4px 0 #ec4899, -2px -2px 0 #fbbf24",
         }}
       >
-        Adventure Complete!
-      </motion.h2>
-
+        ADVENTURE COMPLETE!
+      </h2>
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
-        className="text-xl text-white/80 mt-4 relative z-10"
-        style={{ fontFamily: "'Crimson Text', Georgia, serif" }}
+        className="text-white mt-4"
+        style={{
+          fontFamily: "'Press Start 2P', monospace",
+          fontSize: "10px",
+        }}
       >
-        Thank you for saying yes 💕
+        Thank you for saying YES! 💕
       </motion.p>
     </motion.div>
   );
@@ -812,14 +760,15 @@ export function ForestAdventure({
       saveResponse(slug, "Yes");
     }
 
-    // Magical celebration
-    const colors = ["#a855f7", "#22c55e", "#fbbf24", "#ec4899", "#3b82f6"];
+    // Magical forest celebration
+    const forestColors = ["#22c55e", "#86efac", "#fbbf24", "#f472b6", "#a855f7"];
 
     confetti({
       particleCount: 100,
       spread: 120,
       origin: { y: 0.5 },
-      colors,
+      colors: forestColors,
+      shapes: ["circle", "square"],
       scalar: 1.5,
     });
 
@@ -829,6 +778,8 @@ export function ForestAdventure({
         spread: 60,
         origin: { y: 0.3, x: 0.2 },
         colors: ["#fbbf24", "#fef08a"],
+        shapes: ["circle"],
+        scalar: 1,
         gravity: 0.5,
       });
       confetti({
@@ -836,6 +787,8 @@ export function ForestAdventure({
         spread: 60,
         origin: { y: 0.3, x: 0.8 },
         colors: ["#fbbf24", "#fef08a"],
+        shapes: ["circle"],
+        scalar: 1,
         gravity: 0.5,
       });
     }, 300);
@@ -864,9 +817,9 @@ export function ForestAdventure({
 
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-black">
-      {/* Load fonts */}
+      {/* Load pixel font */}
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
       `}</style>
 
       {/* Background with transition */}
@@ -898,14 +851,13 @@ export function ForestAdventure({
         }}
       />
 
-      {/* Dialogue for normal screens */}
+      {/* Dialogue box for normal screens */}
       {screenData.dialogue.length > 0 &&
         currentScreen !== "invitation" &&
         currentScreen !== "guilt_trip" &&
         currentScreen !== "happy_ending" && (
-          <DialogueOverlay
+          <DialogueBox
             key={currentScreen}
-            title={screenData.title}
             messages={screenData.dialogue}
             onComplete={() => setDialogueComplete(true)}
           />
@@ -913,15 +865,37 @@ export function ForestAdventure({
 
       {/* Choice buttons */}
       {dialogueComplete && screenData.choices && (
-        <ChoiceButtons choices={screenData.choices} onChoice={handleChoice} />
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <div className="flex flex-wrap justify-center gap-3 px-4">
+            {screenData.choices.map((choice, index) => (
+              <ChoiceButton
+                key={index}
+                text={choice.text}
+                onClick={() => handleChoice(choice.next)}
+                variant={choice.variant || (index === 0 ? "primary" : "secondary")}
+              />
+            ))}
+          </div>
+        </motion.div>
       )}
 
       {/* Continue button */}
       {dialogueComplete && screenData.continueButton && !screenData.choices && (
-        <ChoiceButtons
-          choices={[{ ...screenData.continueButton, variant: "primary" }]}
-          onChoice={handleChoice}
-        />
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <ChoiceButton
+            text={screenData.continueButton.text}
+            onClick={() => handleChoice(screenData.continueButton!.next)}
+            variant="primary"
+          />
+        </motion.div>
       )}
 
       {/* Invitation screen */}
@@ -954,10 +928,11 @@ export function ForestAdventure({
       {currentScreen !== "start" && (
         <motion.button
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
+          animate={{ opacity: 0.7 }}
           whileHover={{ opacity: 1, scale: 1.1 }}
           onClick={restartGame}
-          className="absolute top-4 left-4 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white z-30 border border-white/20"
+          className="absolute top-4 left-4 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white z-30"
+          style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "10px" }}
         >
           ↺
         </motion.button>
