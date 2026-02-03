@@ -6,7 +6,6 @@ import {
   InteractionDefinition,
   InteractionType,
   YesNoConfig,
-  ScratchRevealConfig,
   SpinWheelConfig,
   ShakeRevealConfig,
   SwipeCardsConfig,
@@ -22,11 +21,6 @@ const DEFAULT_YES_NO_CONFIG: YesNoConfig = {
   yesButtonText: "Yes! 💕",
   noButtonText: "No",
   successMessage: "Yay! You made me so happy! 🎉💕",
-};
-
-const DEFAULT_SCRATCH_REVEAL_CONFIG: ScratchRevealConfig = {
-  instructionText: "Scratch to reveal your surprise!",
-  revealContent: "You're invited to my birthday party! 🎂🎈",
 };
 
 const DEFAULT_SPIN_WHEEL_CONFIG: SpinWheelConfig = {
@@ -102,22 +96,6 @@ export const INTERACTIONS: InteractionDefinition[] = [
   },
 
   // ========== REVEAL INTERACTIONS ==========
-  {
-    type: "scratch-reveal",
-    name: "Scratch to Reveal",
-    description:
-      "Create a golden scratch card experience! They scratch away to reveal your hidden message. Great for surprises and announcements!",
-    shortDescription: "Scratch off to reveal message",
-    emoji: "✨",
-    category: "reveal",
-    isAvailable: true,
-    isPremium: true,
-    previewAnimation: {
-      type: "shimmer",
-      duration: 1.5,
-    },
-    defaultConfig: DEFAULT_SCRATCH_REVEAL_CONFIG,
-  },
   {
     type: "shake-reveal",
     name: "Shake to Reveal",

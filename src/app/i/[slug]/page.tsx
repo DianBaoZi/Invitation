@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense, lazy } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, HeartCrack, Loader2 } from "lucide-react";
+import { Heart, HeartCrack } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
 import { Invite, TemplateConfig } from "@/lib/supabase/types";
@@ -13,7 +13,6 @@ import { saveResponse } from "@/lib/api/saveResponse";
 const Y2KDigitalCrush = lazy(() => import("@/components/templates/Y2KDigitalCrush").then(m => ({ default: m.Y2KDigitalCrush })));
 const CozyScrapbook = lazy(() => import("@/components/templates/CozyScrapbook").then(m => ({ default: m.CozyScrapbook })));
 const LoveLetterMailbox = lazy(() => import("@/components/templates/LoveLetterMailbox").then(m => ({ default: m.LoveLetterMailbox })));
-const ScratchReveal = lazy(() => import("@/components/templates/ScratchReveal").then(m => ({ default: m.ScratchReveal })));
 const Stargazer = lazy(() => import("@/components/templates/Stargazer").then(m => ({ default: m.Stargazer })));
 const Premiere = lazy(() => import("@/components/templates/Premiere").then(m => ({ default: m.Premiere })));
 const ForestAdventure = lazy(() => import("@/components/templates/ForestAdventure").then(m => ({ default: m.ForestAdventure })));
@@ -28,7 +27,7 @@ function InvitePageContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Templates that have their own built-in intro/splash screens
+  // Templates that have their own built-in intro/splash screens (skip generic splash for these)
   const templatesWithOwnSplash = [
     "stargazer",
     "premiere",
@@ -70,12 +69,15 @@ function InvitePageContent() {
     }
   }, [slug]);
 
-  // Splash screen timing
+  // Check if this template has its own splash
+  const hasOwnSplash = invite ? templatesWithOwnSplash.includes(invite.template_id) : false;
+
+  // Splash screen timing - only show for templates WITHOUT their own splash (like runaway button)
   useEffect(() => {
     if (loading || error) return;
 
-    // Skip generic splash for templates that have their own intro/splash
-    if (invite && templatesWithOwnSplash.includes(invite.template_id)) {
+    // Skip generic splash for templates with their own intro
+    if (hasOwnSplash) {
       setShowSplash(false);
       return;
     }
@@ -100,17 +102,17 @@ function InvitePageContent() {
       clearTimeout(exitTimer);
       clearTimeout(hideTimer);
     };
-  }, [loading, error, invite]);
+  }, [loading, error, hasOwnSplash]);
 
   // Show loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Loader2 className="w-12 h-12 text-pink-500" />
+          <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
         </motion.div>
       </div>
     );
@@ -124,42 +126,27 @@ function InvitePageContent() {
   const config = invite.configuration as TemplateConfig;
   const senderName = invite.creator_name || "Someone Special";
 
-  // Check if template has its own full-screen experience
-  const hasOwnFullScreen = templatesWithOwnSplash.includes(invite.template_id);
-
-  // For templates with their own intro, render directly without wrapper
-  if (hasOwnFullScreen) {
-    return (
-      <InteractiveTemplate
-        templateId={invite.template_id}
-        config={config}
-        senderName={senderName}
-        slug={slug}
-      />
-    );
-  }
-
-  // For simple templates (like runaway-button), use the generic splash and wrapper
+  // Templates with own splash have full-screen experience (no wrapper needed)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 relative overflow-hidden">
-      {/* Floating hearts background (visible after splash) */}
-      {!showSplash && <FloatingHearts />}
+    <div className={`min-h-screen relative overflow-hidden ${hasOwnSplash ? '' : 'bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50'}`}>
+      {/* Floating hearts background (only for runaway button, visible after splash) */}
+      {!showSplash && !hasOwnSplash && <FloatingHearts />}
 
-      {/* Splash Screen */}
+      {/* Generic Splash Screen - only for templates without their own intro (e.g., runaway button) */}
       <AnimatePresence>
-        {showSplash && (
+        {showSplash && !hasOwnSplash && (
           <SplashScreen name={senderName} phase={splashPhase} />
         )}
       </AnimatePresence>
 
-      {/* Main content (visible after splash) */}
+      {/* Main content */}
       <AnimatePresence>
-        {!showSplash && (
+        {(!showSplash || hasOwnSplash) && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="relative z-10 min-h-screen flex items-center justify-center p-4"
+            className={hasOwnSplash ? '' : 'relative z-10 min-h-screen flex items-center justify-center p-4'}
           >
             <InteractiveTemplate
               templateId={invite.template_id}
@@ -361,12 +348,13 @@ function SplashScreen({ name, phase }: { name: string; phase: "enter" | "hold" |
 // Loading spinner for lazy-loaded templates
 function TemplateLoader() {
   return (
-    <div className="flex items-center justify-center min-h-[300px]">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        className="w-8 h-8 border-3 border-pink-200 border-t-pink-500 rounded-full"
-      />
+        animate={{ scale: [1, 1.2, 1] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
+      </motion.div>
     </div>
   );
 }
@@ -393,8 +381,6 @@ function InteractiveTemplate({
   // Wrap lazy-loaded templates in Suspense
   const renderTemplate = () => {
     switch (templateId) {
-      case "scratch-reveal":
-        return <ScratchReveal message={message} slug={slug} />;
       case "y2k-digital-crush":
         return (
           <Y2KDigitalCrush
@@ -643,9 +629,9 @@ export default function InvitePage() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
           <motion.div
             animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 1, repeat: Infinity }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           >
-            <Heart className="w-16 h-16 text-pink-500 fill-pink-500" />
+            <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
           </motion.div>
         </div>
       }

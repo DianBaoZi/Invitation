@@ -48,11 +48,10 @@ const FONTS = {
 // INTERFACES
 // ============================================
 interface InteractionData {
-  interactionType?: "yes-no-runaway" | "yes-no-shrinking" | "scratch-reveal" | "spin-wheel";
+  interactionType?: "yes-no-runaway" | "yes-no-shrinking" | "spin-wheel";
   interactionId?: string;
-  role?: "question" | "yes-button" | "no-button" | "reveal-area" | "wheel" | "sticker";
+  role?: "question" | "yes-button" | "no-button" | "wheel" | "sticker";
   wheelOptions?: string[];
-  revealContent?: string;
   stickerType?: string;
   stickerAnimation?: Record<string, number[]>;
 }
@@ -94,8 +93,6 @@ interface InteractionState {
   noButtonScale: Record<string, number>;
   noButtonPosition: Record<string, { x: number; y: number }>;
   noButtonAttempts: Record<string, number>;
-  scratchRevealed: Record<string, boolean>;
-  scratchProgress: Record<string, number>;
   wheelSpinning: Record<string, boolean>;
   wheelRotation: Record<string, number>;
   wheelResult: Record<string, string>;
@@ -404,201 +401,6 @@ const ShrinkingNoButton = ({
         </motion.span>
       </motion.div>
     </motion.button>
-  );
-};
-
-// ============================================
-// GOLDEN SCRATCH REVEAL
-// ============================================
-const GoldenScratchReveal = ({
-  pos,
-  isRevealed,
-  revealContent,
-  progress,
-  onScratch,
-  onReveal,
-}: {
-  pos: { left: number; top: number; width: number; height: number; transform: string; adjustedLeft: number; adjustedTop: number };
-  isRevealed: boolean;
-  revealContent: string;
-  progress: number;
-  onScratch: (progress: number) => void;
-  onReveal: () => void;
-}) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const isDrawing = useRef(false);
-  const [scratched, setScratched] = useState(0);
-  const [showSparkles, setShowSparkles] = useState(false);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || isRevealed) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Create golden gradient overlay
-    const gradient = ctx.createLinearGradient(0, 0, pos.width, pos.height);
-    gradient.addColorStop(0, "#D4AF37");
-    gradient.addColorStop(0.3, "#F7E7CE");
-    gradient.addColorStop(0.5, "#D4AF37");
-    gradient.addColorStop(0.7, "#B8860B");
-    gradient.addColorStop(1, "#D4AF37");
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, pos.width, pos.height);
-
-    // Add shimmer pattern
-    ctx.globalAlpha = 0.3;
-    for (let i = 0; i < 50; i++) {
-      const x = Math.random() * pos.width;
-      const y = Math.random() * pos.height;
-      const radius = Math.random() * 3 + 1;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-
-    // Add text
-    ctx.font = `bold ${Math.min(pos.width, pos.height) * 0.15}px ${FONTS.sans}`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = "#8B4513";
-    ctx.fillText("✨ Scratch Me! ✨", pos.width / 2, pos.height / 2);
-  }, [pos.width, pos.height, isRevealed]);
-
-  const scratch = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDrawing.current || isRevealed) return;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.beginPath();
-    ctx.arc(x, y, 25, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Calculate scratch progress
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    let transparent = 0;
-    for (let i = 3; i < imageData.data.length; i += 4) {
-      if (imageData.data[i] < 128) transparent++;
-    }
-    const newProgress = (transparent / (canvas.width * canvas.height)) * 100;
-    setScratched(newProgress);
-    onScratch(newProgress);
-
-    if (newProgress > 50 && !isRevealed) {
-      setShowSparkles(true);
-      setTimeout(() => onReveal(), 300);
-    }
-  };
-
-  return (
-    <div
-      className="absolute cursor-pointer overflow-hidden"
-      style={{
-        left: pos.adjustedLeft,
-        top: pos.adjustedTop,
-        width: pos.width,
-        height: pos.height,
-        borderRadius: 16,
-        boxShadow: `0 8px 32px ${VALENTINE_COLORS.gold}40`,
-      }}
-    >
-      {/* Hidden content */}
-      <motion.div
-        className="absolute inset-0 flex items-center justify-center p-4"
-        style={{
-          background: `linear-gradient(135deg, ${VALENTINE_COLORS.blush} 0%, ${VALENTINE_COLORS.cream} 100%)`,
-        }}
-        animate={isRevealed ? { scale: [0.9, 1.05, 1] } : {}}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.p
-          className="text-center font-bold"
-          style={{
-            fontFamily: FONTS.script,
-            fontSize: Math.min(pos.width, pos.height) * 0.2,
-            color: VALENTINE_COLORS.rose,
-            textShadow: `0 2px 10px ${VALENTINE_COLORS.rose}30`,
-          }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={isRevealed ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.2 }}
-        >
-          {revealContent}
-        </motion.p>
-      </motion.div>
-
-      {/* Scratch overlay */}
-      <AnimatePresence>
-        {!isRevealed && (
-          <motion.canvas
-            ref={canvasRef}
-            width={pos.width}
-            height={pos.height}
-            className="absolute inset-0"
-            style={{ touchAction: "none" }}
-            exit={{ opacity: 0, scale: 1.1 }}
-            transition={{ duration: 0.5 }}
-            onMouseDown={() => (isDrawing.current = true)}
-            onMouseUp={() => (isDrawing.current = false)}
-            onMouseLeave={() => (isDrawing.current = false)}
-            onMouseMove={scratch}
-            onTouchStart={() => (isDrawing.current = true)}
-            onTouchEnd={() => (isDrawing.current = false)}
-            onTouchMove={scratch}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Sparkle burst on reveal */}
-      {showSparkles && (
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 0 }}
-          transition={{ duration: 1 }}
-        >
-          {Array.from({ length: 20 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute left-1/2 top-1/2 text-yellow-400"
-              initial={{ scale: 0, x: 0, y: 0 }}
-              animate={{
-                scale: [0, 1, 0],
-                x: (Math.random() - 0.5) * 200,
-                y: (Math.random() - 0.5) * 200,
-              }}
-              transition={{ duration: 0.8, delay: i * 0.02 }}
-            >
-              ✨
-            </motion.div>
-          ))}
-        </motion.div>
-      )}
-
-      {/* Decorative border */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          border: `3px solid ${VALENTINE_COLORS.gold}`,
-          borderRadius: 16,
-        }}
-      />
-    </div>
   );
 };
 
@@ -944,8 +746,6 @@ export function PreviewRenderer() {
     noButtonScale: {},
     noButtonPosition: {},
     noButtonAttempts: {},
-    scratchRevealed: {},
-    scratchProgress: {},
     wheelSpinning: {},
     wheelRotation: {},
     wheelResult: {},
@@ -1080,21 +880,6 @@ export function PreviewRenderer() {
     [state.noButtonScale, handleYesClick]
   );
 
-  const handleScratchProgress = useCallback((interactionId: string, progress: number) => {
-    setState((prev) => ({
-      ...prev,
-      scratchProgress: { ...prev.scratchProgress, [interactionId]: progress },
-    }));
-  }, []);
-
-  const handleScratchReveal = useCallback((interactionId: string) => {
-    triggerConfetti();
-    setState((prev) => ({
-      ...prev,
-      scratchRevealed: { ...prev.scratchRevealed, [interactionId]: true },
-    }));
-  }, [triggerConfetti]);
-
   const handleSpinWheel = useCallback(
     (interactionId: string, options: string[]) => {
       if (state.wheelSpinning[interactionId]) return;
@@ -1216,25 +1001,6 @@ export function PreviewRenderer() {
           pos={pos}
           scale={scale}
           onClick={() => handleNoButtonClick(interactionId, obj)}
-        />
-      );
-    }
-
-    // Handle Scratch Reveal
-    if (role === "reveal-area" && interactionType === "scratch-reveal") {
-      const isRevealed = state.scratchRevealed[interactionId] || false;
-      const progress = state.scratchProgress[interactionId] || 0;
-      const revealContent = data?.revealContent || "I Love You! 💝";
-
-      return (
-        <GoldenScratchReveal
-          key={index}
-          pos={pos}
-          isRevealed={isRevealed}
-          revealContent={revealContent}
-          progress={progress}
-          onScratch={(p) => handleScratchProgress(interactionId, p)}
-          onReveal={() => handleScratchReveal(interactionId)}
         />
       );
     }

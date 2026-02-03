@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Heart, LogOut, User, LayoutDashboard } from "lucide-react";
+import { Heart, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -62,6 +62,34 @@ export function Navbar() {
           </span>
         </button>
 
+        {/* Navigation Links */}
+        <div className="hidden md:flex items-center gap-6">
+          <button
+            onClick={() => router.push("/about")}
+            className="text-sm text-gray-600 hover:text-gray-900 transition"
+          >
+            About
+          </button>
+          <button
+            onClick={() => router.push("/faq")}
+            className="text-sm text-gray-600 hover:text-gray-900 transition"
+          >
+            FAQ
+          </button>
+          <button
+            onClick={() => router.push("/terms")}
+            className="text-sm text-gray-600 hover:text-gray-900 transition"
+          >
+            Terms of Use
+          </button>
+          <button
+            onClick={() => router.push("/disclaimer")}
+            className="text-sm text-gray-600 hover:text-gray-900 transition"
+          >
+            Disclaimer
+          </button>
+        </div>
+
         {/* Right side */}
         <div className="flex items-center gap-3">
           {loading ? (
@@ -71,16 +99,17 @@ export function Navbar() {
               {/* Dashboard link */}
               <Button
                 onClick={() => router.push("/dashboard")}
-                variant="ghost"
                 size="sm"
-                className="text-gray-600 hidden sm:flex"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-md hover:shadow-lg transition-all hidden sm:flex"
               >
-                <LayoutDashboard className="w-4 h-4 mr-2" />
                 Dashboard
               </Button>
 
               {/* User info */}
-              <div className="flex items-center gap-2">
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="flex items-center gap-2 hover:opacity-80 transition"
+              >
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
@@ -95,7 +124,7 @@ export function Navbar() {
                 <span className="text-sm font-medium text-gray-700 hidden md:block max-w-[120px] truncate">
                   {displayName}
                 </span>
-              </div>
+              </button>
 
               {/* Sign out */}
               <Button

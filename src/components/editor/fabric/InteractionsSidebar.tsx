@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { VALENTINE_COLORS } from "../FabricEditor";
 
-type InteractionType = "yes-no-runaway" | "yes-no-shrinking" | "scratch-reveal" | "spin-wheel";
+type InteractionType = "yes-no-runaway" | "yes-no-shrinking" | "spin-wheel";
 type TextType = "heading" | "subheading" | "body";
 type DecorationType = "heart" | "emoji";
 type ShapeType = "rectangle" | "circle" | "rounded-rect" | "line";
@@ -459,14 +459,6 @@ export function InteractionsSidebar({
               onClick={() => onAddInteraction("yes-no-shrinking")}
               gradient="#9333EA"
               delay={2}
-            />
-            <InteractionCard
-              name="Scratch Reveal"
-              description="Tap to reveal hidden message"
-              icon={<Wand2 className="w-5 h-5" />}
-              onClick={() => onAddInteraction("scratch-reveal")}
-              gradient={VALENTINE_COLORS.gold}
-              delay={3}
             />
             <InteractionCard
               name="Spin Wheel"

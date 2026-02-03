@@ -1223,33 +1223,6 @@ function TemplatePreviewScene({ templateId, isHovered = false }: { templateId: s
         </div>
       );
 
-    case "scratch-reveal":
-      return (
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-100 flex items-center justify-center">
-          {/* Scratch ticket */}
-          <motion.div
-            className="relative w-32 h-20 rounded-lg overflow-hidden"
-            style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-yellow-400" />
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-br from-stone-400 to-stone-500"
-              animate={isHovered ? {
-                clipPath: [
-                  "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-                  "polygon(20% 0, 100% 0, 100% 100%, 0 100%)",
-                  "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-                ]
-              } : {}}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <p className="text-stone-600 text-[10px] font-bold">SCRATCH ME</p>
-            </div>
-          </motion.div>
-        </div>
-      );
-
     case "elegant-invitation":
       return (
         <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf7] via-[#f8e8e4] to-[#fdfbf7] flex items-center justify-center overflow-hidden">

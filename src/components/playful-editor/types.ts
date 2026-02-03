@@ -6,7 +6,6 @@
 export type InteractionType =
   | "yes-no-runaway"
   | "yes-no-shrinking"
-  | "scratch-reveal"
   | "spin-wheel"
   | "shake-reveal"    // Future
   | "swipe-cards"     // Future
@@ -27,11 +26,6 @@ export interface YesNoConfig {
   yesButtonText: string;
   noButtonText: string;
   successMessage: string;
-}
-
-export interface ScratchRevealConfig {
-  instructionText: string;
-  revealContent: string;
 }
 
 export interface SpinWheelConfig {
@@ -59,7 +53,6 @@ export interface TapCounterConfig {
 export type InteractionConfigMap = {
   "yes-no-runaway": YesNoConfig;
   "yes-no-shrinking": YesNoConfig;
-  "scratch-reveal": ScratchRevealConfig;
   "spin-wheel": SpinWheelConfig;
   "shake-reveal": ShakeRevealConfig;
   "swipe-cards": SwipeCardsConfig;

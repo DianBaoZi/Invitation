@@ -418,11 +418,10 @@ const STICKER_DATA: Record<StickerType, { emoji: string; animation: object }> = 
 
 // Custom data interface for interaction elements
 export interface InteractionData {
-  interactionType?: "yes-no-runaway" | "yes-no-shrinking" | "scratch-reveal" | "spin-wheel";
+  interactionType?: "yes-no-runaway" | "yes-no-shrinking" | "spin-wheel";
   interactionId?: string;
-  role?: "question" | "yes-button" | "no-button" | "reveal-area" | "wheel" | "sticker";
+  role?: "question" | "yes-button" | "no-button" | "wheel" | "sticker";
   wheelOptions?: string[];
-  revealContent?: string;
   stickerType?: StickerType;
   stickerAnimation?: object;
 }
@@ -655,41 +654,6 @@ export function FabricEditor({ onPreview, onSave }: FabricEditorProps) {
     noButton.data = { interactionType: "yes-no-shrinking", interactionId, role: "no-button" };
 
     canvas.add(question, yesButton, noButton);
-    canvas.renderAll();
-  }, [canvas, generateInteractionId]);
-
-  // Add Scratch Reveal interaction
-  const addScratchReveal = useCallback(() => {
-    if (!canvas) return;
-    const interactionId = generateInteractionId();
-    const centerX = canvas.width! / 2;
-
-    const instruction = new Textbox("Scratch to reveal! ✨", {
-      left: centerX, top: 200, width: 280,
-      fontSize: 24, fontFamily: "'Playfair Display', serif",
-      fill: VALENTINE_COLORS.text, textAlign: "center",
-      originX: "center", originY: "center",
-    });
-    instruction.data = { interactionType: "scratch-reveal", interactionId, role: "question" };
-
-    const scratchArea = new Rect({
-      left: centerX, top: 320, width: 200, height: 100,
-      fill: VALENTINE_COLORS.primary, rx: 12, ry: 12,
-      originX: "center", originY: "center",
-    });
-    scratchArea.data = {
-      interactionType: "scratch-reveal", interactionId, role: "reveal-area",
-      revealContent: "I Love You! 💝"
-    };
-
-    const hintText = new Textbox("🎁 Tap Here 🎁", {
-      left: centerX, top: 320, width: 200,
-      fontSize: 16, fontFamily: "'Lato', sans-serif",
-      fill: VALENTINE_COLORS.white, textAlign: "center",
-      originX: "center", originY: "center",
-    });
-
-    canvas.add(instruction, scratchArea, hintText);
     canvas.renderAll();
   }, [canvas, generateInteractionId]);
 
@@ -1154,7 +1118,6 @@ export function FabricEditor({ onPreview, onSave }: FabricEditorProps) {
         onAddInteraction={(type) => {
           if (type === "yes-no-runaway") addYesNoRunaway();
           else if (type === "yes-no-shrinking") addYesNoShrinking();
-          else if (type === "scratch-reveal") addScratchReveal();
           else if (type === "spin-wheel") addSpinWheel();
         }}
         onAddText={addText}

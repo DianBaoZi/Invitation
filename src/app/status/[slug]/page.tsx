@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, Copy, Check, Eye, Clock, Calendar, RefreshCw, AlertCircle } from "lucide-react";
+import { Heart, Copy, Check, Clock, Calendar, RefreshCw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
@@ -16,8 +16,6 @@ interface InviteStatus {
   is_paid: boolean;
   created_at: string;
   expires_at: string;
-  view_count: number;
-  first_viewed_at: string | null;
   response: string | null;
   responded_at: string | null;
 }
@@ -60,26 +58,7 @@ function StatusPageContent() {
         return;
       }
 
-      // Get view count
-      const { count: viewCount } = await supabase
-        .from("invite_views")
-        .select("*", { count: "exact", head: true })
-        .eq("invite_id", invite.id);
-
-      // Get first view timestamp
-      const { data: firstView } = await supabase
-        .from("invite_views")
-        .select("viewed_at")
-        .eq("invite_id", invite.id)
-        .order("viewed_at", { ascending: true })
-        .limit(1)
-        .single();
-
-      setStatus({
-        ...invite,
-        view_count: viewCount || 0,
-        first_viewed_at: firstView?.viewed_at || null,
-      });
+      setStatus(invite);
     } catch (err) {
       console.error("Error loading status:", err);
       setError("Failed to load invite status");
@@ -119,16 +98,16 @@ function StatusPageContent() {
 
   // Check if expired
   const isExpired = status?.expires_at ? new Date(status.expires_at) < new Date() : false;
-  const hasBeenViewed = status && status.view_count > 0;
+  const hasResponded = status?.response !== null;
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <RefreshCw className="w-8 h-8 text-gray-400" />
+          <Heart className="w-10 h-10 text-pink-400 fill-pink-400" />
         </motion.div>
       </div>
     );
@@ -173,20 +152,84 @@ function StatusPageContent() {
           transition={{ delay: 0.1 }}
           className="text-center mb-8"
         >
-          <div className="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
-            <Eye className="w-7 h-7 text-blue-600" />
+          <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
+            hasResponded
+              ? "bg-gradient-to-br from-green-100 to-emerald-100"
+              : "bg-gradient-to-br from-pink-100 to-rose-100"
+          }`}>
+            <Heart className={`w-8 h-8 ${hasResponded ? "text-green-500 fill-green-500" : "text-pink-400"}`} />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Link Status</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {hasResponded ? "They said Yes!" : "Waiting for response..."}
+          </h1>
           {status.recipient_name && (
             <p className="text-gray-500 mt-1">For {status.recipient_name}</p>
           )}
+        </motion.div>
+
+        {/* Response status card */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-6"
+        >
+          <div className={`p-5 rounded-2xl border-2 ${
+            isExpired
+              ? "bg-gradient-to-br from-red-50 to-orange-50 border-red-200"
+              : hasResponded
+              ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
+              : "bg-gradient-to-br from-pink-50 to-rose-50 border-pink-200"
+          }`}>
+            {hasResponded ? (
+              <div className="text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", delay: 0.3 }}
+                  className="text-4xl mb-3"
+                >
+                  💕
+                </motion.div>
+                <p className="text-green-700 font-semibold text-lg mb-2">
+                  {status.response}
+                </p>
+                {status.responded_at && (
+                  <div className="flex items-center justify-center gap-2 text-sm text-green-600">
+                    <Clock className="w-4 h-4" />
+                    <span>{formatDateTime(status.responded_at)}</span>
+                  </div>
+                )}
+              </div>
+            ) : isExpired ? (
+              <div className="text-center">
+                <span className="text-3xl mb-2 block">⏰</span>
+                <p className="text-red-600 font-medium">
+                  This invite has expired
+                </p>
+              </div>
+            ) : (
+              <div className="text-center">
+                <motion.span
+                  className="text-3xl mb-2 block"
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  💌
+                </motion.span>
+                <p className="text-pink-600 font-medium">
+                  Waiting for them to open your invite
+                </p>
+              </div>
+            )}
+          </div>
         </motion.div>
 
         {/* Shareable link */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.3 }}
           className="mb-6"
         >
           <p className="text-sm text-gray-500 mb-2">Your shareable link</p>
@@ -212,86 +255,6 @@ function StatusPageContent() {
           </div>
         </motion.div>
 
-        {/* Status card */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-6"
-        >
-          <div className={`p-5 rounded-2xl border-2 ${
-            isExpired
-              ? "bg-gradient-to-br from-red-50 to-orange-50 border-red-200"
-              : hasBeenViewed
-              ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
-              : "bg-gradient-to-br from-gray-50 to-slate-50 border-gray-200"
-          }`}>
-            {/* Status badge */}
-            <div className="flex items-center gap-2 mb-4">
-              <span className={`text-2xl`}>
-                {isExpired ? "⏰" : hasBeenViewed ? "✅" : "⏳"}
-              </span>
-              <span className={`text-lg font-semibold ${
-                isExpired
-                  ? "text-red-700"
-                  : hasBeenViewed
-                  ? "text-green-700"
-                  : "text-gray-600"
-              }`}>
-                {isExpired ? "Expired" : hasBeenViewed ? "Opened" : "Not opened yet"}
-              </span>
-            </div>
-
-            {/* Stats */}
-            {hasBeenViewed && (
-              <div className="space-y-3">
-                {status.first_viewed_at && (
-                  <div className="flex items-center gap-3 text-sm">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-600">First opened:</span>
-                    <span className="text-gray-900 font-medium">
-                      {formatDateTime(status.first_viewed_at)}
-                    </span>
-                  </div>
-                )}
-                <div className="flex items-center gap-3 text-sm">
-                  <Eye className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-600">Total views:</span>
-                  <span className="text-gray-900 font-medium">
-                    {status.view_count}
-                  </span>
-                </div>
-                {status.response && (
-                  <div className="flex items-center gap-3 text-sm pt-2 border-t border-gray-200">
-                    <Heart className={`w-4 h-4 ${status.response.toLowerCase().includes('yes') ? 'text-green-500 fill-green-500' : 'text-gray-400'}`} />
-                    <span className="text-gray-600">Response:</span>
-                    <span className={`font-semibold ${status.response.toLowerCase().includes('yes') ? 'text-green-600' : 'text-gray-600'}`}>
-                      {status.response}
-                    </span>
-                    {status.responded_at && (
-                      <span className="text-gray-400 text-xs">
-                        ({formatDateTime(status.responded_at)})
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {!hasBeenViewed && !isExpired && (
-              <p className="text-sm text-gray-500">
-                We'll show you when they open your invite
-              </p>
-            )}
-
-            {isExpired && (
-              <p className="text-sm text-red-600">
-                This invite has expired and is no longer accessible
-              </p>
-            )}
-          </div>
-        </motion.div>
-
         {/* Refresh button */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -306,7 +269,7 @@ function StatusPageContent() {
             className="text-gray-500 hover:text-gray-700"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh status
+            Refresh
           </Button>
         </motion.div>
 
@@ -331,14 +294,6 @@ function StatusPageContent() {
           className="space-y-3"
         >
           <Button
-            onClick={() => window.open(`/i/${slug}`, "_blank")}
-            variant="outline"
-            className="w-full h-12 text-base font-medium rounded-xl"
-          >
-            <Eye className="w-4 h-4 mr-2" />
-            Preview Invite
-          </Button>
-          <Button
             onClick={() => router.push("/")}
             className="w-full h-12 text-base font-medium rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg"
           >
@@ -361,10 +316,10 @@ export default function StatusPage() {
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
           <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           >
-            <RefreshCw className="w-8 h-8 text-gray-400" />
+            <Heart className="w-10 h-10 text-pink-400 fill-pink-400" />
           </motion.div>
         </div>
       }

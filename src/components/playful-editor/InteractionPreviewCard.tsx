@@ -162,8 +162,6 @@ function MiniDemo({ interaction, isHovered }: MiniDemoProps) {
       return <RunawayButtonDemo isHovered={isHovered} />;
     case "yes-no-shrinking":
       return <ShrinkingButtonDemo isHovered={isHovered} />;
-    case "scratch-reveal":
-      return <ScratchRevealDemo isHovered={isHovered} />;
     case "spin-wheel":
       return <SpinWheelDemo isHovered={isHovered} />;
     case "shake-reveal":
@@ -236,38 +234,6 @@ function ShrinkingButtonDemo({ isHovered }: { isHovered: boolean }) {
       >
         No
       </motion.button>
-    </div>
-  );
-}
-
-// Scratch Reveal Demo
-function ScratchRevealDemo({ isHovered }: { isHovered: boolean }) {
-  const [revealed, setRevealed] = useState(0);
-
-  return (
-    <div className="relative w-full h-full flex items-center justify-center">
-      <div className="relative w-28 h-16 rounded-lg overflow-hidden">
-        {/* Hidden content */}
-        <div
-          className="absolute inset-0 flex items-center justify-center text-white text-sm font-bold"
-          style={{ background: PLAYFUL_COLORS.funGradient }}
-        >
-          🎉 You&apos;re Invited!
-        </div>
-
-        {/* Scratch overlay */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{
-            background: "linear-gradient(135deg, #D4AF37 0%, #F5E6C4 50%, #D4AF37 100%)",
-          }}
-          animate={isHovered ? { opacity: [1, 0.3, 1] } : { opacity: 1 }}
-          transition={{ repeat: Infinity, duration: 1.5 }}
-          onHoverStart={() => setRevealed((r) => Math.min(100, r + 30))}
-        >
-          <span className="text-amber-900 text-xs font-medium">Scratch me!</span>
-        </motion.div>
-      </div>
     </div>
   );
 }

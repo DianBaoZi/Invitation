@@ -30,7 +30,6 @@ import {
   CustomizationWizardProps,
   PLAYFUL_COLORS,
   YesNoConfig,
-  ScratchRevealConfig,
   SpinWheelConfig,
 } from "./types";
 import { getInteractionByType } from "./data/interactions";
@@ -273,13 +272,6 @@ function InteractionConfigForm({
           onUpdate={onUpdate}
         />
       );
-    case "scratch-reveal":
-      return (
-        <ScratchRevealConfigForm
-          config={interaction.config as ScratchRevealConfig}
-          onUpdate={onUpdate}
-        />
-      );
     case "spin-wheel":
       return (
         <SpinWheelConfigForm
@@ -363,54 +355,6 @@ function YesNoConfigForm({
         />
         <p className="text-xs text-gray-400 mt-1">
           Shows when they click Yes
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function ScratchRevealConfigForm({
-  config,
-  onUpdate,
-}: {
-  config: ScratchRevealConfig;
-  onUpdate: (config: ScratchRevealConfig) => void;
-}) {
-  return (
-    <div className="space-y-5">
-      <div>
-        <Label htmlFor="instructionText" className="text-gray-700 font-medium">
-          Instruction Text
-        </Label>
-        <Input
-          id="instructionText"
-          value={config.instructionText}
-          onChange={(e) =>
-            onUpdate({ ...config, instructionText: e.target.value })
-          }
-          placeholder="Scratch to reveal your surprise!"
-          className="mt-2 h-12 rounded-xl"
-        />
-        <p className="text-xs text-gray-400 mt-1">
-          Tells them what to do
-        </p>
-      </div>
-
-      <div>
-        <Label htmlFor="revealContent" className="text-gray-700 font-medium">
-          Hidden Message
-        </Label>
-        <Textarea
-          id="revealContent"
-          value={config.revealContent}
-          onChange={(e) =>
-            onUpdate({ ...config, revealContent: e.target.value })
-          }
-          placeholder="You're invited to my birthday party! 🎂🎈"
-          className="mt-2 rounded-xl min-h-[100px]"
-        />
-        <p className="text-xs text-gray-400 mt-1">
-          The message revealed after scratching
         </p>
       </div>
     </div>

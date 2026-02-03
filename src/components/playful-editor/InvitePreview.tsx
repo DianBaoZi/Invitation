@@ -119,15 +119,6 @@ function InteractionPreviewSlot({
         />
       );
 
-    case "scratch-reveal":
-      return (
-        <ScratchRevealPreview
-          config={config as { instructionText: string; revealContent: string }}
-          primaryColor={primaryColor}
-          textColor={textColor}
-        />
-      );
-
     case "spin-wheel":
       return (
         <SpinWheelPreview
@@ -188,46 +179,6 @@ function YesNoPreview({
         >
           {config.noButtonText}
         </motion.button>
-      </div>
-    </div>
-  );
-}
-
-function ScratchRevealPreview({
-  config,
-  primaryColor,
-  textColor,
-}: {
-  config: { instructionText: string; revealContent: string };
-  primaryColor: string;
-  textColor: string;
-}) {
-  return (
-    <div className="flex flex-col items-center justify-center p-6 text-center">
-      <p className="text-sm mb-4" style={{ color: textColor }}>
-        {config.instructionText}
-      </p>
-
-      <div className="relative w-64 h-32 rounded-xl overflow-hidden">
-        {/* Hidden content */}
-        <div
-          className="absolute inset-0 flex items-center justify-center text-white font-bold p-4"
-          style={{ background: `linear-gradient(135deg, ${primaryColor}, ${PLAYFUL_COLORS.pink})` }}
-        >
-          {config.revealContent}
-        </div>
-
-        {/* Scratch overlay */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{
-            background: "linear-gradient(135deg, #D4AF37 0%, #F5E6C4 50%, #D4AF37 100%)",
-          }}
-          animate={{ opacity: [1, 0.8, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <span className="text-amber-900 font-medium">✨ Scratch Here ✨</span>
-        </motion.div>
       </div>
     </div>
   );
