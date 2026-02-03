@@ -374,14 +374,6 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
         ],
       };
 
-    case "avocado-valentine":
-      return {
-        sectionTitle: "Avocado Details",
-        sectionIcon: "heart",
-        accentColor: "green",
-        fields: [], // Only needs name
-      };
-
     case "forest-adventure":
       return {
         sectionTitle: "Adventure Details",
@@ -627,8 +619,6 @@ function getPageBackground(templateId: string): string {
       return "bg-gradient-to-br from-purple-50 via-fuchsia-50 to-pink-50";
     case "y2k-digital-crush":
       return "bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50";
-    case "avocado-valentine":
-      return "bg-gradient-to-br from-green-50 via-emerald-50 to-lime-50";
     case "runaway-button":
       return "bg-gradient-to-br from-pink-50 via-rose-50 to-red-50";
     case "forest-adventure":
@@ -648,7 +638,6 @@ function getHeaderBorder(templateId: string): string {
     case "neon-arcade": return "border-purple-100";
     case "y2k-digital-crush": return "border-blue-100";
     case "cozy-scrapbook": return "border-amber-100";
-    case "avocado-valentine": return "border-green-100";
     case "forest-adventure": return "border-emerald-100";
     case "elegant-invitation": return "border-rose-100";
     default: return "border-gray-100";
@@ -1558,7 +1547,6 @@ function DetailsPreview({
       case "neon-arcade": return "linear-gradient(180deg, #0a0a1a 0%, #120825 50%, #0a0a1a 100%)";
       case "y2k-digital-crush": return "#008080";
       case "cozy-scrapbook": return "linear-gradient(180deg, #f5ebe0 0%, #eddcd2 50%, #e3d5ca 100%)";
-      case "avocado-valentine": return "linear-gradient(180deg, #f0fdf4 0%, #dcfce7 50%, #f0fdf4 100%)";
       case "forest-adventure": return "linear-gradient(180deg, #1a3c1a 0%, #2d5a2d 50%, #1a3c1a 100%)";
       case "elegant-invitation": return "linear-gradient(180deg, #fdfbf7 0%, #f8e8e4 50%, #fdfbf7 100%)";
       default: return "linear-gradient(180deg, #fce4ec 0%, #f8bbd0 100%)";
@@ -1580,7 +1568,6 @@ function DetailsPreview({
       case "neon-arcade": return "🕹️";
       case "y2k-digital-crush": return "💾";
       case "cozy-scrapbook": return "📒";
-      case "avocado-valentine": return "🥑";
       case "runaway-button": return "💕";
       case "forest-adventure": return "🌲";
       case "elegant-invitation": return "💐";
@@ -2304,7 +2291,6 @@ function SplashPreview({ name, templateId, photoUrl1 }: { name: string; template
   const getBg = () => {
     switch (templateId) {
       case "neon-arcade": return "bg-[#0a0a1a]";
-      case "avocado-valentine": return "bg-white";
       default: return "bg-gradient-to-br from-rose-100 via-pink-50 to-purple-100";
     }
   };
@@ -2312,7 +2298,6 @@ function SplashPreview({ name, templateId, photoUrl1 }: { name: string; template
   const getNameColor = () => {
     switch (templateId) {
       case "neon-arcade": return "from-cyan-400 to-magenta-400";
-      case "avocado-valentine": return "from-green-500 to-emerald-500";
       default: return "from-pink-500 to-purple-500";
     }
   };
@@ -2438,7 +2423,6 @@ function MiniSplashPreview({ name, templateId, photoUrl1 }: { name: string; temp
   const getBg = () => {
     switch (templateId) {
       case "neon-arcade": return "bg-[#0a0a1a]";
-      case "avocado-valentine": return "bg-white";
       default: return "bg-gradient-to-br from-rose-100 to-pink-100";
     }
   };
@@ -2483,7 +2467,6 @@ function MiniDetailsPreview({
       case "neon-arcade": return "bg-[#0a0a1a]";
       case "y2k-digital-crush": return "bg-[#008080]";
       case "cozy-scrapbook": return "bg-[#f5ebe0]";
-      case "avocado-valentine": return "bg-green-50";
       case "forest-adventure": return "bg-gradient-to-br from-[#1a3c1a] to-[#2d5a2d]";
       case "elegant-invitation": return "bg-[#fdfbf7]";
       default: return "bg-gradient-to-br from-pink-100 to-rose-100";

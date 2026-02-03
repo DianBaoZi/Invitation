@@ -7,7 +7,6 @@ import confetti from "canvas-confetti";
 import { Y2KDigitalCrush } from "@/components/templates/Y2KDigitalCrush";
 import { CozyScrapbook } from "@/components/templates/CozyScrapbook";
 import { LoveLetterMailbox } from "@/components/templates/LoveLetterMailbox";
-import { AvocadoValentine } from "@/components/templates/AvocadoValentine";
 import { Stargazer } from "@/components/templates/Stargazer";
 import { Premiere } from "@/components/templates/Premiere";
 import { ForestAdventure } from "@/components/templates/ForestAdventure";
@@ -15,10 +14,10 @@ import { ElegantInvitation } from "@/components/templates/ElegantInvitation";
 import { SplashScreen } from "@/components/invite/SplashScreen";
 
 // Templates that manage their own full-screen layout
-const FULLSCREEN_TEMPLATES = ["y2k-digital-crush", "cozy-scrapbook", "love-letter-mailbox", "avocado-valentine", "stargazer", "premiere", "forest-adventure", "elegant-invitation"];
+const FULLSCREEN_TEMPLATES = ["y2k-digital-crush", "cozy-scrapbook", "love-letter-mailbox", "stargazer", "premiere", "forest-adventure", "elegant-invitation"];
 
-// Templates that have their own built-in splash/intro sequence (don't show external SplashScreen)
-const TEMPLATES_WITH_BUILTIN_SPLASH = ["stargazer", "avocado-valentine", "premiere", "y2k-digital-crush", "forest-adventure"];
+// Templates that have their own built-in intro (skip external splash)
+const TEMPLATES_WITH_BUILTIN_SPLASH = ["forest-adventure"];
 
 export default function TestTemplatePage() {
   const params = useParams();
@@ -106,8 +105,6 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
           {...(overrides.personalMessage && { personalMessage: overrides.personalMessage })}
         />
       );
-    case "avocado-valentine":
-      return <AvocadoValentine senderName={overrides.name || "Daniel"} />;
     case "stargazer":
       return (
         <Stargazer

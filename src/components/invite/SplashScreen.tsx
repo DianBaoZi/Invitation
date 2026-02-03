@@ -51,7 +51,6 @@ export function SplashScreen({ creatorName, isPaid, onComplete, templateId, phot
     premiere: <PremiereSplash {...splashProps} />,
     "y2k-digital-crush": <Y2KSplash {...splashProps} />,
     "cozy-scrapbook": <ScrapbookSplash {...splashProps} />,
-    "forest-adventure": <ForestAdventureSplash {...splashProps} />,
     "love-letter-mailbox": <LoveLetterSplash {...splashProps} />,
     "elegant-invitation": <ElegantInvitationSplash {...splashProps} />,
   };

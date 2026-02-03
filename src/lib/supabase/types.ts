@@ -26,7 +26,7 @@ export interface Template {
   badge?: "Most Popular" | "Staff Pick" | "New" | "Trending";
 }
 
-export type TemplateId = "runaway-button" | "y2k-digital-crush" | "cozy-scrapbook" | "love-letter-mailbox" | "stargazer" | "premiere" | "avocado-valentine" | "forest-adventure" | "elegant-invitation";
+export type TemplateId = "runaway-button" | "y2k-digital-crush" | "cozy-scrapbook" | "love-letter-mailbox" | "stargazer" | "premiere" | "forest-adventure" | "elegant-invitation";
 
 // Configuration for each template type
 export interface RunawayButtonConfig {

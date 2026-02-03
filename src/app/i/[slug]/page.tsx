@@ -35,12 +35,11 @@ function InvitePageContent() {
     "love-letter-mailbox",
     "cozy-scrapbook",
     "y2k-digital-crush",
-    "forest-adventure",
     "elegant-invitation",
   ];
 
-  // Only runaway-button uses the simple inline splash (no custom splash)
-  const templatesWithNoCustomSplash = ["runaway-button", "avocado-valentine"];
+  // Templates that use simple inline splash or have built-in intro (no custom splash)
+  const templatesWithNoCustomSplash = ["runaway-button", "forest-adventure"];
 
   const [showSplash, setShowSplash] = useState(true);
   const [splashPhase, setSplashPhase] = useState<"enter" | "hold" | "exit">("enter");
@@ -146,7 +145,7 @@ function InvitePageContent() {
         />
       )}
 
-      {/* Simple Inline Splash Screen - only for runaway button and avocado */}
+      {/* Simple Inline Splash Screen - only for runaway button */}
       <AnimatePresence>
         {showSplash && usesInlineSplash && (
           <InlineSplashScreen name={senderName} phase={splashPhase} />

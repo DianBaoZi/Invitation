@@ -340,13 +340,20 @@ function DialogueBox({
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(true);
+  const [skipTyping, setSkipTyping] = useState(false);
 
+  // Reset skip flag when moving to next message
+  useEffect(() => {
+    setSkipTyping(false);
+    setIsTyping(true);
+  }, [currentIndex]);
+
+  // Auto-advance to next message after typing completes
   useEffect(() => {
     if (!isTyping) {
       const timer = setTimeout(() => {
         if (currentIndex < messages.length - 1) {
           setCurrentIndex((prev) => prev + 1);
-          setIsTyping(true);
         } else {
           onComplete?.();
         }
@@ -355,8 +362,10 @@ function DialogueBox({
     }
   }, [isTyping, currentIndex, messages.length, onComplete]);
 
+  // Click to skip typing and show full message
   const handleClick = () => {
     if (isTyping) {
+      setSkipTyping(true);
       setIsTyping(false);
     }
   };
@@ -383,9 +392,9 @@ function DialogueBox({
 
         <p
           className="text-lg md:text-xl leading-relaxed text-amber-900"
-          style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "14px", lineHeight: "1.8" }}
+          style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "14px", lineHeight: "1.8", wordBreak: "break-word", overflowWrap: "break-word" }}
         >
-          {isTyping ? (
+          {isTyping && !skipTyping ? (
             <TypewriterText
               text={messages[currentIndex]}
               onComplete={() => setIsTyping(false)}
@@ -498,6 +507,8 @@ function InvitationReveal({
           style={{
             fontFamily: "'Press Start 2P', monospace",
             textShadow: "2px 2px 0 rgba(236, 72, 153, 0.3)",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
           }}
         >
           {message}
@@ -537,6 +548,8 @@ function InvitationReveal({
           style={{
             fontFamily: "'Press Start 2P', monospace",
             fontSize: "10px",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
           }}
         >
           - {senderName}
@@ -696,13 +709,6 @@ function HappyEnding() {
       animate={{ opacity: 1 }}
       className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none"
     >
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
-        transition={{ duration: 1, repeat: Infinity }}
-        className="text-6xl md:text-8xl mb-4"
-      >
-        🎉
-      </motion.div>
       <h2
         className="text-2xl md:text-4xl text-white text-center px-4"
         style={{
