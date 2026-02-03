@@ -12,6 +12,7 @@ import { createClient } from "@/lib/supabase/client";
 import { CozyScrapbook } from "@/components/templates/CozyScrapbook";
 import { ElegantInvitation } from "@/components/templates/ElegantInvitation";
 import { SplashScreen } from "@/components/invite/SplashScreen";
+import { useToast } from "@/components/ui/toast";
 
 // Format date from YYYY-MM-DD to readable format
 function formatDate(dateStr: string): string {
@@ -661,6 +662,7 @@ function getHeaderBorder(templateId: string): string {
 function CustomizePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { showToast } = useToast();
   const templateId = searchParams.get("template") || "love-letter-mailbox";
   const template = getTemplateById(templateId);
   const fieldConfig = getTemplateFields(templateId);
@@ -698,12 +700,12 @@ function CustomizePageContent() {
     if (file) {
       // Validate file type
       if (!file.type.startsWith("image/")) {
-        alert("Please select an image file");
+        showToast("Please select an image file", "error");
         return;
       }
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert("Image must be less than 5MB");
+        showToast("Image must be less than 5MB", "error");
         return;
       }
       const reader = new FileReader();
@@ -770,7 +772,7 @@ function CustomizePageContent() {
 
   const handleNext = () => {
     if (!name.trim()) {
-      alert("Please enter your name");
+      showToast("Please enter your name", "error");
       return;
     }
     setStep(2);
@@ -778,7 +780,7 @@ function CustomizePageContent() {
 
   const handleSubmit = () => {
     if (!name.trim()) {
-      alert("Please enter your name");
+      showToast("Please enter your name", "error");
       return;
     }
     setShowConfirm(true);
@@ -902,7 +904,7 @@ function CustomizePageContent() {
       router.push(`/success?${params.toString()}`);
     } catch (error) {
       console.error("Error creating invite:", error);
-      alert("Failed to create invite. Please try again.");
+      showToast("Failed to create invite. Please try again.", "error");
       setIsCreating(false);
     }
   };
