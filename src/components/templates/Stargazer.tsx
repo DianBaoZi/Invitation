@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { saveResponse } from "@/lib/api/saveResponse";
 
 // ─────────────────────────────────────────────
 // TYPES & CONSTANTS
@@ -37,6 +38,7 @@ export function Stargazer({
   date = "February 14th",
   time = "7:00 PM",
   location = "Under the stars",
+  slug,
 }: {
   senderName?: string;
   message?: string;
@@ -44,6 +46,7 @@ export function Stargazer({
   date?: string;
   time?: string;
   location?: string;
+  slug?: string;
 }) {
   const [scene, setScene] = useState<Scene>("splash");
   const [accepted, setAccepted] = useState(false);
@@ -58,6 +61,10 @@ export function Stargazer({
 
   const handleAccept = () => {
     setAccepted(true);
+    // Save RSVP response
+    if (slug) {
+      saveResponse(slug, "Yes");
+    }
     // Shooting stars effect - diagonal streaks across the sky
     const starColors = ["#fbbf24", "#e8e4ff", "#f5f3ff"];
     const nebulaColors = ["#7c3aed", "#ec4899"];

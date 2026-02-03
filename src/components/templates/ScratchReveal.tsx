@@ -3,9 +3,11 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { saveResponse } from "@/lib/api/saveResponse";
 
 interface ScratchRevealProps {
   message: string;
+  slug?: string;
 }
 
 // --- Particle types ---
@@ -347,7 +349,7 @@ function Flower({
 // =============================================================================
 // Main Component
 // =============================================================================
-export function ScratchReveal({ message }: ScratchRevealProps) {
+export function ScratchReveal({ message, slug }: ScratchRevealProps) {
   const [progress, setProgress] = useState(0);
   const [completed, setCompleted] = useState(false);
   const [showInstruction, setShowInstruction] = useState(false);
@@ -378,9 +380,13 @@ export function ScratchReveal({ message }: ScratchRevealProps) {
     };
   }, []);
 
-  // Fire confetti when completed
+  // Fire confetti and save response when completed
   useEffect(() => {
     if (completed) {
+      // Save RSVP response
+      if (slug) {
+        saveResponse(slug, "Yes");
+      }
       confetti({
         particleCount: 80,
         spread: 70,
@@ -396,7 +402,7 @@ export function ScratchReveal({ message }: ScratchRevealProps) {
         });
       }, 300);
     }
-  }, [completed]);
+  }, [completed, slug]);
 
   // --- Growth loop ---
   const startGrowth = useCallback(() => {

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { saveResponse } from "@/lib/api/saveResponse";
 
 interface LoveLetterMailboxProps {
   message?: string;
@@ -12,6 +13,7 @@ interface LoveLetterMailboxProps {
   imageUrl?: string;
   senderName?: string;
   personalMessage?: string;
+  slug?: string;
 }
 
 type Screen = "mailbox" | "reveal";
@@ -24,6 +26,7 @@ export function LoveLetterMailbox({
   imageUrl,
   senderName = "Someone Special",
   personalMessage = "You make every moment feel like a fairytale. I can't imagine spending this day with anyone else.",
+  slug,
 }: LoveLetterMailboxProps) {
   const [screen, setScreen] = useState<Screen>("mailbox");
   const [mailboxOpen, setMailboxOpen] = useState(false);
@@ -68,6 +71,7 @@ export function LoveLetterMailbox({
             imageUrl={imageUrl}
             senderName={senderName}
             personalMessage={personalMessage}
+            slug={slug}
           />
         )}
       </AnimatePresence>
@@ -314,6 +318,7 @@ function RevealScreen({
   imageUrl,
   senderName,
   personalMessage,
+  slug,
 }: {
   message: string;
   plan: string;
@@ -322,11 +327,16 @@ function RevealScreen({
   imageUrl?: string;
   senderName: string;
   personalMessage: string;
+  slug?: string;
 }) {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleRSVP = () => {
     setShowSuccess(true);
+    // Save RSVP response
+    if (slug) {
+      saveResponse(slug, "Yes");
+    }
     // Rose petals falling - soft romantic pinks like flower petals
     const petalColors = ["#f8bbd0", "#f48fb1", "#f06292", "#ec407a", "#fff0f5"];
 

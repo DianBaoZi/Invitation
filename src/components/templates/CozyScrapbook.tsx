@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { saveResponse } from "@/lib/api/saveResponse";
 
 interface CozyScrapbookProps {
   message: string;
@@ -12,6 +13,7 @@ interface CozyScrapbookProps {
   eventLocation?: string;
   photoUrl1?: string;
   photoUrl2?: string;
+  slug?: string;
 }
 
 export function CozyScrapbook({
@@ -22,6 +24,7 @@ export function CozyScrapbook({
   eventLocation = "Somewhere romantic",
   photoUrl1,
   photoUrl2,
+  slug,
 }: CozyScrapbookProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -53,6 +56,10 @@ export function CozyScrapbook({
 
   const handleYes = () => {
     setShowSuccess(true);
+    // Save RSVP response
+    if (slug) {
+      saveResponse(slug, "Yes");
+    }
     const colors = ["#c27256", "#8b9e6b", "#d4a574", "#e8c9a0", "#a08060"];
     confetti({ particleCount: 60, spread: 80, origin: { y: 0.5 }, colors, shapes: ["circle"], scalar: 1.4 });
     setTimeout(() => {

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { saveResponse } from "@/lib/api/saveResponse";
 
 interface Y2KDigitalCrushProps {
   message: string;
@@ -12,6 +13,7 @@ interface Y2KDigitalCrushProps {
   date?: string;
   time?: string;
   location?: string;
+  slug?: string;
 }
 
 // ─── Win95 Style Constants ───────────────────────────────────────────────────
@@ -70,6 +72,7 @@ export function Y2KDigitalCrush({
   date,
   time,
   location,
+  slug,
 }: Y2KDigitalCrushProps) {
   // Phase: "desktop" | "terminal" | "invitation"
   const [phase, setPhase] = useState<"desktop" | "terminal" | "invitation">("desktop");
@@ -177,6 +180,10 @@ export function Y2KDigitalCrush({
 
   const handleYesClick = useCallback(() => {
     setAccepted(true);
+    // Save RSVP response
+    if (slug) {
+      saveResponse(slug, "Yes");
+    }
     // Y2K/Windows style - blue squares like pixels + some pink hearts
     const win95Colors = ["#000080", "#008080", "#0000ff", "#00ffff", "#ff69b4"];
 
@@ -224,7 +231,7 @@ export function Y2KDigitalCrush({
         scalar: 1.3,
       });
     }, 350);
-  }, []);
+  }, [slug]);
 
   const handleNoClick = useCallback(() => {
     const count = noClickCount + 1;

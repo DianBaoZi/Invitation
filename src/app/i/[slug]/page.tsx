@@ -7,6 +7,7 @@ import { Heart, HeartCrack, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
 import { Invite, TemplateConfig } from "@/lib/supabase/types";
+import { saveResponse } from "@/lib/api/saveResponse";
 
 // Dynamic imports for templates - reduces initial bundle size
 const Y2KDigitalCrush = lazy(() => import("@/components/templates/Y2KDigitalCrush").then(m => ({ default: m.Y2KDigitalCrush })));
@@ -393,7 +394,7 @@ function InteractiveTemplate({
   const renderTemplate = () => {
     switch (templateId) {
       case "scratch-reveal":
-        return <ScratchReveal message={message} />;
+        return <ScratchReveal message={message} slug={slug} />;
       case "y2k-digital-crush":
         return (
           <Y2KDigitalCrush
@@ -402,6 +403,7 @@ function InteractiveTemplate({
             date={date}
             time={time}
             location={location}
+            slug={slug}
           />
         );
       case "cozy-scrapbook":
@@ -412,6 +414,7 @@ function InteractiveTemplate({
             eventDate={date}
             eventTime={time}
             eventLocation={location}
+            slug={slug}
           />
         );
       case "love-letter-mailbox":
@@ -421,6 +424,7 @@ function InteractiveTemplate({
             date={date}
             location={location}
             personalMessage={personalMessage}
+            slug={slug}
           />
         );
       case "stargazer":
@@ -431,6 +435,7 @@ function InteractiveTemplate({
             date={date}
             time={time}
             location={location}
+            slug={slug}
           />
         );
       case "premiere":
@@ -441,6 +446,7 @@ function InteractiveTemplate({
             date={date}
             time={time}
             location={location}
+            slug={slug}
           />
         );
       case "forest-adventure":
@@ -451,6 +457,7 @@ function InteractiveTemplate({
             date={date}
             time={time}
             location={location}
+            slug={slug}
           />
         );
       case "elegant-invitation":
@@ -467,10 +474,11 @@ function InteractiveTemplate({
             photo2Caption={(configAny.photo2Caption || "") as string}
             photo3Url={(configAny.photo3Url || "") as string}
             photo3Caption={(configAny.photo3Caption || "") as string}
+            slug={slug}
           />
         );
       default:
-        return <RunawayButtonTemplate message={message} />;
+        return <RunawayButtonTemplate message={message} slug={slug} />;
     }
   };
 
@@ -485,7 +493,7 @@ function InteractiveTemplate({
 // RUNAWAY BUTTON TEMPLATE
 // ============================================
 
-function RunawayButtonTemplate({ message }: { message: string }) {
+function RunawayButtonTemplate({ message, slug }: { message: string; slug: string }) {
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
   const [hoverCount, setHoverCount] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -501,6 +509,8 @@ function RunawayButtonTemplate({ message }: { message: string }) {
 
   const handleYesClick = () => {
     setShowSuccess(true);
+    // Save RSVP response
+    saveResponse(slug, "Yes");
     confetti({
       particleCount: 150,
       spread: 80,

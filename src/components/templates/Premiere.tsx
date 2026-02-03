@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import confetti from "canvas-confetti";
+import { saveResponse } from "@/lib/api/saveResponse";
 
 // ─────────────────────────────────────────────
 // TYPES & CONSTANTS
@@ -32,6 +33,7 @@ export function Premiere({
   date = "February 14th",
   time = "7:00 PM",
   location = "The usual spot",
+  slug,
 }: {
   senderName?: string;
   message?: string;
@@ -39,12 +41,17 @@ export function Premiere({
   date?: string;
   time?: string;
   location?: string;
+  slug?: string;
 }) {
   const [phase, setPhase] = useState<Phase>("countdown");
   const [accepted, setAccepted] = useState(false);
 
   const handleAccept = () => {
     setAccepted(true);
+    // Save RSVP response
+    if (slug) {
+      saveResponse(slug, "Yes");
+    }
     // Hollywood premiere - gold stars rain down like an award show
 
     // Initial spotlight burst (gold explosion)

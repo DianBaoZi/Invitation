@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { saveResponse } from "@/lib/api/saveResponse";
 
 // ============================================
 // TYPES
@@ -33,6 +34,7 @@ interface ForestAdventureProps {
   date?: string;
   time?: string;
   location?: string;
+  slug?: string;
 }
 
 // ============================================
@@ -840,6 +842,7 @@ export function ForestAdventure({
   date,
   time,
   location,
+  slug,
 }: ForestAdventureProps) {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>("start");
   const [dialogueComplete, setDialogueComplete] = useState(false);
@@ -855,6 +858,10 @@ export function ForestAdventure({
   const handleYes = useCallback(() => {
     setCurrentScreen("happy_ending");
     setDialogueComplete(false);
+    // Save RSVP response
+    if (slug) {
+      saveResponse(slug, "Yes");
+    }
 
     // Magical forest celebration!
     const forestColors = ["#22c55e", "#86efac", "#fbbf24", "#f472b6", "#a855f7"];
@@ -890,7 +897,7 @@ export function ForestAdventure({
         gravity: 0.5,
       });
     }, 300);
-  }, []);
+  }, [slug]);
 
   const handleNo = () => {
     setCurrentScreen("guilt_trip");

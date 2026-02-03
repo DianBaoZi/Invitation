@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import confetti from "canvas-confetti";
+import { saveResponse } from "@/lib/api/saveResponse";
 
 // ─────────────────────────────────────────────
 // TYPES & PALETTE
@@ -44,6 +45,7 @@ export function ElegantInvitation({
   photo2Caption = "A moment I'll never forget",
   photo3Url = "",
   photo3Caption = "Here's to many more",
+  slug,
 }: {
   senderName?: string;
   message?: string;
@@ -57,6 +59,7 @@ export function ElegantInvitation({
   photo2Caption?: string;
   photo3Url?: string;
   photo3Caption?: string;
+  slug?: string;
 }) {
   const [accepted, setAccepted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,6 +77,11 @@ export function ElegantInvitation({
 
   const handleAccept = () => {
     setAccepted(true);
+
+    // Save RSVP response
+    if (slug) {
+      saveResponse(slug, "Yes");
+    }
 
     // Elegant rose gold confetti
     const colors = [PALETTE.roseGold, PALETTE.roseGoldLight, PALETTE.gold, PALETTE.blushDark];
