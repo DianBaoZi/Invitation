@@ -12,7 +12,6 @@ import {
   RefreshCw,
   AlertCircle,
   ArrowLeft,
-  Eye,
   Mail,
   Sparkle,
 } from "lucide-react";
@@ -30,7 +29,6 @@ interface InviteStatus {
   expires_at: string;
   response: string | null;
   responded_at: string | null;
-  opened_at: string | null;
 }
 
 function StatusPageContent() {
@@ -63,7 +61,7 @@ function StatusPageContent() {
       const { data: invite, error: inviteError } = await supabase
         .from("invites")
         .select(
-          "id, slug, template_id, creator_name, recipient_name, is_paid, created_at, expires_at, response, responded_at, opened_at"
+          "id, slug, template_id, creator_name, recipient_name, is_paid, created_at, expires_at, response, responded_at"
         )
         .eq("slug", slug)
         .single();
@@ -115,7 +113,6 @@ function StatusPageContent() {
     ? new Date(status.expires_at) < new Date()
     : false;
   const hasResponded = status?.response !== null;
-  const hasOpened = status?.opened_at !== null;
 
   // Loading state
   if (loading) {
@@ -359,81 +356,6 @@ function StatusPageContent() {
       {/* Status cards section */}
       <div className="relative z-10 px-4 pb-32">
         <div className="max-w-lg mx-auto space-y-6">
-          {/* Opened Status Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div
-              className={`relative overflow-hidden rounded-3xl p-8 ${
-                hasOpened
-                  ? "bg-white shadow-xl shadow-emerald-100/30"
-                  : "bg-white shadow-xl shadow-stone-200/30"
-              }`}
-            >
-              {/* Decorative corner */}
-              <div
-                className={`absolute top-0 right-0 w-24 h-24 ${
-                  hasOpened ? "bg-emerald-50" : "bg-stone-50"
-                } rounded-bl-[100px]`}
-              />
-
-              <div className="relative flex items-start gap-5">
-                <div
-                  className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 ${
-                    hasOpened
-                      ? "bg-gradient-to-br from-emerald-400 to-green-500 shadow-lg shadow-emerald-200/50"
-                      : "bg-gradient-to-br from-stone-200 to-stone-300"
-                  }`}
-                >
-                  <Eye className="w-7 h-7 text-white" />
-                </div>
-
-                <div className="flex-1 pt-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3
-                      className="text-2xl text-stone-800"
-                      style={{
-                        fontFamily: "'Playfair Display', Georgia, serif",
-                      }}
-                    >
-                      {hasOpened ? "Invitation Opened" : "Not Opened Yet"}
-                    </h3>
-                    {hasOpened && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center"
-                      >
-                        <Check className="w-4 h-4 text-white" />
-                      </motion.div>
-                    )}
-                  </div>
-
-                  <p
-                    className={`text-base ${
-                      hasOpened ? "text-emerald-600" : "text-stone-400"
-                    }`}
-                    style={{
-                      fontFamily: "'Cormorant Garamond', Georgia, serif",
-                    }}
-                  >
-                    {hasOpened && status.opened_at ? (
-                      <span className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        Viewed on {formatDateTime(status.opened_at)}
-                      </span>
-                    ) : (
-                      "Your special someone hasn't seen it yet"
-                    )}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
           {/* RSVP Status Card */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}

@@ -514,38 +514,17 @@ function RevealScreen({
       />
 
       <div className="max-w-[320px] sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto relative z-10">
-        {/* Intro spacer - gives room for first card animation to play */}
-        <div className="h-[25vh] sm:h-[30vh] flex flex-col items-center justify-end px-4 sm:px-5 pb-6 sm:pb-8">
+        {/* Card 1: Valentine Header — starts with a bit of top padding */}
+        <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-5 py-8 sm:py-12 pt-16 sm:pt-20">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="text-center"
-          >
-            <motion.p
-              className="text-rose-600/70 text-xs sm:text-sm tracking-[0.15em] sm:tracking-[0.2em] uppercase mb-2"
-              style={{ fontFamily: "Georgia, serif" }}
-            >
-              A Special Message
-            </motion.p>
-            <motion.div
-              animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c2185b" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" className="sm:w-5 sm:h-5">
-                <path d="M7 10l5 5 5-5" />
-              </svg>
-            </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Card 1: Valentine Header */}
-        <div className="min-h-[75vh] sm:min-h-[70vh] flex flex-col items-center justify-center px-4 sm:px-5 py-8 sm:py-12">
-          <motion.div
-            variants={cardDramaticDrop}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
+            initial={{ opacity: 0, y: -100, scale: 0.8, rotate: 8 }}
+            animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
+            transition={{
+              duration: 1.2,
+              delay: 0.3,
+              ease: [0.16, 1, 0.3, 1],
+              scale: { type: "spring", stiffness: 200, damping: 15 },
+            }}
             className="rounded-2xl overflow-hidden w-full relative"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
