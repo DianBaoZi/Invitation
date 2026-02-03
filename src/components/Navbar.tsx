@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Heart, LogOut, User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -54,12 +55,16 @@ export function Navbar() {
         {/* Logo */}
         <button
           onClick={() => router.push("/")}
-          className="flex items-center gap-2 hover:opacity-80 transition"
+          className="flex items-center gap-1 hover:opacity-80 transition"
         >
-          <Heart className="w-7 h-7 text-pink-500 fill-pink-500" />
-          <span className="font-bold text-lg text-gray-900 hidden sm:block">
-            Invitely
-          </span>
+          <Image
+            src="/logo.svg"
+            alt="XYI"
+            width={100}
+            height={40}
+            className="h-8 w-auto"
+            priority
+          />
         </button>
 
         {/* Right side */}

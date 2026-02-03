@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Heart, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -67,15 +68,13 @@ export function Footer() {
             {/* Brand */}
             <div className="col-span-2">
               <Link href="/" className="flex items-center gap-3 mb-6 group">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary/25 group-hover:scale-110 transition-transform duration-300">
-                  <Heart className="w-6 h-6 text-white fill-white" />
-                </div>
-                <div>
-                  <span className="text-2xl font-bold text-white tracking-tight font-sans">
-                    Invitation
-                  </span>
-                  <p className="text-xs text-gray-500 font-sans">Say yes to love</p>
-                </div>
+                <Image
+                  src="/logo.svg"
+                  alt="XYI"
+                  width={120}
+                  height={48}
+                  className="h-10 w-auto brightness-0 invert group-hover:scale-105 transition-transform duration-300"
+                />
               </Link>
               <p className="text-gray-400 max-w-sm font-sans leading-relaxed">
                 Create beautiful, interactive Valentine&apos;s Day invitations that
@@ -153,7 +152,7 @@ export function Footer() {
           <div className="mt-16 pt-8 border-t border-gray-800">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <p className="text-sm text-gray-500 font-sans">
-                © {new Date().getFullYear()} Invitation. All rights reserved.
+                © {new Date().getFullYear()} XYI. All rights reserved.
               </p>
               <p className="text-sm text-gray-500 font-sans flex items-center gap-2">
                 Made with

@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Plus, Calendar, ExternalLink, Copy, CheckCircle, LogOut, Trash2, BarChart3, AlertTriangle, X } from "lucide-react";
+import { Plus, Calendar, ExternalLink, Copy, CheckCircle, LogOut, Trash2, BarChart3, AlertTriangle, X, Mail } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { getTemplateById } from "@/lib/supabase/templates";
 import type { User } from "@supabase/supabase-js";
@@ -119,10 +120,10 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
         <motion.div
-          animate={{ scale: [1, 1.2, 1] }}
+          animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
+          <Image src="/logo.svg" alt="XYI" width={120} height={48} className="h-12 w-auto" />
         </motion.div>
       </div>
     );
@@ -135,10 +136,9 @@ export default function DashboardPage() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <button
             onClick={() => router.push("/")}
-            className="flex items-center gap-2 hover:opacity-80 transition"
+            className="flex items-center hover:opacity-80 transition"
           >
-            <Heart className="w-7 h-7 text-pink-500 fill-pink-500" />
-            <span className="font-bold text-lg text-gray-900">Invitely</span>
+            <Image src="/logo.svg" alt="XYI" width={100} height={40} className="h-8 w-auto" />
           </button>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600 hidden sm:block">
@@ -180,7 +180,7 @@ export default function DashboardPage() {
             animate={{ opacity: 1 }}
             className="text-center py-16"
           >
-            <Heart className="w-16 h-16 text-pink-200 mx-auto mb-4" />
+            <Mail className="w-16 h-16 text-pink-200 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-700 mb-2">
               No invites yet
             </h2>
