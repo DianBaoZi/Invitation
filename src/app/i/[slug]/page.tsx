@@ -110,18 +110,9 @@ function InvitePageContent() {
     };
   }, [loading, error, hasCustomSplash, usesInlineSplash]);
 
-  // Show loading state
+  // Show loading state - invisible to prevent flash before splash
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-        <motion.div
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
-        </motion.div>
-      </div>
-    );
+    return <div className="min-h-screen" />;
   }
 
   // Show error/not found state
@@ -368,18 +359,9 @@ function InlineSplashScreen({ name, phase }: { name: string; phase: "enter" | "h
 // INTERACTIVE TEMPLATES
 // ============================================
 
-// Loading spinner for lazy-loaded templates
+// Invisible loader for lazy-loaded templates - prevents flash
 function TemplateLoader() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <motion.div
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
-      </motion.div>
-    </div>
-  );
+  return <div className="min-h-screen" />;
 }
 
 function InteractiveTemplate({
@@ -647,18 +629,7 @@ function FloatingHearts() {
 
 export default function InvitePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-          <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
-          </motion.div>
-        </div>
-      }
-    >
+    <Suspense fallback={<div className="min-h-screen" />}>
       <InvitePageContent />
     </Suspense>
   );
