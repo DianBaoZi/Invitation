@@ -3,7 +3,17 @@
 import { useState, useEffect, Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, Copy, Check, Clock, Calendar, RefreshCw, AlertCircle } from "lucide-react";
+import {
+  Heart,
+  Copy,
+  Check,
+  Clock,
+  Calendar,
+  RefreshCw,
+  AlertCircle,
+  Sparkles,
+  ArrowLeft,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
@@ -29,6 +39,7 @@ function StatusPageContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<InviteStatus | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const shareUrl = `${baseUrl}/i/${slug}`;
@@ -37,24 +48,27 @@ function StatusPageContent() {
     loadInviteStatus();
   }, [slug]);
 
-  const loadInviteStatus = async () => {
-    setLoading(true);
+  const loadInviteStatus = async (showRefresh = false) => {
+    if (showRefresh) setIsRefreshing(true);
+    else setLoading(true);
     setError(null);
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const supabase = createClient() as any;
 
-      // Get invite data
       const { data: invite, error: inviteError } = await supabase
         .from("invites")
-        .select("id, slug, template_id, creator_name, recipient_name, is_paid, created_at, expires_at, response, responded_at")
+        .select(
+          "id, slug, template_id, creator_name, recipient_name, is_paid, created_at, expires_at, response, responded_at"
+        )
         .eq("slug", slug)
         .single();
 
       if (inviteError || !invite) {
         setError("Invite not found");
         setLoading(false);
+        setIsRefreshing(false);
         return;
       }
 
@@ -64,14 +78,14 @@ function StatusPageContent() {
       setError("Failed to load invite status");
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
-  // Format date helper
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-US", {
-      month: "short",
+      month: "long",
       day: "numeric",
       year: "numeric",
     });
@@ -82,55 +96,78 @@ function StatusPageContent() {
     return date.toLocaleString("en-US", {
       month: "short",
       day: "numeric",
-      year: "numeric",
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
     });
   };
 
-  // Copy link
   const handleCopy = async () => {
     await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Check if expired
-  const isExpired = status?.expires_at ? new Date(status.expires_at) < new Date() : false;
+  const isExpired = status?.expires_at
+    ? new Date(status.expires_at) < new Date()
+    : false;
   const hasResponded = status?.response !== null;
 
+  // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
+      <div className="min-h-screen flex items-center justify-center bg-[#fdfcfa]">
+        <div
+          className="fixed inset-0 opacity-[0.15] pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          }}
+        />
         <motion.div
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ scale: [1, 1.15, 1] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Heart className="w-10 h-10 text-pink-400 fill-pink-400" />
+          <Heart className="w-8 h-8 text-rose-400 fill-rose-400" />
         </motion.div>
       </div>
     );
   }
 
+  // Error state
   if (error || !status) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#fdfcfa] p-4">
+        <div
+          className="fixed inset-0 opacity-[0.15] pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          }}
+        />
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-white rounded-3xl shadow-xl p-8 max-w-md w-full text-center"
+          className="relative bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-rose-100/50 p-8 max-w-md w-full text-center"
         >
-          <div className="w-14 h-14 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-            <AlertCircle className="w-7 h-7 text-red-600" />
+          <div className="w-16 h-16 mx-auto mb-5 bg-rose-50 rounded-full flex items-center justify-center">
+            <AlertCircle className="w-8 h-8 text-rose-400" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Invite Not Found</h1>
-          <p className="text-gray-500 mb-6">{error || "This invite doesn't exist or has been deleted."}</p>
-          <Button
-            onClick={() => router.push("/")}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+          <h1
+            className="text-2xl text-stone-800 mb-2"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            Create New Invite
+            Invite Not Found
+          </h1>
+          <p
+            className="text-stone-500 mb-6"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+          >
+            {error || "This invite doesn't exist or has been deleted."}
+          </p>
+          <Button
+            onClick={() => router.push("/dashboard")}
+            className="bg-rose-500 hover:bg-rose-600 text-white rounded-full px-6"
+          >
+            Back to Dashboard
           </Button>
         </motion.div>
       </div>
@@ -138,188 +175,361 @@ function StatusPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", damping: 20 }}
-        className="bg-white rounded-3xl shadow-xl p-8 max-w-md w-full"
-      >
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-center mb-8"
-        >
-          <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
-            hasResponded
-              ? "bg-gradient-to-br from-green-100 to-emerald-100"
-              : "bg-gradient-to-br from-pink-100 to-rose-100"
-          }`}>
-            <Heart className={`w-8 h-8 ${hasResponded ? "text-green-500 fill-green-500" : "text-pink-400"}`} />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {hasResponded ? "They said Yes!" : "Waiting for response..."}
-          </h1>
-          {status.recipient_name && (
-            <p className="text-gray-500 mt-1">For {status.recipient_name}</p>
-          )}
-        </motion.div>
+    <div className="min-h-screen bg-[#fdfcfa] relative overflow-hidden">
+      {/* Paper texture overlay */}
+      <div
+        className="fixed inset-0 opacity-[0.15] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
 
-        {/* Response status card */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-6"
+      {/* Subtle gradient */}
+      <div className="fixed inset-0 bg-gradient-to-b from-rose-50/40 via-transparent to-stone-50/30 pointer-events-none" />
+
+      {/* Floating decorative elements */}
+      <motion.div
+        className="fixed top-20 left-[10%] text-rose-200/30 pointer-events-none"
+        animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <Heart className="w-12 h-12 fill-current" />
+      </motion.div>
+      <motion.div
+        className="fixed bottom-32 right-[8%] text-rose-200/20 pointer-events-none"
+        animate={{ y: [0, 10, 0], rotate: [0, -8, 0] }}
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1,
+        }}
+      >
+        <Heart className="w-16 h-16 fill-current" />
+      </motion.div>
+      <motion.div
+        className="fixed top-1/3 right-[15%] text-amber-200/25 pointer-events-none"
+        animate={{ scale: [1, 1.1, 1], opacity: [0.25, 0.35, 0.25] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <Sparkles className="w-8 h-8" />
+      </motion.div>
+
+      {/* Main content */}
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-12">
+        {/* Back button */}
+        <motion.button
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          onClick={() => router.push("/dashboard")}
+          className="absolute top-6 left-6 flex items-center gap-2 text-stone-400 hover:text-stone-600 transition-colors"
+          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
         >
-          <div className={`p-5 rounded-2xl border-2 ${
-            isExpired
-              ? "bg-gradient-to-br from-red-50 to-orange-50 border-red-200"
-              : hasResponded
-              ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
-              : "bg-gradient-to-br from-pink-50 to-rose-50 border-pink-200"
-          }`}>
-            {hasResponded ? (
-              <div className="text-center">
+          <ArrowLeft className="w-4 h-4" />
+          <span>Dashboard</span>
+        </motion.button>
+
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          className="w-full max-w-md"
+        >
+          {/* Header Card */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg shadow-rose-100/50 border border-rose-100/30 overflow-hidden">
+            {/* Decorative top bar */}
+            <div className="h-1.5 bg-gradient-to-r from-rose-200 via-rose-400 to-rose-200" />
+
+            <div className="p-8">
+              {/* Title section */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-center mb-8"
+              >
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", delay: 0.3 }}
-                  className="text-4xl mb-3"
+                  transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
+                  className={`w-20 h-20 mx-auto mb-5 rounded-full flex items-center justify-center ${
+                    hasResponded
+                      ? "bg-gradient-to-br from-emerald-50 to-green-100 shadow-lg shadow-emerald-100/50"
+                      : "bg-gradient-to-br from-rose-50 to-pink-100 shadow-lg shadow-rose-100/50"
+                  }`}
                 >
-                  💕
+                  <Heart
+                    className={`w-9 h-9 ${
+                      hasResponded
+                        ? "text-emerald-500 fill-emerald-500"
+                        : "text-rose-400 fill-rose-400"
+                    }`}
+                  />
                 </motion.div>
-                <p className="text-green-700 font-semibold text-lg mb-2">
-                  {status.response}
+
+                <p
+                  className="text-xs tracking-[0.25em] uppercase text-stone-400 mb-2"
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                >
+                  Invitation Status
                 </p>
-                {status.responded_at && (
-                  <div className="flex items-center justify-center gap-2 text-sm text-green-600">
-                    <Clock className="w-4 h-4" />
-                    <span>{formatDateTime(status.responded_at)}</span>
+
+                <h1
+                  className="text-3xl text-stone-800 mb-1"
+                  style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontWeight: 500,
+                  }}
+                >
+                  {hasResponded ? "They Said Yes!" : "Awaiting Response"}
+                </h1>
+
+                {status.recipient_name && (
+                  <p
+                    className="text-stone-500 text-lg"
+                    style={{
+                      fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    }}
+                  >
+                    for {status.recipient_name}
+                  </p>
+                )}
+              </motion.div>
+
+              {/* RSVP Status Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="mb-8"
+              >
+                <div
+                  className={`relative p-6 rounded-2xl transition-all ${
+                    hasResponded
+                      ? "bg-gradient-to-br from-emerald-50/80 to-green-50/80 border border-emerald-200/50"
+                      : "bg-gradient-to-br from-stone-50/80 to-slate-50/80 border border-stone-200/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 ${
+                        hasResponded
+                          ? "bg-emerald-100 text-emerald-600"
+                          : "bg-stone-100 text-stone-400"
+                      }`}
+                    >
+                      <Heart
+                        className={`w-6 h-6 ${
+                          hasResponded ? "fill-current" : ""
+                        }`}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span
+                        className={`font-medium block mb-1 ${
+                          hasResponded ? "text-emerald-700" : "text-stone-600"
+                        }`}
+                        style={{
+                          fontFamily: "'Playfair Display', Georgia, serif",
+                          fontSize: "1.25rem",
+                        }}
+                      >
+                        {hasResponded
+                          ? "They clicked Yes! 💕"
+                          : "Not clicked Yes yet"}
+                      </span>
+                      <p
+                        className={`text-sm ${
+                          hasResponded ? "text-emerald-600/70" : "text-stone-400"
+                        }`}
+                        style={{
+                          fontFamily: "'Cormorant Garamond', Georgia, serif",
+                        }}
+                      >
+                        {hasResponded && status.responded_at ? (
+                          <span className="flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5" />
+                            Responded on {formatDateTime(status.responded_at)}
+                          </span>
+                        ) : (
+                          "Waiting for their answer..."
+                        )}
+                      </p>
+                    </div>
+                    {hasResponded && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-200"
+                      >
+                        <Check className="w-5 h-5 text-white" />
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Expired warning */}
+              {isExpired && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="mb-6 p-4 rounded-xl bg-amber-50/80 border border-amber-200/50"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">⏰</span>
+                    <div>
+                      <p
+                        className="font-medium text-amber-700"
+                        style={{
+                          fontFamily: "'Cormorant Garamond', Georgia, serif",
+                        }}
+                      >
+                        Invite Expired
+                      </p>
+                      <p
+                        className="text-sm text-amber-600/70"
+                        style={{
+                          fontFamily: "'Cormorant Garamond', Georgia, serif",
+                        }}
+                      >
+                        This invitation is no longer active
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Shareable link */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+                className="mb-6"
+              >
+                <p
+                  className="text-xs tracking-[0.15em] uppercase text-stone-400 mb-2"
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                >
+                  Shareable Link
+                </p>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 p-3.5 bg-stone-50/80 rounded-xl border border-stone-200/50 overflow-hidden">
+                    <p
+                      className="text-sm text-stone-600 truncate"
+                      style={{
+                        fontFamily: "'Cormorant Garamond', Georgia, serif",
+                      }}
+                    >
+                      {shareUrl}
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleCopy}
+                    size="sm"
+                    className={`shrink-0 h-11 w-11 p-0 rounded-xl transition-all ${
+                      copied
+                        ? "bg-emerald-500 hover:bg-emerald-600"
+                        : "bg-stone-800 hover:bg-stone-900"
+                    } text-white`}
+                  >
+                    {copied ? (
+                      <Check className="w-4 h-4" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
+              </motion.div>
+
+              {/* Refresh & Expiry */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="flex items-center justify-between mb-8"
+              >
+                <button
+                  onClick={() => loadInviteStatus(true)}
+                  disabled={isRefreshing}
+                  className="flex items-center gap-2 text-stone-400 hover:text-stone-600 transition-colors disabled:opacity-50"
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                >
+                  <RefreshCw
+                    className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
+                  />
+                  <span className="text-sm">Refresh</span>
+                </button>
+
+                {!isExpired && status.expires_at && (
+                  <div
+                    className="flex items-center gap-1.5 text-sm text-stone-400"
+                    style={{
+                      fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    }}
+                  >
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Expires {formatDate(status.expires_at)}</span>
                   </div>
                 )}
-              </div>
-            ) : isExpired ? (
-              <div className="text-center">
-                <span className="text-3xl mb-2 block">⏰</span>
-                <p className="text-red-600 font-medium">
-                  This invite has expired
-                </p>
-              </div>
-            ) : (
-              <div className="text-center">
-                <motion.span
-                  className="text-3xl mb-2 block"
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+              </motion.div>
+
+              {/* Action button */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 }}
+              >
+                <Button
+                  onClick={() => router.push("/dashboard")}
+                  className="w-full h-12 text-base rounded-full bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white shadow-lg shadow-rose-200/50 transition-all hover:shadow-xl hover:shadow-rose-200/60"
+                  style={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    letterSpacing: "0.02em",
+                  }}
                 >
-                  💌
-                </motion.span>
-                <p className="text-pink-600 font-medium">
-                  Waiting for them to open your invite
-                </p>
-              </div>
-            )}
-          </div>
-        </motion.div>
-
-        {/* Shareable link */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-6"
-        >
-          <p className="text-sm text-gray-500 mb-2">Your shareable link</p>
-          <div className="flex items-center gap-2">
-            <div className="flex-1 p-3 bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
-              <p className="text-sm text-gray-700 truncate">{shareUrl}</p>
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Dashboard
+                </Button>
+              </motion.div>
             </div>
-            <Button
-              onClick={handleCopy}
-              size="sm"
-              className={`shrink-0 h-10 px-3 ${
-                copied
-                  ? "bg-green-500 hover:bg-green-600"
-                  : "bg-gray-800 hover:bg-gray-900"
-              } text-white`}
-            >
-              {copied ? (
-                <Check className="w-4 h-4" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </Button>
           </div>
-        </motion.div>
 
-        {/* Refresh button */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="flex items-center justify-center gap-2 mb-6"
-        >
-          <Button
-            onClick={loadInviteStatus}
-            variant="ghost"
-            size="sm"
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh
-          </Button>
-        </motion.div>
-
-        {/* Expiry note */}
-        {!isExpired && status.expires_at && (
+          {/* Decorative flourish */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-6"
+            transition={{ delay: 0.6 }}
+            className="flex items-center justify-center gap-3 mt-8"
           >
-            <Calendar className="w-4 h-4" />
-            <span>Expires on {formatDate(status.expires_at)}</span>
+            <span className="block h-px w-12 bg-gradient-to-r from-transparent to-rose-200" />
+            <Heart className="w-4 h-4 text-rose-300 fill-rose-300" />
+            <span className="block h-px w-12 bg-gradient-to-l from-transparent to-rose-200" />
           </motion.div>
-        )}
-
-        {/* Action buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="space-y-3"
-        >
-          <Button
-            onClick={() => router.push("/")}
-            className="w-full h-12 text-base font-medium rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg"
-          >
-            <Heart className="w-4 h-4 mr-2" />
-            Create another invite
-          </Button>
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 }
-
-// ============================================
-// MAIN EXPORT WITH SUSPENSE
-// ============================================
 
 export default function StatusPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100">
+        <div className="min-h-screen flex items-center justify-center bg-[#fdfcfa]">
+          <div
+            className="fixed inset-0 opacity-[0.15] pointer-events-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+            }}
+          />
           <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
           >
-            <Heart className="w-10 h-10 text-pink-400 fill-pink-400" />
+            <Heart className="w-8 h-8 text-rose-400 fill-rose-400" />
           </motion.div>
         </div>
       }
