@@ -11,8 +11,10 @@ import {
   Calendar,
   RefreshCw,
   AlertCircle,
-  Sparkles,
   ArrowLeft,
+  Eye,
+  Mail,
+  Sparkle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -28,6 +30,7 @@ interface InviteStatus {
   expires_at: string;
   response: string | null;
   responded_at: string | null;
+  opened_at: string | null;
 }
 
 function StatusPageContent() {
@@ -60,7 +63,7 @@ function StatusPageContent() {
       const { data: invite, error: inviteError } = await supabase
         .from("invites")
         .select(
-          "id, slug, template_id, creator_name, recipient_name, is_paid, created_at, expires_at, response, responded_at"
+          "id, slug, template_id, creator_name, recipient_name, is_paid, created_at, expires_at, response, responded_at, opened_at"
         )
         .eq("slug", slug)
         .single();
@@ -112,17 +115,12 @@ function StatusPageContent() {
     ? new Date(status.expires_at) < new Date()
     : false;
   const hasResponded = status?.response !== null;
+  const hasOpened = status?.opened_at !== null;
 
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fdfcfa]">
-        <div
-          className="fixed inset-0 opacity-[0.15] pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-          }}
-        />
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF7F5]">
         <motion.div
           animate={{ scale: [1, 1.15, 1] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
@@ -136,36 +134,30 @@ function StatusPageContent() {
   // Error state
   if (error || !status) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fdfcfa] p-4">
-        <div
-          className="fixed inset-0 opacity-[0.15] pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-          }}
-        />
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF7F5] p-4">
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="relative bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-rose-100/50 p-8 max-w-md w-full text-center"
+          className="relative bg-white rounded-2xl shadow-2xl shadow-stone-200/50 p-10 max-w-md w-full text-center"
         >
-          <div className="w-16 h-16 mx-auto mb-5 bg-rose-50 rounded-full flex items-center justify-center">
-            <AlertCircle className="w-8 h-8 text-rose-400" />
+          <div className="w-20 h-20 mx-auto mb-6 bg-rose-50 rounded-full flex items-center justify-center">
+            <AlertCircle className="w-10 h-10 text-rose-400" />
           </div>
           <h1
-            className="text-2xl text-stone-800 mb-2"
+            className="text-3xl text-stone-800 mb-3"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            Invite Not Found
+            Not Found
           </h1>
           <p
-            className="text-stone-500 mb-6"
+            className="text-stone-500 mb-8 text-lg"
             style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
           >
             {error || "This invite doesn't exist or has been deleted."}
           </p>
           <Button
             onClick={() => router.push("/dashboard")}
-            className="bg-rose-500 hover:bg-rose-600 text-white rounded-full px-6"
+            className="bg-stone-900 hover:bg-stone-800 text-white rounded-full px-8 h-12"
           >
             Back to Dashboard
           </Button>
@@ -175,340 +167,497 @@ function StatusPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdfcfa] relative overflow-hidden">
-      {/* Paper texture overlay */}
-      <div
-        className="fixed inset-0 opacity-[0.15] pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-        }}
-      />
+    <div className="min-h-[200vh] bg-[#FAF7F5] relative">
+      {/* Subtle gradient background */}
+      <div className="fixed inset-0 bg-gradient-to-b from-rose-50/40 via-transparent to-amber-50/20 pointer-events-none" />
 
-      {/* Subtle gradient */}
-      <div className="fixed inset-0 bg-gradient-to-b from-rose-50/40 via-transparent to-stone-50/30 pointer-events-none" />
-
-      {/* Floating decorative elements */}
-      <motion.div
-        className="fixed top-20 left-[10%] text-rose-200/30 pointer-events-none"
-        animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <Heart className="w-12 h-12 fill-current" />
-      </motion.div>
-      <motion.div
-        className="fixed bottom-32 right-[8%] text-rose-200/20 pointer-events-none"
-        animate={{ y: [0, 10, 0], rotate: [0, -8, 0] }}
-        transition={{
-          duration: 7,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1,
-        }}
-      >
-        <Heart className="w-16 h-16 fill-current" />
-      </motion.div>
-      <motion.div
-        className="fixed top-1/3 right-[15%] text-amber-200/25 pointer-events-none"
-        animate={{ scale: [1, 1.1, 1], opacity: [0.25, 0.35, 0.25] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <Sparkles className="w-8 h-8" />
-      </motion.div>
-
-      {/* Main content */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-12">
-        {/* Back button */}
-        <motion.button
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          onClick={() => router.push("/dashboard")}
-          className="absolute top-6 left-6 flex items-center gap-2 text-stone-400 hover:text-stone-600 transition-colors"
-          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Dashboard</span>
-        </motion.button>
-
+      {/* Decorative elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          initial={{ scale: 0.95, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="w-full max-w-md"
-        >
-          {/* Header Card */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg shadow-rose-100/50 border border-rose-100/30 overflow-hidden">
-            {/* Decorative top bar */}
-            <div className="h-1.5 bg-gradient-to-r from-rose-200 via-rose-400 to-rose-200" />
+          className="absolute top-[15%] left-[8%] w-2 h-2 rounded-full bg-rose-300/40"
+          animate={{ y: [0, -20, 0], opacity: [0.4, 0.6, 0.4] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute top-[25%] right-[12%] w-3 h-3 rounded-full bg-amber-300/30"
+          animate={{ y: [0, 15, 0], opacity: [0.3, 0.5, 0.3] }}
+          transition={{
+            duration: 7,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+        />
+        <motion.div
+          className="absolute bottom-[30%] left-[15%] w-1.5 h-1.5 rounded-full bg-pink-400/30"
+          animate={{ y: [0, -10, 0], opacity: [0.3, 0.4, 0.3] }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+        />
+      </div>
 
-            <div className="p-8">
-              {/* Title section */}
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-center mb-8"
+      {/* Fixed header */}
+      <motion.header
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="fixed top-0 left-0 right-0 z-50 px-6 py-5"
+      >
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="flex items-center gap-2 text-stone-500 hover:text-stone-700 transition-colors group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <span
+              className="text-sm tracking-wide"
+              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+            >
+              Dashboard
+            </span>
+          </button>
+
+          <button
+            onClick={() => loadInviteStatus(true)}
+            disabled={isRefreshing}
+            className="flex items-center gap-2 text-stone-400 hover:text-stone-600 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw
+              className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
+            />
+            <span
+              className="text-sm"
+              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+            >
+              Refresh
+            </span>
+          </button>
+        </div>
+      </motion.header>
+
+      {/* Hero section - requires scroll */}
+      <div className="min-h-screen flex items-center justify-center px-4 pt-20">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center"
+        >
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{
+              delay: 0.3,
+              type: "spring",
+              stiffness: 200,
+              damping: 15,
+            }}
+            className={`w-28 h-28 mx-auto mb-8 rounded-full flex items-center justify-center shadow-2xl ${
+              hasResponded
+                ? "bg-gradient-to-br from-emerald-400 to-green-500 shadow-emerald-200/50"
+                : "bg-gradient-to-br from-rose-400 to-pink-500 shadow-rose-200/50"
+            }`}
+          >
+            <Heart
+              className={`w-14 h-14 ${
+                hasResponded ? "text-white fill-white" : "text-white fill-white"
+              }`}
+            />
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-xs tracking-[0.3em] uppercase text-stone-400 mb-4"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+          >
+            Invitation Status
+          </motion.p>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="text-5xl md:text-6xl text-stone-800 mb-4"
+            style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontWeight: 500,
+              lineHeight: 1.1,
+            }}
+          >
+            {hasResponded ? (
+              <>
+                They Said <span className="italic text-emerald-600">Yes</span>
+              </>
+            ) : (
+              <>
+                Waiting for <span className="italic text-rose-500">Love</span>
+              </>
+            )}
+          </motion.h1>
+
+          {status.recipient_name && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="text-xl text-stone-500"
+              style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+              }}
+            >
+              An invitation for{" "}
+              <span className="text-stone-700 font-medium">
+                {status.recipient_name}
+              </span>
+            </motion.p>
+          )}
+
+          {/* Scroll indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+            className="mt-16"
+          >
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="flex flex-col items-center gap-2 text-stone-400"
+            >
+              <span
+                className="text-xs tracking-widest uppercase"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
               >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
-                  className={`w-20 h-20 mx-auto mb-5 rounded-full flex items-center justify-center ${
-                    hasResponded
-                      ? "bg-gradient-to-br from-emerald-50 to-green-100 shadow-lg shadow-emerald-100/50"
-                      : "bg-gradient-to-br from-rose-50 to-pink-100 shadow-lg shadow-rose-100/50"
+                Scroll for details
+              </span>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="opacity-60"
+              >
+                <path
+                  d="M12 5v14M5 12l7 7 7-7"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Status cards section */}
+      <div className="relative z-10 px-4 pb-32">
+        <div className="max-w-lg mx-auto space-y-6">
+          {/* Opened Status Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div
+              className={`relative overflow-hidden rounded-3xl p-8 ${
+                hasOpened
+                  ? "bg-white shadow-xl shadow-emerald-100/30"
+                  : "bg-white shadow-xl shadow-stone-200/30"
+              }`}
+            >
+              {/* Decorative corner */}
+              <div
+                className={`absolute top-0 right-0 w-24 h-24 ${
+                  hasOpened ? "bg-emerald-50" : "bg-stone-50"
+                } rounded-bl-[100px]`}
+              />
+
+              <div className="relative flex items-start gap-5">
+                <div
+                  className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 ${
+                    hasOpened
+                      ? "bg-gradient-to-br from-emerald-400 to-green-500 shadow-lg shadow-emerald-200/50"
+                      : "bg-gradient-to-br from-stone-200 to-stone-300"
                   }`}
                 >
-                  <Heart
-                    className={`w-9 h-9 ${
-                      hasResponded
-                        ? "text-emerald-500 fill-emerald-500"
-                        : "text-rose-400 fill-rose-400"
-                    }`}
-                  />
-                </motion.div>
+                  <Eye className="w-7 h-7 text-white" />
+                </div>
 
-                <p
-                  className="text-xs tracking-[0.25em] uppercase text-stone-400 mb-2"
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                >
-                  Invitation Status
-                </p>
+                <div className="flex-1 pt-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3
+                      className="text-2xl text-stone-800"
+                      style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                      }}
+                    >
+                      {hasOpened ? "Invitation Opened" : "Not Opened Yet"}
+                    </h3>
+                    {hasOpened && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center"
+                      >
+                        <Check className="w-4 h-4 text-white" />
+                      </motion.div>
+                    )}
+                  </div>
 
-                <h1
-                  className="text-3xl text-stone-800 mb-1"
-                  style={{
-                    fontFamily: "'Playfair Display', Georgia, serif",
-                    fontWeight: 500,
-                  }}
-                >
-                  {hasResponded ? "They Said Yes!" : "Awaiting Response"}
-                </h1>
-
-                {status.recipient_name && (
                   <p
-                    className="text-stone-500 text-lg"
+                    className={`text-base ${
+                      hasOpened ? "text-emerald-600" : "text-stone-400"
+                    }`}
                     style={{
                       fontFamily: "'Cormorant Garamond', Georgia, serif",
                     }}
                   >
-                    for {status.recipient_name}
+                    {hasOpened && status.opened_at ? (
+                      <span className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        Viewed on {formatDateTime(status.opened_at)}
+                      </span>
+                    ) : (
+                      "Your special someone hasn't seen it yet"
+                    )}
                   </p>
-                )}
-              </motion.div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
 
-              {/* RSVP Status Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-                className="mb-8"
-              >
+          {/* RSVP Status Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          >
+            <div
+              className={`relative overflow-hidden rounded-3xl p-8 ${
+                hasResponded
+                  ? "bg-gradient-to-br from-emerald-50 to-green-50 shadow-xl shadow-emerald-100/40"
+                  : "bg-white shadow-xl shadow-stone-200/30"
+              }`}
+            >
+              {/* Decorative corner */}
+              <div
+                className={`absolute top-0 right-0 w-24 h-24 ${
+                  hasResponded ? "bg-emerald-100/50" : "bg-rose-50"
+                } rounded-bl-[100px]`}
+              />
+
+              {hasResponded && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute top-4 right-4"
+                >
+                  <Sparkle className="w-5 h-5 text-amber-400 fill-amber-400" />
+                </motion.div>
+              )}
+
+              <div className="relative flex items-start gap-5">
                 <div
-                  className={`relative p-6 rounded-2xl transition-all ${
+                  className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 ${
                     hasResponded
-                      ? "bg-gradient-to-br from-emerald-50/80 to-green-50/80 border border-emerald-200/50"
-                      : "bg-gradient-to-br from-stone-50/80 to-slate-50/80 border border-stone-200/50"
+                      ? "bg-gradient-to-br from-emerald-400 to-green-500 shadow-lg shadow-emerald-200/50"
+                      : "bg-gradient-to-br from-rose-300 to-pink-400 shadow-lg shadow-rose-200/50"
                   }`}
                 >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 ${
-                        hasResponded
-                          ? "bg-emerald-100 text-emerald-600"
-                          : "bg-stone-100 text-stone-400"
-                      }`}
+                  <Heart className="w-7 h-7 text-white fill-white" />
+                </div>
+
+                <div className="flex-1 pt-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3
+                      className="text-2xl text-stone-800"
+                      style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                      }}
                     >
-                      <Heart
-                        className={`w-6 h-6 ${
-                          hasResponded ? "fill-current" : ""
-                        }`}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span
-                        className={`font-medium block mb-1 ${
-                          hasResponded ? "text-emerald-700" : "text-stone-600"
-                        }`}
-                        style={{
-                          fontFamily: "'Playfair Display', Georgia, serif",
-                          fontSize: "1.25rem",
-                        }}
-                      >
-                        {hasResponded
-                          ? "They clicked Yes! 💕"
-                          : "Not clicked Yes yet"}
-                      </span>
-                      <p
-                        className={`text-sm ${
-                          hasResponded ? "text-emerald-600/70" : "text-stone-400"
-                        }`}
-                        style={{
-                          fontFamily: "'Cormorant Garamond', Georgia, serif",
-                        }}
-                      >
-                        {hasResponded && status.responded_at ? (
-                          <span className="flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5" />
-                            Responded on {formatDateTime(status.responded_at)}
-                          </span>
-                        ) : (
-                          "Waiting for their answer..."
-                        )}
-                      </p>
-                    </div>
+                      {hasResponded ? "They Said Yes! 💕" : "Awaiting Response"}
+                    </h3>
                     {hasResponded && (
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ delay: 0.1 }}
-                        className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-200"
+                        className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center"
                       >
-                        <Check className="w-5 h-5 text-white" />
+                        <Check className="w-4 h-4 text-white" />
                       </motion.div>
                     )}
                   </div>
-                </div>
-              </motion.div>
 
-              {/* Expired warning */}
-              {isExpired && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="mb-6 p-4 rounded-xl bg-amber-50/80 border border-amber-200/50"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">⏰</span>
-                    <div>
-                      <p
-                        className="font-medium text-amber-700"
-                        style={{
-                          fontFamily: "'Cormorant Garamond', Georgia, serif",
-                        }}
-                      >
-                        Invite Expired
-                      </p>
-                      <p
-                        className="text-sm text-amber-600/70"
-                        style={{
-                          fontFamily: "'Cormorant Garamond', Georgia, serif",
-                        }}
-                      >
-                        This invitation is no longer active
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Shareable link */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className="mb-6"
-              >
-                <p
-                  className="text-xs tracking-[0.15em] uppercase text-stone-400 mb-2"
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                >
-                  Shareable Link
-                </p>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 p-3.5 bg-stone-50/80 rounded-xl border border-stone-200/50 overflow-hidden">
-                    <p
-                      className="text-sm text-stone-600 truncate"
-                      style={{
-                        fontFamily: "'Cormorant Garamond', Georgia, serif",
-                      }}
-                    >
-                      {shareUrl}
-                    </p>
-                  </div>
-                  <Button
-                    onClick={handleCopy}
-                    size="sm"
-                    className={`shrink-0 h-11 w-11 p-0 rounded-xl transition-all ${
-                      copied
-                        ? "bg-emerald-500 hover:bg-emerald-600"
-                        : "bg-stone-800 hover:bg-stone-900"
-                    } text-white`}
-                  >
-                    {copied ? (
-                      <Check className="w-4 h-4" />
-                    ) : (
-                      <Copy className="w-4 h-4" />
-                    )}
-                  </Button>
-                </div>
-              </motion.div>
-
-              {/* Refresh & Expiry */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="flex items-center justify-between mb-8"
-              >
-                <button
-                  onClick={() => loadInviteStatus(true)}
-                  disabled={isRefreshing}
-                  className="flex items-center gap-2 text-stone-400 hover:text-stone-600 transition-colors disabled:opacity-50"
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                >
-                  <RefreshCw
-                    className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
-                  />
-                  <span className="text-sm">Refresh</span>
-                </button>
-
-                {!isExpired && status.expires_at && (
-                  <div
-                    className="flex items-center gap-1.5 text-sm text-stone-400"
+                  <p
+                    className={`text-base ${
+                      hasResponded ? "text-emerald-600" : "text-stone-400"
+                    }`}
                     style={{
                       fontFamily: "'Cormorant Garamond', Georgia, serif",
                     }}
                   >
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span>Expires {formatDate(status.expires_at)}</span>
-                  </div>
-                )}
-              </motion.div>
-
-              {/* Action button */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
-              >
-                <Button
-                  onClick={() => router.push("/dashboard")}
-                  className="w-full h-12 text-base rounded-full bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white shadow-lg shadow-rose-200/50 transition-all hover:shadow-xl hover:shadow-rose-200/60"
-                  style={{
-                    fontFamily: "'Cormorant Garamond', Georgia, serif",
-                    letterSpacing: "0.02em",
-                  }}
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Dashboard
-                </Button>
-              </motion.div>
+                    {hasResponded && status.responded_at ? (
+                      <span className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        Responded on {formatDateTime(status.responded_at)}
+                      </span>
+                    ) : (
+                      "Waiting for their heartfelt answer..."
+                    )}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          </motion.div>
+
+          {/* Expired warning */}
+          {isExpired && (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="rounded-3xl p-8 bg-amber-50 shadow-xl shadow-amber-100/30">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center">
+                    <span className="text-2xl">⏰</span>
+                  </div>
+                  <div>
+                    <h3
+                      className="text-xl text-amber-800 mb-1"
+                      style={{
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                      }}
+                    >
+                      Invitation Expired
+                    </h3>
+                    <p
+                      className="text-amber-600"
+                      style={{
+                        fontFamily: "'Cormorant Garamond', Georgia, serif",
+                      }}
+                    >
+                      This invitation is no longer active
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Share Link Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          >
+            <div className="rounded-3xl p-8 bg-white shadow-xl shadow-stone-200/30">
+              <div className="flex items-center gap-4 mb-5">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center">
+                  <Mail className="w-5 h-5 text-rose-500" />
+                </div>
+                <div>
+                  <h3
+                    className="text-lg text-stone-800"
+                    style={{
+                      fontFamily: "'Playfair Display', Georgia, serif",
+                    }}
+                  >
+                    Share Your Invitation
+                  </h3>
+                  <p
+                    className="text-sm text-stone-400"
+                    style={{
+                      fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    }}
+                  >
+                    Copy the link and send it to your special someone
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex-1 p-4 bg-stone-50 rounded-2xl border border-stone-100 overflow-hidden">
+                  <p
+                    className="text-sm text-stone-600 truncate font-mono"
+                  >
+                    {shareUrl}
+                  </p>
+                </div>
+                <Button
+                  onClick={handleCopy}
+                  className={`shrink-0 h-14 w-14 p-0 rounded-2xl transition-all ${
+                    copied
+                      ? "bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-200/50"
+                      : "bg-stone-900 hover:bg-stone-800 shadow-lg shadow-stone-300/50"
+                  } text-white`}
+                >
+                  {copied ? (
+                    <Check className="w-5 h-5" />
+                  ) : (
+                    <Copy className="w-5 h-5" />
+                  )}
+                </Button>
+              </div>
+
+              {!isExpired && status.expires_at && (
+                <div
+                  className="flex items-center gap-2 mt-5 pt-5 border-t border-stone-100 text-sm text-stone-400"
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>Valid until {formatDate(status.expires_at)}</span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Action button */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+            className="pt-6"
+          >
+            <Button
+              onClick={() => router.push("/dashboard")}
+              className="w-full h-14 text-base rounded-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white shadow-xl shadow-rose-200/40 transition-all hover:shadow-2xl hover:shadow-rose-200/50"
+              style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                letterSpacing: "0.05em",
+                fontSize: "1.1rem",
+              }}
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Back to Dashboard
+            </Button>
+          </motion.div>
 
           {/* Decorative flourish */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="flex items-center justify-center gap-3 mt-8"
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+            className="flex items-center justify-center gap-4 pt-8"
           >
-            <span className="block h-px w-12 bg-gradient-to-r from-transparent to-rose-200" />
-            <Heart className="w-4 h-4 text-rose-300 fill-rose-300" />
-            <span className="block h-px w-12 bg-gradient-to-l from-transparent to-rose-200" />
+            <span className="block h-px w-16 bg-gradient-to-r from-transparent to-rose-200" />
+            <Heart className="w-5 h-5 text-rose-300 fill-rose-300" />
+            <span className="block h-px w-16 bg-gradient-to-l from-transparent to-rose-200" />
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
@@ -518,13 +667,7 @@ export default function StatusPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#fdfcfa]">
-          <div
-            className="fixed inset-0 opacity-[0.15] pointer-events-none"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-            }}
-          />
+        <div className="min-h-screen flex items-center justify-center bg-[#FAF7F5]">
           <motion.div
             animate={{ scale: [1, 1.15, 1] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}

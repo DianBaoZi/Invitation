@@ -133,10 +133,13 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-pink-100 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Heart className="w-8 h-8 text-pink-500 fill-pink-500" />
-            <h1 className="text-xl font-bold text-gray-900">My Invites</h1>
-          </div>
+          <button
+            onClick={() => router.push("/")}
+            className="flex items-center gap-2 hover:opacity-80 transition"
+          >
+            <Heart className="w-7 h-7 text-pink-500 fill-pink-500" />
+            <span className="font-bold text-lg text-gray-900">Invitely</span>
+          </button>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600 hidden sm:block">
               {user?.email}

@@ -515,11 +515,16 @@ function RevealScreen({
 
       <div className="max-w-[320px] sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto relative z-10">
         {/* Card 1: Valentine Header — takes full viewport to force scroll */}
-        <div className="min-h-[70vh] flex flex-col items-center justify-center px-5 py-12">
+        <div className="min-h-screen flex flex-col items-center justify-center px-5 py-12">
           <motion.div
-            variants={cardDramaticDrop}
-            initial="hidden"
-            animate="visible"
+            initial={{ opacity: 0, y: -100, scale: 0.8, rotate: 8 }}
+            animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
+            transition={{
+              duration: 1.2,
+              delay: 0.3,
+              ease: [0.16, 1, 0.3, 1],
+              scale: { type: "spring", stiffness: 200, damping: 15 },
+            }}
             className="rounded-2xl overflow-hidden w-full relative"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
@@ -534,7 +539,7 @@ function RevealScreen({
                   "0 0 0px rgba(233,30,99,0)",
                 ],
               }}
-              transition={{ duration: 1.8, delay: 0.5, ease: "easeOut" }}
+              transition={{ duration: 1.8, delay: 1.0, ease: "easeOut" }}
             />
             <img
               src="/images/valentine-header.png"
@@ -543,15 +548,20 @@ function RevealScreen({
             />
           </motion.div>
 
-          {/* Scroll hint */}
+          {/* Scroll hint - appears after card animation */}
           <motion.div
             className="mt-8"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, y: [0, 8, 0] }}
+            transition={{
+              opacity: { delay: 1.5, duration: 0.5 },
+              y: { delay: 1.5, duration: 1.8, repeat: Infinity, ease: "easeInOut" }
+            }}
           >
             <motion.div
+              initial={{ opacity: 0 }}
               animate={{ opacity: [0.3, 0.7, 0.3] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ delay: 1.5, duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
             >
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c2185b" strokeWidth="1.5" strokeLinecap="round">
                 <path d="M7 10l5 5 5-5" />
@@ -572,13 +582,13 @@ function RevealScreen({
           </motion.div>
         </div>
 
-        {/* Card 2: Details Card — full viewport */}
-        <div className="min-h-[70vh] flex flex-col items-center justify-center px-5 py-12">
+        {/* Card 2: Details Card — full viewport, only animates on scroll */}
+        <div className="min-h-screen flex flex-col items-center justify-center px-5 py-12">
           <motion.div
             variants={cardDramaticSweep}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.4, margin: "-100px" }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
@@ -653,12 +663,12 @@ function RevealScreen({
         </div>
 
         {/* Card 4: Personal Message — full viewport */}
-        <div className="min-h-[70vh] flex flex-col items-center justify-center px-5 py-12">
+        <div className="min-h-screen flex flex-col items-center justify-center px-5 py-12">
           <motion.div
             variants={cardDramaticReveal}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.4, margin: "-100px" }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
@@ -722,12 +732,12 @@ function RevealScreen({
         </div>
 
         {/* Card 5: RSVP — full viewport */}
-        <div className="min-h-[70vh] flex flex-col items-center justify-center px-5 py-12">
+        <div className="min-h-screen flex flex-col items-center justify-center px-5 py-12">
           <motion.div
             variants={cardDramaticFlip}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.4, margin: "-100px" }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.15)" }}
           >
