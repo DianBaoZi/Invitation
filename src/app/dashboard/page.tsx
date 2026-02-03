@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { motion } from "framer-motion";
-import { Heart, Plus, Calendar, ExternalLink, Copy, CheckCircle, LogOut, Trash2, BarChart3 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Heart, Plus, Calendar, ExternalLink, Copy, CheckCircle, LogOut, Trash2, BarChart3, AlertTriangle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTemplateById } from "@/lib/supabase/templates";
 import type { User } from "@supabase/supabase-js";
@@ -26,6 +26,12 @@ export default function DashboardPage() {
   const [invites, setInvites] = useState<InviteData[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; inviteId: string | null; inviteName: string }>({
+    isOpen: false,
+    inviteId: null,
+    inviteName: "",
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -83,12 +89,24 @@ export default function DashboardPage() {
     setTimeout(() => setCopiedSlug(null), 2000);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this invite?")) return;
+  const openDeleteModal = (id: string, templateName: string) => {
+    setDeleteModal({ isOpen: true, inviteId: id, inviteName: templateName });
+  };
 
+  const closeDeleteModal = () => {
+    setDeleteModal({ isOpen: false, inviteId: null, inviteName: "" });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteModal.inviteId) return;
+
+    setIsDeleting(true);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const supabase = createClient() as any;
-    const { error } = await supabase.from("invites").delete().eq("id", id);
+    const { error } = await supabase.from("invites").delete().eq("id", deleteModal.inviteId);
+
+    setIsDeleting(false);
+    closeDeleteModal();
 
     if (!error && user) {
       loadInvites(user.id);
@@ -256,7 +274,7 @@ export default function DashboardPage() {
                       <ExternalLink className="w-4 h-4" />
                     </Button>
                     <Button
-                      onClick={() => handleDelete(invite.id)}
+                      onClick={() => openDeleteModal(invite.id, template?.name || invite.template_id)}
                       variant="outline"
                       size="sm"
                       className="text-red-500 hover:text-red-600 hover:bg-red-50"
@@ -271,6 +289,93 @@ export default function DashboardPage() {
           </div>
         )}
       </main>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteModal.isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              onClick={closeDeleteModal}
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden"
+            >
+              {/* Close button */}
+              <button
+                onClick={closeDeleteModal}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Content */}
+              <div className="p-6 pt-8 text-center">
+                {/* Warning icon */}
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
+                  <AlertTriangle className="w-8 h-8 text-red-500" />
+                </div>
+
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Delete this invite?
+                </h3>
+                <p className="text-gray-600 mb-2">
+                  You&apos;re about to delete your{" "}
+                  <span className="font-medium text-gray-800">{deleteModal.inviteName}</span> invite.
+                </p>
+                <p className="text-sm text-gray-500 mb-6">
+                  This action cannot be undone. The invite link will stop working.
+                </p>
+
+                {/* Actions */}
+                <div className="flex gap-3">
+                  <Button
+                    onClick={closeDeleteModal}
+                    variant="outline"
+                    className="flex-1 h-11 rounded-xl"
+                    disabled={isDeleting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={confirmDelete}
+                    disabled={isDeleting}
+                    className="flex-1 h-11 rounded-xl bg-red-500 hover:bg-red-600 text-white"
+                  >
+                    {isDeleting ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                      />
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
