@@ -373,11 +373,13 @@ function TemplateLoader() {
 function InteractiveTemplate({
   templateId,
   config,
-  senderName
+  senderName,
+  slug
 }: {
   templateId: string;
   config: TemplateConfig;
   senderName: string;
+  slug: string;
 }) {
   // Extract common fields from config
   const configAny = config as unknown as Record<string, unknown>;
