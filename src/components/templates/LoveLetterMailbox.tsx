@@ -514,17 +514,38 @@ function RevealScreen({
       />
 
       <div className="max-w-[320px] sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto relative z-10">
-        {/* Card 1: Valentine Header — takes full viewport to force scroll */}
-        <div className="min-h-screen flex flex-col items-center justify-center px-5 py-12">
+        {/* Intro spacer - gives room for first card animation to play */}
+        <div className="h-[25vh] sm:h-[30vh] flex flex-col items-center justify-end px-4 sm:px-5 pb-6 sm:pb-8">
           <motion.div
-            initial={{ opacity: 0, y: -100, scale: 0.8, rotate: 8 }}
-            animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
-            transition={{
-              duration: 1.2,
-              delay: 0.3,
-              ease: [0.16, 1, 0.3, 1],
-              scale: { type: "spring", stiffness: 200, damping: 15 },
-            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="text-center"
+          >
+            <motion.p
+              className="text-rose-600/70 text-xs sm:text-sm tracking-[0.15em] sm:tracking-[0.2em] uppercase mb-2"
+              style={{ fontFamily: "Georgia, serif" }}
+            >
+              A Special Message
+            </motion.p>
+            <motion.div
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c2185b" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" className="sm:w-5 sm:h-5">
+                <path d="M7 10l5 5 5-5" />
+              </svg>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Card 1: Valentine Header */}
+        <div className="min-h-[75vh] sm:min-h-[70vh] flex flex-col items-center justify-center px-4 sm:px-5 py-8 sm:py-12">
+          <motion.div
+            variants={cardDramaticDrop}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
             className="rounded-2xl overflow-hidden w-full relative"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
@@ -550,20 +571,17 @@ function RevealScreen({
 
           {/* Scroll hint - appears after card animation */}
           <motion.div
-            className="mt-8"
+            className="mt-6 sm:mt-8"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1, y: [0, 8, 0] }}
-            transition={{
-              opacity: { delay: 1.5, duration: 0.5 },
-              y: { delay: 1.5, duration: 1.8, repeat: Infinity, ease: "easeInOut" }
-            }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 1.3, duration: 0.5 }}
           >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0.3, 0.7, 0.3] }}
-              transition={{ delay: 1.5, duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+              animate={{ y: [0, 8, 0], opacity: [0.3, 0.7, 0.3] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
             >
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c2185b" strokeWidth="1.5" strokeLinecap="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c2185b" strokeWidth="1.5" strokeLinecap="round" className="sm:w-7 sm:h-7">
                 <path d="M7 10l5 5 5-5" />
               </svg>
             </motion.div>
@@ -571,7 +589,7 @@ function RevealScreen({
         </div>
 
         {/* Ribbon connector */}
-        <div className="px-5">
+        <div className="px-4 sm:px-5">
           <motion.div
             initial={{ opacity: 0, scale: 0 }}
             whileInView={{ opacity: 1, scale: 1 }}
