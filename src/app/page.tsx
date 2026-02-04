@@ -531,7 +531,7 @@ function TemplateCard({
 
         {/* Click to preview on hover */}
         <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+          className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-20"
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
           transition={{ duration: 0.2 }}

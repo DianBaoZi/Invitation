@@ -123,7 +123,7 @@ export default function DashboardPage() {
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Image src="/logo-with-name.svg" alt="YoursInvite" width={120} height={48} className="h-12 w-auto" />
+          <Image src="/logo-with-name.svg" alt="YoursInvite" width={200} height={80} className="h-20 w-auto" />
         </motion.div>
       </div>
     );
@@ -138,7 +138,7 @@ export default function DashboardPage() {
             onClick={() => router.push("/")}
             className="flex items-center hover:opacity-80 transition"
           >
-            <Image src="/logo.svg" alt="YoursInvite" width={100} height={40} className="h-8 w-auto" />
+            <Image src="/logo.svg" alt="YoursInvite" width={160} height={64} className="h-14 w-auto" />
           </button>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600 hidden sm:block">

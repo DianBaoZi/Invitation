@@ -130,7 +130,7 @@ function StatusPageContent() {
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Image src="/logo-with-name.svg" alt="YoursInvite" width={120} height={48} className="h-12 w-auto" />
+          <Image src="/logo-with-name.svg" alt="YoursInvite" width={200} height={80} className="h-20 w-auto" />
         </motion.div>
       </div>
     );
@@ -388,7 +388,7 @@ export default function StatusPage() {
             animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           >
-            <Image src="/logo-with-name.svg" alt="YoursInvite" width={120} height={48} className="h-12 w-auto" />
+            <Image src="/logo-with-name.svg" alt="YoursInvite" width={200} height={80} className="h-20 w-auto" />
           </motion.div>
         </div>
       }

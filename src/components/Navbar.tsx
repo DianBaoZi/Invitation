@@ -60,9 +60,9 @@ export function Navbar() {
           <Image
             src="/logo.svg"
             alt="YoursInvite"
-            width={100}
-            height={40}
-            className="h-8 w-auto"
+            width={160}
+            height={64}
+            className="h-14 w-auto"
             priority
           />
         </button>

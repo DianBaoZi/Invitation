@@ -71,9 +71,9 @@ export function Footer() {
                 <Image
                   src="/logo.svg"
                   alt="YoursInvite"
-                  width={120}
-                  height={48}
-                  className="h-10 w-auto brightness-0 invert group-hover:scale-105 transition-transform duration-300"
+                  width={180}
+                  height={72}
+                  className="h-16 w-auto brightness-0 invert group-hover:scale-105 transition-transform duration-300"
                 />
               </Link>
               <p className="text-gray-400 max-w-sm font-sans leading-relaxed">
