@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Calendar, ExternalLink, Copy, CheckCircle, LogOut, Trash2, BarChart3, AlertTriangle, X, Mail } from "lucide-react";
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 import { Button } from "@/components/ui/button";
 import { getTemplateById } from "@/lib/supabase/templates";
 import type { User } from "@supabase/supabase-js";
@@ -123,7 +123,7 @@ export default function DashboardPage() {
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Image src="/logo-with-name.svg" alt="YoursInvite" width={200} height={80} className="h-20 w-auto" />
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-20 w-auto" />
         </motion.div>
       </div>
     );
@@ -138,7 +138,7 @@ export default function DashboardPage() {
             onClick={() => router.push("/")}
             className="flex items-center hover:opacity-80 transition"
           >
-            <Image src="/logo.svg" alt="YoursInvite" width={160} height={64} className="h-14 w-auto" />
+            <img src="/logo.svg" alt="YoursInvite" className="h-14 w-auto" />
           </button>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600 hidden sm:block">

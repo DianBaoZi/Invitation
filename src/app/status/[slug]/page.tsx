@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Heart, Copy, Check, Eye, Clock, Calendar, RefreshCw, AlertCircle, ArrowLeft, ExternalLink, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 
 interface InviteStatus {
   id: string;
@@ -130,7 +130,7 @@ function StatusPageContent() {
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Image src="/logo-with-name.svg" alt="YoursInvite" width={200} height={80} className="h-20 w-auto" />
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-20 w-auto" />
         </motion.div>
       </div>
     );
@@ -388,7 +388,7 @@ export default function StatusPage() {
             animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           >
-            <Image src="/logo-with-name.svg" alt="YoursInvite" width={200} height={80} className="h-20 w-auto" />
+            <img src="/logo-with-name.svg" alt="YoursInvite" className="h-20 w-auto" />
           </motion.div>
         </div>
       }
