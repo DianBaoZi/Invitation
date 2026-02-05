@@ -233,15 +233,30 @@ const GUILT_MESSAGES = [
 // COMPONENTS
 // ============================================
 
-// Floating particles for atmosphere
+// Floating particles for atmosphere - magical orbs rising from below
 function FloatingParticles({ mood }: { mood?: string }) {
-  const particles = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    size: Math.random() * 4 + 2,
-    x: Math.random() * 100,
-    delay: Math.random() * 5,
-    duration: Math.random() * 10 + 15,
-  }));
+  // More particles with varied sizes - small (2-4), medium (5-8), large (10-16)
+  const particles = Array.from({ length: 40 }, (_, i) => {
+    // Create variety: 60% small, 30% medium, 10% large
+    let size;
+    const sizeRoll = Math.random();
+    if (sizeRoll < 0.6) {
+      size = Math.random() * 2 + 2; // Small: 2-4px
+    } else if (sizeRoll < 0.9) {
+      size = Math.random() * 4 + 5; // Medium: 5-9px
+    } else {
+      size = Math.random() * 8 + 10; // Large: 10-18px
+    }
+
+    return {
+      id: i,
+      size,
+      x: Math.random() * 100,
+      delay: Math.random() * 8,
+      duration: Math.random() * 12 + 12, // Slower for bigger orbs feel
+      wobble: Math.random() * 20 - 10, // Horizontal drift
+    };
+  });
 
   const getColor = () => {
     switch (mood) {
@@ -264,12 +279,14 @@ function FloatingParticles({ mood }: { mood?: string }) {
             height: p.size,
             left: `${p.x}%`,
             backgroundColor: getColor(),
-            boxShadow: `0 0 ${p.size * 2}px ${getColor()}`,
+            boxShadow: `0 0 ${p.size * 2}px ${getColor()}, 0 0 ${p.size * 4}px ${getColor().replace('0.', '0.3')}`,
+            filter: p.size > 8 ? 'blur(1px)' : 'none',
           }}
-          initial={{ y: "100vh", opacity: 0 }}
+          initial={{ y: "100vh", opacity: 0, x: 0 }}
           animate={{
             y: "-10vh",
-            opacity: [0, 1, 1, 0],
+            opacity: [0, 0.8, 0.8, 0],
+            x: [0, p.wobble, 0],
           }}
           transition={{
             duration: p.duration,

@@ -705,33 +705,229 @@ function CoverPage() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: 24,
+        padding: 20,
+        overflow: "hidden",
       }}
     >
+      {/* Leather texture overlay */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.08,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          opacity: 0.15,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          mixBlendMode: "multiply",
         }}
       />
-      <div style={{ position: "absolute", inset: 14, border: "2px solid rgba(255,255,255,0.12)", borderRadius: 10, pointerEvents: "none" }} />
-      <WashiTape style={{ position: "absolute", top: 16, left: -12, width: 65, transform: "rotate(-45deg)" }} color="#8b9e6b" />
-      <WashiTape style={{ position: "absolute", bottom: 16, right: -12, width: 65, transform: "rotate(-45deg)" }} color="#c27256" />
 
-      <motion.div animate={{ scale: [1, 1.05, 1], rotate: [0, 2, -2, 0] }} transition={{ duration: 4, repeat: Infinity }} style={{ fontSize: 56, marginBottom: 16 }}>
-        📖
+      {/* Embossed border frame */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 12,
+          border: "3px double rgba(139,105,20,0.25)",
+          borderRadius: 8,
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 20,
+          border: "1px solid rgba(139,105,20,0.15)",
+          borderRadius: 4,
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Corner flourishes */}
+      {[
+        { top: 24, left: 24, rot: 0 },
+        { top: 24, right: 24, rot: 90 },
+        { bottom: 24, right: 24, rot: 180 },
+        { bottom: 24, left: 24, rot: 270 },
+      ].map((pos, i) => (
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            top: pos.top,
+            bottom: pos.bottom,
+            left: pos.left,
+            right: pos.right,
+            width: 24,
+            height: 24,
+            transform: `rotate(${pos.rot}deg)`,
+            opacity: 0.35,
+          }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="#5c3a21" strokeWidth="1.5">
+            <path d="M2 2 C2 12, 12 22, 22 22" strokeLinecap="round" />
+            <path d="M2 8 C2 14, 10 22, 16 22" strokeLinecap="round" />
+          </svg>
+        </div>
+      ))}
+
+      {/* Decorative stitching line */}
+      <div
+        style={{
+          position: "absolute",
+          left: 32,
+          top: 40,
+          bottom: 40,
+          width: 2,
+          backgroundImage: `repeating-linear-gradient(to bottom, #8b6914 0px, #8b6914 6px, transparent 6px, transparent 10px)`,
+          opacity: 0.3,
+        }}
+      />
+
+      {/* Main content area - vintage label style */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        style={{
+          position: "relative",
+          background: "linear-gradient(145deg, #faf6f0 0%, #f5ece0 100%)",
+          padding: "28px 32px",
+          borderRadius: 6,
+          boxShadow: `
+            0 2px 8px rgba(92,58,33,0.15),
+            0 8px 24px rgba(92,58,33,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.8)
+          `,
+          textAlign: "center",
+          transform: "rotate(-1deg)",
+          border: "1px solid rgba(194,114,86,0.2)",
+        }}
+      >
+        {/* Vintage paper texture on label */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: 6,
+            opacity: 0.04,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          }}
+        />
+
+        {/* Decorative top flourish */}
+        <div style={{ marginBottom: 8 }}>
+          <svg width="80" height="16" viewBox="0 0 80 16" style={{ opacity: 0.4 }}>
+            <path
+              d="M0 8 Q10 2, 20 8 T40 8 T60 8 T80 8"
+              stroke="#c27256"
+              strokeWidth="1.5"
+              fill="none"
+            />
+            <circle cx="40" cy="8" r="3" fill="#c27256" />
+          </svg>
+        </div>
+
+        {/* Heart emblem */}
+        <motion.div
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            width: 64,
+            height: 64,
+            margin: "0 auto 14px",
+            borderRadius: "50%",
+            background: "linear-gradient(145deg, #c27256 0%, #a85d45 100%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 4px 12px rgba(194,114,86,0.35), inset 0 2px 4px rgba(255,255,255,0.2)",
+          }}
+        >
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="#faf6f0">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+        </motion.div>
+
+        {/* Title */}
+        <h2
+          style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: 28,
+            fontWeight: 600,
+            color: "#4a3423",
+            marginBottom: 6,
+            letterSpacing: "0.02em",
+          }}
+        >
+          Our Scrapbook
+        </h2>
+
+        {/* Subtitle */}
+        <p
+          style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontSize: 17,
+            color: "#8b7355",
+            fontStyle: "italic",
+            letterSpacing: "0.05em",
+          }}
+        >
+          a collection of memories
+        </p>
+
+        {/* Decorative bottom flourish */}
+        <div style={{ marginTop: 10 }}>
+          <svg width="60" height="12" viewBox="0 0 60 12" style={{ opacity: 0.35 }}>
+            <path d="M0 6 L20 6 M40 6 L60 6" stroke="#5c3a21" strokeWidth="1" />
+            <circle cx="30" cy="6" r="4" fill="none" stroke="#5c3a21" strokeWidth="1" />
+            <circle cx="30" cy="6" r="2" fill="#5c3a21" />
+          </svg>
+        </div>
       </motion.div>
 
-      <div style={{ background: "rgba(253,248,240,0.95)", padding: "14px 26px", borderRadius: 8, boxShadow: "0 4px 16px rgba(107,82,64,0.2)", textAlign: "center", transform: "rotate(-1deg)" }}>
-        <h2 style={{ fontFamily: "'Dancing Script', cursive", fontSize: 26, color: "#5c3a21", marginBottom: 4, fontWeight: 700 }}>A Scrapbook</h2>
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#8b7355", fontStyle: "italic" }}>just for you</p>
-      </div>
+      {/* Spine detail - left edge */}
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 8,
+          background: "linear-gradient(90deg, rgba(92,58,33,0.15) 0%, transparent 100%)",
+        }}
+      />
 
-      <motion.div animate={{ opacity: [0.5, 0.9, 0.5], y: [0, 3, 0] }} transition={{ duration: 2, repeat: Infinity }} style={{ marginTop: 28, display: "flex", alignItems: "center", gap: 6 }}>
-        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 13, color: "rgba(255,255,255,0.85)", fontStyle: "italic" }}>tap to open</span>
-        <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.2, repeat: Infinity }} style={{ fontSize: 14, color: "rgba(255,255,255,0.7)" }}>→</motion.span>
+      {/* Tap hint */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+        style={{
+          position: "absolute",
+          bottom: 20,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 4,
+        }}
+      >
+        <motion.div
+          animate={{ y: [0, 4, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(92,58,33,0.5)" strokeWidth="2">
+            <path d="M12 5v14M5 12l7 7 7-7" />
+          </svg>
+        </motion.div>
+        <span
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 11,
+            color: "rgba(92,58,33,0.6)",
+            fontStyle: "italic",
+            letterSpacing: "0.1em",
+          }}
+        >
+          tap to open
+        </span>
       </motion.div>
     </div>
   );
