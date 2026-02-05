@@ -705,181 +705,253 @@ function CoverPage() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: 20,
+        padding: 16,
         overflow: "hidden",
       }}
     >
-      {/* Leather texture overlay */}
+      {/* Paper texture overlay */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.15,
+          opacity: 0.08,
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           mixBlendMode: "multiply",
         }}
       />
 
-      {/* Embossed border frame */}
+      {/* Decorative ribbon bow at top */}
       <div
         style={{
           position: "absolute",
-          inset: 12,
-          border: "3px double rgba(139,105,20,0.25)",
-          borderRadius: 8,
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          inset: 20,
-          border: "1px solid rgba(139,105,20,0.15)",
-          borderRadius: 4,
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Corner flourishes */}
-      {[
-        { top: 24, left: 24, rot: 0 },
-        { top: 24, right: 24, rot: 90 },
-        { bottom: 24, right: 24, rot: 180 },
-        { bottom: 24, left: 24, rot: 270 },
-      ].map((pos, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            top: pos.top,
-            bottom: pos.bottom,
-            left: pos.left,
-            right: pos.right,
-            width: 24,
-            height: 24,
-            transform: `rotate(${pos.rot}deg)`,
-            opacity: 0.35,
-          }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="#5c3a21" strokeWidth="1.5">
-            <path d="M2 2 C2 12, 12 22, 22 22" strokeLinecap="round" />
-            <path d="M2 8 C2 14, 10 22, 16 22" strokeLinecap="round" />
-          </svg>
-        </div>
-      ))}
-
-      {/* Decorative stitching line */}
-      <div
-        style={{
-          position: "absolute",
-          left: 32,
-          top: 40,
-          bottom: 40,
-          width: 2,
-          backgroundImage: `repeating-linear-gradient(to bottom, #8b6914 0px, #8b6914 6px, transparent 6px, transparent 10px)`,
-          opacity: 0.3,
-        }}
-      />
-
-      {/* Main content area - vintage label style */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        style={{
-          position: "relative",
-          background: "linear-gradient(145deg, #faf6f0 0%, #f5ece0 100%)",
-          padding: "28px 32px",
-          borderRadius: 6,
-          boxShadow: `
-            0 2px 8px rgba(92,58,33,0.15),
-            0 8px 24px rgba(92,58,33,0.1),
-            inset 0 1px 0 rgba(255,255,255,0.8)
-          `,
-          textAlign: "center",
-          transform: "rotate(-1deg)",
-          border: "1px solid rgba(194,114,86,0.2)",
+          top: 12,
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 10,
         }}
       >
-        {/* Vintage paper texture on label */}
+        <svg width="80" height="45" viewBox="0 0 80 45">
+          {/* Ribbon tails */}
+          <path d="M25 22 Q15 30, 8 42" stroke="#e8a4a4" strokeWidth="8" fill="none" strokeLinecap="round" />
+          <path d="M55 22 Q65 30, 72 42" stroke="#e8a4a4" strokeWidth="8" fill="none" strokeLinecap="round" />
+          {/* Left loop */}
+          <ellipse cx="22" cy="18" rx="16" ry="12" fill="#f4b8b8" />
+          <ellipse cx="22" cy="18" rx="12" ry="8" fill="#e8a4a4" />
+          {/* Right loop */}
+          <ellipse cx="58" cy="18" rx="16" ry="12" fill="#f4b8b8" />
+          <ellipse cx="58" cy="18" rx="12" ry="8" fill="#e8a4a4" />
+          {/* Center knot */}
+          <circle cx="40" cy="20" r="8" fill="#dc8c8c" />
+          <circle cx="40" cy="20" r="5" fill="#c87878" />
+        </svg>
+      </div>
+
+      {/* Cute stickers scattered around */}
+      {/* Heart sticker - top left */}
+      <motion.div
+        initial={{ scale: 0, rotate: -20 }}
+        animate={{ scale: 1, rotate: -15 }}
+        transition={{ delay: 0.2, type: "spring" }}
+        style={{
+          position: "absolute",
+          top: 60,
+          left: 16,
+          filter: "drop-shadow(2px 2px 3px rgba(0,0,0,0.15))",
+        }}
+      >
+        <svg width="42" height="38" viewBox="0 0 42 38">
+          <path d="M21 35 C5 22, 0 12, 8 5 C14 0, 21 6, 21 12 C21 6, 28 0, 34 5 C42 12, 37 22, 21 35Z" fill="#ff6b8a" />
+          <path d="M14 10 Q16 7, 19 10" stroke="rgba(255,255,255,0.6)" strokeWidth="2" fill="none" strokeLinecap="round" />
+        </svg>
+      </motion.div>
+
+      {/* Star sticker - top right */}
+      <motion.div
+        initial={{ scale: 0, rotate: 10 }}
+        animate={{ scale: 1, rotate: 12 }}
+        transition={{ delay: 0.3, type: "spring" }}
+        style={{
+          position: "absolute",
+          top: 70,
+          right: 20,
+          filter: "drop-shadow(2px 2px 3px rgba(0,0,0,0.15))",
+        }}
+      >
+        <svg width="36" height="36" viewBox="0 0 36 36">
+          <path d="M18 2 L22 14 L34 14 L24 22 L28 34 L18 26 L8 34 L12 22 L2 14 L14 14 Z" fill="#ffd93d" />
+          <path d="M18 8 L20 14 L26 14" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        </svg>
+      </motion.div>
+
+      {/* Flower sticker - bottom left */}
+      <motion.div
+        initial={{ scale: 0, rotate: 5 }}
+        animate={{ scale: 1, rotate: -8 }}
+        transition={{ delay: 0.4, type: "spring" }}
+        style={{
+          position: "absolute",
+          bottom: 80,
+          left: 20,
+          filter: "drop-shadow(2px 2px 3px rgba(0,0,0,0.15))",
+        }}
+      >
+        <svg width="38" height="38" viewBox="0 0 38 38">
+          {/* Petals */}
+          <ellipse cx="19" cy="10" rx="7" ry="9" fill="#ffb5d1" />
+          <ellipse cx="28" cy="16" rx="7" ry="9" fill="#ffb5d1" transform="rotate(72 19 19)" />
+          <ellipse cx="25" cy="27" rx="7" ry="9" fill="#ffb5d1" transform="rotate(144 19 19)" />
+          <ellipse cx="13" cy="27" rx="7" ry="9" fill="#ffb5d1" transform="rotate(216 19 19)" />
+          <ellipse cx="10" cy="16" rx="7" ry="9" fill="#ffb5d1" transform="rotate(288 19 19)" />
+          {/* Center */}
+          <circle cx="19" cy="19" r="6" fill="#ffdd57" />
+          <circle cx="17" cy="17" r="1.5" fill="#f0c040" />
+          <circle cx="21" cy="18" r="1" fill="#f0c040" />
+          <circle cx="19" cy="21" r="1.2" fill="#f0c040" />
+        </svg>
+      </motion.div>
+
+      {/* Butterfly sticker - bottom right */}
+      <motion.div
+        initial={{ scale: 0, rotate: -5 }}
+        animate={{ scale: 1, rotate: 10 }}
+        transition={{ delay: 0.5, type: "spring" }}
+        style={{
+          position: "absolute",
+          bottom: 90,
+          right: 18,
+          filter: "drop-shadow(2px 2px 3px rgba(0,0,0,0.15))",
+        }}
+      >
+        <svg width="40" height="32" viewBox="0 0 40 32">
+          {/* Wings */}
+          <ellipse cx="12" cy="14" rx="10" ry="12" fill="#b8e0ff" />
+          <ellipse cx="28" cy="14" rx="10" ry="12" fill="#b8e0ff" />
+          <ellipse cx="10" cy="12" rx="4" ry="5" fill="#8cc8ff" />
+          <ellipse cx="30" cy="12" rx="4" ry="5" fill="#8cc8ff" />
+          {/* Body */}
+          <ellipse cx="20" cy="16" rx="2.5" ry="10" fill="#6b5240" />
+          {/* Antennae */}
+          <path d="M18 6 Q16 2, 14 0" stroke="#6b5240" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+          <path d="M22 6 Q24 2, 26 0" stroke="#6b5240" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        </svg>
+      </motion.div>
+
+      {/* Small heart stickers scattered */}
+      <motion.div
+        animate={{ scale: [1, 1.15, 1] }}
+        transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+        style={{ position: "absolute", top: 140, left: 45, fontSize: 16 }}
+      >
+        💕
+      </motion.div>
+      <motion.div
+        animate={{ scale: [1, 1.2, 1] }}
+        transition={{ duration: 2.5, repeat: Infinity, delay: 0.8 }}
+        style={{ position: "absolute", top: 180, right: 40, fontSize: 14 }}
+      >
+        ✨
+      </motion.div>
+      <motion.div
+        animate={{ rotate: [0, 10, -10, 0] }}
+        transition={{ duration: 3, repeat: Infinity }}
+        style={{ position: "absolute", bottom: 140, left: 55, fontSize: 16 }}
+      >
+        🌸
+      </motion.div>
+
+      {/* Main title card - like a cute label */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        style={{
+          position: "relative",
+          background: "linear-gradient(145deg, #fffbf5 0%, #fff5eb 100%)",
+          padding: "32px 28px",
+          borderRadius: 16,
+          boxShadow: `
+            0 4px 20px rgba(194,114,86,0.2),
+            0 8px 32px rgba(92,58,33,0.1),
+            inset 0 2px 0 rgba(255,255,255,0.9)
+          `,
+          textAlign: "center",
+          border: "3px solid #f0d4c4",
+          marginTop: 20,
+        }}
+      >
+        {/* Decorative tape on corners */}
         <div
           style={{
             position: "absolute",
-            inset: 0,
-            borderRadius: 6,
-            opacity: 0.04,
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+            top: -8,
+            left: 15,
+            width: 45,
+            height: 16,
+            background: "linear-gradient(90deg, #a8d8a8 0%, #8bc88b 100%)",
+            transform: "rotate(-8deg)",
+            borderRadius: 2,
+            opacity: 0.85,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: -8,
+            right: 15,
+            width: 45,
+            height: 16,
+            background: "linear-gradient(90deg, #f4b8b8 0%, #e8a4a4 100%)",
+            transform: "rotate(8deg)",
+            borderRadius: 2,
+            opacity: 0.85,
           }}
         />
 
-        {/* Decorative top flourish */}
-        <div style={{ marginBottom: 8 }}>
-          <svg width="80" height="16" viewBox="0 0 80 16" style={{ opacity: 0.4 }}>
-            <path
-              d="M0 8 Q10 2, 20 8 T40 8 T60 8 T80 8"
-              stroke="#c27256"
-              strokeWidth="1.5"
-              fill="none"
-            />
-            <circle cx="40" cy="8" r="3" fill="#c27256" />
-          </svg>
-        </div>
-
-        {/* Heart emblem */}
+        {/* Big heart icon */}
         <motion.div
-          animate={{ scale: [1, 1.08, 1] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           style={{
-            width: 64,
-            height: 64,
-            margin: "0 auto 14px",
-            borderRadius: "50%",
-            background: "linear-gradient(145deg, #c27256 0%, #a85d45 100%)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 4px 12px rgba(194,114,86,0.35), inset 0 2px 4px rgba(255,255,255,0.2)",
+            fontSize: 56,
+            marginBottom: 8,
+            filter: "drop-shadow(0 4px 8px rgba(255,107,138,0.3))",
           }}
         >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="#faf6f0">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-          </svg>
+          💝
         </motion.div>
 
-        {/* Title */}
+        {/* Title - much bigger */}
         <h2
           style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
-            fontSize: 28,
-            fontWeight: 600,
-            color: "#4a3423",
-            marginBottom: 6,
-            letterSpacing: "0.02em",
+            fontFamily: "'Dancing Script', cursive",
+            fontSize: 38,
+            fontWeight: 700,
+            color: "#5c3a21",
+            marginBottom: 8,
+            textShadow: "1px 1px 0 rgba(255,255,255,0.8)",
           }}
         >
           Our Scrapbook
         </h2>
 
-        {/* Subtitle */}
+        {/* Subtitle - bigger */}
         <p
           style={{
             fontFamily: "'Cormorant Garamond', Georgia, serif",
-            fontSize: 17,
-            color: "#8b7355",
+            fontSize: 20,
+            color: "#a08060",
             fontStyle: "italic",
-            letterSpacing: "0.05em",
+            letterSpacing: "0.03em",
           }}
         >
           a collection of memories
         </p>
 
-        {/* Decorative bottom flourish */}
-        <div style={{ marginTop: 10 }}>
-          <svg width="60" height="12" viewBox="0 0 60 12" style={{ opacity: 0.35 }}>
-            <path d="M0 6 L20 6 M40 6 L60 6" stroke="#5c3a21" strokeWidth="1" />
-            <circle cx="30" cy="6" r="4" fill="none" stroke="#5c3a21" strokeWidth="1" />
-            <circle cx="30" cy="6" r="2" fill="#5c3a21" />
-          </svg>
+        {/* Decorative hearts row */}
+        <div style={{ marginTop: 12, display: "flex", justifyContent: "center", gap: 8 }}>
+          <span style={{ fontSize: 14, opacity: 0.6 }}>♡</span>
+          <span style={{ fontSize: 18, color: "#ff6b8a" }}>♥</span>
+          <span style={{ fontSize: 14, opacity: 0.6 }}>♡</span>
         </div>
       </motion.div>
 
@@ -891,39 +963,38 @@ function CoverPage() {
           top: 0,
           bottom: 0,
           width: 8,
-          background: "linear-gradient(90deg, rgba(92,58,33,0.15) 0%, transparent 100%)",
+          background: "linear-gradient(90deg, rgba(92,58,33,0.12) 0%, transparent 100%)",
         }}
       />
 
-      {/* Tap hint */}
+      {/* Tap hint - bigger */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
         style={{
           position: "absolute",
-          bottom: 20,
+          bottom: 24,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 4,
+          gap: 6,
         }}
       >
         <motion.div
-          animate={{ y: [0, 4, 0] }}
+          animate={{ y: [0, 5, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(92,58,33,0.5)" strokeWidth="2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c27256" strokeWidth="2.5" strokeLinecap="round">
             <path d="M12 5v14M5 12l7 7 7-7" />
           </svg>
         </motion.div>
         <span
           style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 11,
-            color: "rgba(92,58,33,0.6)",
-            fontStyle: "italic",
-            letterSpacing: "0.1em",
+            fontFamily: "'Dancing Script', cursive",
+            fontSize: 16,
+            color: "#c27256",
+            fontWeight: 600,
           }}
         >
           tap to open
@@ -942,16 +1013,16 @@ function MessagePage({ message, senderName, photoUrl2, showHint }: { message: st
       {photoUrl2 ? (
         <motion.div initial={{ opacity: 0, rotate: -5 }} animate={{ opacity: 1, rotate: 2 }} transition={{ delay: 0.2 }} style={{ background: "#fff", padding: "6px 6px 28px 6px", borderRadius: 2, boxShadow: "0 5px 18px rgba(107,82,64,0.2)", marginBottom: 16 }}>
           <img src={photoUrl2} alt="Our moment" style={{ width: 120, height: 120, objectFit: "cover", display: "block" }} />
-          <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 13, color: "#8b7355", textAlign: "center", marginTop: 8 }}>us ♡</p>
+          <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 16, color: "#8b7355", textAlign: "center", marginTop: 8 }}>us ♡</p>
         </motion.div>
       ) : (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} style={{ marginTop: 16, marginBottom: 20, fontSize: 52 }}>💝</motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} style={{ marginTop: 16, marginBottom: 20, fontSize: 56 }}>💝</motion.div>
       )}
 
-      <motion.h3 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ fontFamily: "'Dancing Script', cursive", fontSize: 24, color: "#5c3a21", marginBottom: 6, position: "relative", zIndex: 1 }}>A Little Something</motion.h3>
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 13, color: "#8b7355", fontStyle: "italic", marginBottom: 12, wordBreak: "break-word", overflowWrap: "break-word" }}>from {senderName}</motion.p>
-      <div style={{ width: 50, height: 2, background: "linear-gradient(90deg, transparent, #c27256, transparent)", marginBottom: 12 }} />
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: "#6b5240", fontStyle: "italic", textAlign: "center", lineHeight: 1.65, padding: "0 8px", maxHeight: 100, overflow: "hidden", position: "relative", zIndex: 1, wordBreak: "break-word", overflowWrap: "break-word" }}>
+      <motion.h3 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ fontFamily: "'Dancing Script', cursive", fontSize: 30, color: "#5c3a21", marginBottom: 8, position: "relative", zIndex: 1 }}>A Little Something</motion.h3>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 17, color: "#8b7355", fontStyle: "italic", marginBottom: 14, wordBreak: "break-word", overflowWrap: "break-word" }}>from {senderName}</motion.p>
+      <div style={{ width: 60, height: 2, background: "linear-gradient(90deg, transparent, #c27256, transparent)", marginBottom: 14 }} />
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18, color: "#6b5240", fontStyle: "italic", textAlign: "center", lineHeight: 1.7, padding: "0 8px", maxHeight: 110, overflow: "hidden", position: "relative", zIndex: 1, wordBreak: "break-word", overflowWrap: "break-word" }}>
         {message.length > 100 ? message.slice(0, 100) + "..." : message}
       </motion.p>
 
@@ -974,8 +1045,8 @@ function RSVPPage({ eventDate, eventTime, eventLocation, photoUrl1, onYes, onNoI
       <div style={{ position: "absolute", inset: 0, background: `repeating-linear-gradient(transparent, transparent 26px, rgba(212,196,176,0.18) 26px, rgba(212,196,176,0.18) 27px)`, backgroundPositionY: 20, pointerEvents: "none" }} />
       <WashiTape style={{ position: "absolute", top: -6, right: 20, width: 65, transform: "rotate(5deg)" }} color="#8b9e6b" />
 
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} style={{ fontSize: 28, marginBottom: 4 }}>✨</motion.div>
-      <motion.h3 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontFamily: "'Dancing Script', cursive", fontSize: 24, color: "#5c3a21", marginBottom: 12, position: "relative", zIndex: 1 }}>Save the Date!</motion.h3>
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} style={{ fontSize: 32, marginBottom: 4 }}>✨</motion.div>
+      <motion.h3 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontFamily: "'Dancing Script', cursive", fontSize: 30, color: "#5c3a21", marginBottom: 12, position: "relative", zIndex: 1 }}>Save the Date!</motion.h3>
 
       {/* Photo Frame - Polaroid style */}
       {photoUrl1 && (
@@ -1021,11 +1092,11 @@ function RSVPPage({ eventDate, eventTime, eventLocation, photoUrl1, onYes, onNoI
       </motion.div>
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
-        <h4 style={{ fontFamily: "'Dancing Script', cursive", fontSize: 18, color: "#5c3a21", marginBottom: 2 }}>What do you say?</h4>
-        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 11, color: "#a08060", fontStyle: "italic", marginBottom: 12 }}>Your answer means the world</p>
+        <h4 style={{ fontFamily: "'Dancing Script', cursive", fontSize: 24, color: "#5c3a21", marginBottom: 4 }}>What do you say?</h4>
+        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: "#a08060", fontStyle: "italic", marginBottom: 14 }}>Your answer means the world</p>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16, justifyContent: "center" }}>
-          <motion.button onClick={onYes} whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }} style={{ fontFamily: "'Dancing Script', cursive", fontSize: 16, color: "#fff", background: "linear-gradient(135deg, #8b9e6b 0%, #7a8d5c 100%)", border: "none", borderRadius: 20, padding: "10px 28px", cursor: "pointer", boxShadow: "0 5px 18px rgba(139,158,107,0.4)" }}>
+          <motion.button onClick={onYes} whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }} style={{ fontFamily: "'Dancing Script', cursive", fontSize: 20, color: "#fff", background: "linear-gradient(135deg, #8b9e6b 0%, #7a8d5c 100%)", border: "none", borderRadius: 24, padding: "12px 32px", cursor: "pointer", boxShadow: "0 5px 18px rgba(139,158,107,0.4)" }}>
             Yes! 💕
           </motion.button>
 
@@ -1120,11 +1191,11 @@ function WashiTape({ style, color }: { style: React.CSSProperties; color: string
 
 function EventDetailRow({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <span style={{ fontSize: 18, flexShrink: 0 }}>{icon}</span>
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <span style={{ fontSize: 22, flexShrink: 0 }}>{icon}</span>
       <div style={{ minWidth: 0, flex: 1 }}>
-        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 10, color: "#a08060", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 1 }}>{label}</p>
-        <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 16, color: "#5c3a21", fontWeight: 600, wordBreak: "break-word", overflowWrap: "break-word" }}>{value}</p>
+        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 13, color: "#a08060", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 2 }}>{label}</p>
+        <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 19, color: "#5c3a21", fontWeight: 600, wordBreak: "break-word", overflowWrap: "break-word" }}>{value}</p>
       </div>
     </div>
   );

@@ -810,9 +810,22 @@ function CustomizePageContent() {
           eventDate: fieldValues.date.trim() || "",
           eventTime: fieldValues.time.trim() || "",
           eventLocation: fieldValues.location.trim() || "",
+          photoUrl1: photoUrl1 || "",
+          photoUrl2: photoUrl2 || "",
+        };
+      } else if (templateId === "elegant-invitation") {
+        configuration = {
+          message: fieldValues.message.trim() || "Will you be my Valentine?",
+          personalMessage: fieldValues.personalMessage.trim() || "",
+          date: fieldValues.date.trim() || "",
+          time: fieldValues.time.trim() || "",
+          location: fieldValues.location.trim() || "",
+          photo1Url: photoUrl1 || "",
+          photo2Url: photoUrl2 || "",
+          photo3Url: photoUrl3 || "",
         };
       } else {
-        // stargazer, premiere, forest-adventure, elegant-invitation
+        // stargazer, premiere, forest-adventure
         configuration = {
           message: fieldValues.message.trim() || "Will you be my Valentine?",
           personalMessage: fieldValues.personalMessage.trim() || "",
@@ -1633,6 +1646,7 @@ function DetailsPreview({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className={`text-xs ${subtextColor} tracking-widest uppercase`}
+          style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
         >
           From {name || "Your Name"}
         </motion.p>
@@ -1644,7 +1658,7 @@ function DetailsPreview({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
             className={`text-lg font-bold ${textColor} text-center px-4`}
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            style={{ fontFamily: "'Playfair Display', Georgia, serif", wordBreak: "break-word", overflowWrap: "break-word" }}
           >
             &ldquo;{fieldValues.message}&rdquo;
           </motion.h3>
@@ -1672,10 +1686,14 @@ function DetailsPreview({
                   <p className={`text-sm font-medium ${textColor} ${
                     field.key === "personalMessage" ? "italic" : ""
                   }`}
-                    style={field.key === "personalMessage" ? {
-                      fontFamily: "'Playfair Display', Georgia, serif",
-                      lineHeight: 1.6,
-                    } : undefined}
+                    style={{
+                      wordBreak: "break-word",
+                      overflowWrap: "break-word",
+                      ...(field.key === "personalMessage" ? {
+                        fontFamily: "'Playfair Display', Georgia, serif",
+                        lineHeight: 1.6,
+                      } : {}),
+                    }}
                   >
                     {fieldValues[field.key]}
                   </p>

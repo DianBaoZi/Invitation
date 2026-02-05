@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { Y2KDigitalCrush } from "@/components/templates/Y2KDigitalCrush";
@@ -12,6 +13,7 @@ import { Premiere } from "@/components/templates/Premiere";
 import { ForestAdventure } from "@/components/templates/ForestAdventure";
 import { ElegantInvitation } from "@/components/templates/ElegantInvitation";
 import { SplashScreen } from "@/components/invite/SplashScreen";
+/* eslint-disable @next/next/no-img-element */
 
 // Templates that manage their own full-screen layout
 const FULLSCREEN_TEMPLATES = ["y2k-digital-crush", "cozy-scrapbook", "love-letter-mailbox", "stargazer", "premiere", "forest-adventure", "elegant-invitation"];
@@ -63,6 +65,21 @@ export default function TestTemplatePage() {
         />
       )}
       {!showSplash && renderTemplate()}
+
+      {/* Floating Home Button - always visible after splash */}
+      {!showSplash && (
+        <Link
+          href="/"
+          className="fixed top-4 left-4 z-50 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-white hover:scale-105 transition-all duration-200 border border-gray-200/50"
+          title="Go to homepage"
+        >
+          <img
+            src="/logo.svg"
+            alt="Home"
+            className="w-6 h-6"
+          />
+        </Link>
+      )}
     </>
   );
 }
