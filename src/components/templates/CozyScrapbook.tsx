@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import confetti from "canvas-confetti";
 import { saveResponse } from "@/lib/api/saveResponse";
 
@@ -31,6 +31,7 @@ export function CozyScrapbook({
   const [noClicks, setNoClicks] = useState(0);
   const [noGone, setNoGone] = useState(false);
   const [flippingPage, setFlippingPage] = useState<number | null>(null);
+  const [flipDirection, setFlipDirection] = useState<"forward" | "backward">("forward");
   const [isMobile, setIsMobile] = useState(false);
   // Track which pages have completed flipping (for smooth transitions)
   const [flippedPages, setFlippedPages] = useState<number[]>([]);
@@ -45,6 +46,7 @@ export function CozyScrapbook({
 
   const handleFlipPage = useCallback((pageIndex: number) => {
     if (flippingPage !== null) return;
+    setFlipDirection("forward");
     setFlippingPage(pageIndex);
     // Mark page as flipped immediately so it stays visible during animation
     setFlippedPages(prev => [...prev, pageIndex]);
@@ -57,6 +59,7 @@ export function CozyScrapbook({
   const handleFlipBack = useCallback(() => {
     if (flippingPage !== null || currentPage === 0) return;
     const prevPage = currentPage - 1;
+    setFlipDirection("backward");
     setFlippingPage(prevPage); // Use same flipping state to prevent multiple clicks
     setFlippedPages(prev => prev.filter(p => p !== prevPage));
     setTimeout(() => {
@@ -121,6 +124,7 @@ export function CozyScrapbook({
             currentPage={currentPage}
             flippingPage={flippingPage}
             flippedPages={flippedPages}
+            flipDirection={flipDirection}
             onFlipPage={handleFlipPage}
             onFlipBack={handleFlipBack}
             message={message}
@@ -149,6 +153,7 @@ function DesktopScrapbook({
   currentPage,
   flippingPage,
   flippedPages,
+  flipDirection,
   onFlipPage,
   onFlipBack,
   message,
@@ -166,6 +171,7 @@ function DesktopScrapbook({
   currentPage: number;
   flippingPage: number | null;
   flippedPages: number[];
+  flipDirection: "forward" | "backward";
   onFlipPage: (page: number) => void;
   onFlipBack: () => void;
   message: string;
@@ -334,6 +340,7 @@ function DesktopScrapbook({
             <FlippablePageDesktop
               isFlipping={flippingPage === 1}
               isFlipped={currentPage >= 2}
+              flipDirection={flipDirection}
               onClick={currentPage === 1 && flippingPage === null ? () => onFlipPage(1) : undefined}
               zIndex={5}
             >
@@ -346,6 +353,7 @@ function DesktopScrapbook({
             <FlippablePageDesktop
               isFlipping={flippingPage === 0}
               isFlipped={currentPage >= 1}
+              flipDirection={flipDirection}
               onClick={currentPage === 0 && flippingPage === null ? () => onFlipPage(0) : undefined}
               zIndex={10}
               isCover
@@ -533,6 +541,7 @@ function FlippablePageDesktop({
   children,
   isFlipping,
   isFlipped,
+  flipDirection = "forward",
   onClick,
   zIndex,
   isCover = false,
@@ -540,16 +549,42 @@ function FlippablePageDesktop({
   children: React.ReactNode;
   isFlipping: boolean;
   isFlipped?: boolean;
+  flipDirection?: "forward" | "backward";
   onClick?: () => void;
   zIndex: number;
   isCover?: boolean;
 }) {
+  const controls = useAnimation();
+  const hasInitialized = useRef(false);
+
+  useEffect(() => {
+    if (isFlipping) {
+      if (flipDirection === "backward") {
+        // Flipping backward: instantly set to -180, then animate to 0
+        controls.set({ rotateY: -180 });
+        controls.start({ rotateY: 0, transition: { duration: 0.7, ease: [0.4, 0.0, 0.2, 1] } });
+      } else {
+        // Flipping forward: animate from current position to -180
+        controls.start({ rotateY: -180, transition: { duration: 0.7, ease: [0.4, 0.0, 0.2, 1] } });
+      }
+    } else {
+      // Not flipping - set to final state
+      const targetRotation = isFlipped ? -180 : 0;
+      if (!hasInitialized.current) {
+        // First render - set instantly without animation
+        controls.set({ rotateY: targetRotation });
+        hasInitialized.current = true;
+      } else {
+        // Subsequent renders - this happens after flip completes, no animation needed
+        controls.set({ rotateY: targetRotation });
+      }
+    }
+  }, [isFlipping, flipDirection, isFlipped, controls]);
+
   return (
     <motion.div
       onClick={onClick}
-      initial={{ rotateY: 0 }}
-      animate={{ rotateY: isFlipping ? -180 : 0 }}
-      transition={{ duration: 0.7, ease: [0.4, 0.0, 0.2, 1] }}
+      animate={controls}
       style={{
         position: "absolute",
         inset: 0,
