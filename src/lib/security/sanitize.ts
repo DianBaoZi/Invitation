@@ -98,10 +98,21 @@ export function sanitizeUrl(url: string): string | null {
 export function sanitizeInviteConfig(config: Record<string, unknown>): Record<string, unknown> {
   const sanitized: Record<string, unknown> = {};
 
+  // Keys that contain photo/image data URLs - allow larger sizes
+  const photoKeys = ["photoUrl1", "photoUrl2", "photoUrl3", "photo1Url", "photo2Url", "photo3Url"];
+
   for (const [key, value] of Object.entries(config)) {
     if (typeof value === "string") {
-      // Sanitize string values
-      sanitized[key] = sanitizeString(value, 5000);
+      // Check if this is a photo URL field
+      if (photoKeys.includes(key)) {
+        // For photo URLs, use sanitizeUrl which allows data:image/ URLs
+        // Don't truncate - base64 images can be large
+        const sanitizedUrl = sanitizeUrl(value);
+        sanitized[key] = sanitizedUrl || "";
+      } else {
+        // Sanitize regular string values with length limit
+        sanitized[key] = sanitizeString(value, 5000);
+      }
     } else if (typeof value === "number") {
       // Keep numbers as-is
       sanitized[key] = value;
