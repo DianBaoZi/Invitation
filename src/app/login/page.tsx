@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Suspense, useState } from "react";
 
@@ -34,160 +34,38 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const urlError = searchParams.get("error");
+  const returnTo = searchParams.get("returnTo");
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(urlError ? "Authentication failed. Please try again." : null);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState("");
-  const [forgotLoading, setForgotLoading] = useState(false);
-  const [forgotSuccess, setForgotSuccess] = useState(false);
-
-  const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
-    });
-
-    if (error) {
-      if (error.message.includes("Email not confirmed")) {
-        setError("Please verify your email before signing in. Check your inbox.");
-      } else {
-        setError("Invalid email or password");
-      }
-      setLoading(false);
-      return;
-    }
-
-    router.push("/dashboard");
-  };
+  const [error, setError] = useState<string | null>(
+    urlError ? "Authentication failed. Please try again." : null
+  );
 
   const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError(null);
+
     const supabase = createClient();
+
+    // Build callback URL with optional return destination
+    let callbackUrl = `${window.location.origin}/auth/callback`;
+    if (returnTo) {
+      callbackUrl += `?next=${encodeURIComponent(returnTo)}`;
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callbackUrl,
       },
     });
 
     if (error) {
       console.error("Login error:", error);
       setError("Failed to connect with Google. Please try again.");
+      setLoading(false);
     }
   };
-
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setForgotLoading(true);
-
-    const supabase = createClient();
-    const { error } = await supabase.auth.resetPasswordForEmail(
-      forgotEmail.trim().toLowerCase(),
-      {
-        redirectTo: `${window.location.origin}/reset-password`,
-      }
-    );
-
-    setForgotLoading(false);
-
-    if (error) {
-      setError("Failed to send reset email. Please try again.");
-      return;
-    }
-
-    setForgotSuccess(true);
-  };
-
-  if (showForgotPassword) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-red-50 p-4">
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="bg-white rounded-3xl shadow-xl p-8 max-w-md w-full"
-        >
-          <div className="text-center mb-8">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="inline-block mb-4"
-            >
-              <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
-            </motion.div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Reset Password
-            </h1>
-            <p className="text-gray-600">
-              Enter your email to receive a reset link
-            </p>
-          </div>
-
-          {forgotSuccess ? (
-            <div className="text-center">
-              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
-                Check your email for a password reset link.
-              </div>
-              <button
-                onClick={() => {
-                  setShowForgotPassword(false);
-                  setForgotSuccess(false);
-                  setForgotEmail("");
-                }}
-                className="text-pink-500 hover:text-pink-600 font-medium"
-              >
-                Back to sign in
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleForgotPassword} className="space-y-4">
-              <div>
-                <label htmlFor="forgot-email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  id="forgot-email"
-                  type="email"
-                  value={forgotEmail}
-                  onChange={(e) => setForgotEmail(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-                  placeholder="you@example.com"
-                  required
-                />
-              </div>
-
-              <Button
-                type="submit"
-                disabled={forgotLoading}
-                className="w-full h-12 text-base font-medium bg-pink-500 hover:bg-pink-600 text-white"
-              >
-                {forgotLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  "Send Reset Link"
-                )}
-              </Button>
-
-              <button
-                type="button"
-                onClick={() => setShowForgotPassword(false)}
-                className="w-full text-center text-pink-500 hover:text-pink-600 text-sm font-medium"
-              >
-                Back to sign in
-              </button>
-            </form>
-          )}
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-red-50 p-4">
@@ -205,10 +83,10 @@ function LoginContent() {
             <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
           </motion.div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Welcome Back
+            Welcome to Invitely
           </h1>
           <p className="text-gray-600">
-            Sign in to manage your Valentine&apos;s invites
+            Sign in to create and manage your Valentine&apos;s invites
           </p>
         </div>
 
@@ -218,95 +96,28 @@ function LoginContent() {
           </div>
         )}
 
-        <form onSubmit={handleEmailLogin} className="space-y-4 mb-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-              placeholder="you@example.com"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors pr-12"
-                placeholder="Enter your password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
-
-          <div className="text-right">
-            <button
-              type="button"
-              onClick={() => setShowForgotPassword(true)}
-              className="text-sm text-pink-500 hover:text-pink-600 font-medium"
-            >
-              Forgot password?
-            </button>
-          </div>
-
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full h-12 text-base font-medium bg-pink-500 hover:bg-pink-600 text-white"
-          >
-            {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              "Sign In"
-            )}
-          </Button>
-        </form>
-
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-4 text-gray-500">or</span>
-          </div>
-        </div>
-
         <Button
           onClick={handleGoogleLogin}
-          variant="outline"
-          className="w-full h-12 text-base font-medium border-2 hover:bg-gray-50"
+          disabled={loading}
+          className="w-full h-14 text-base font-medium border-2 bg-white hover:bg-gray-50 text-gray-700 border-gray-200"
         >
-          <GoogleIcon />
-          <span className="ml-3">Continue with Google</span>
+          {loading ? (
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            >
+              <Heart className="w-5 h-5 text-pink-500" />
+            </motion.div>
+          ) : (
+            <>
+              <GoogleIcon />
+              <span className="ml-3">Continue with Google</span>
+            </>
+          )}
         </Button>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Don&apos;t have an account?{" "}
-          <button
-            onClick={() => router.push("/signup")}
-            className="text-pink-500 hover:text-pink-600 font-medium"
-          >
-            Sign up
-          </button>
+        <p className="mt-6 text-center text-xs text-gray-500">
+          By continuing, you agree to our Terms of Service and Privacy Policy
         </p>
 
         <div className="mt-6 pt-6 border-t border-gray-100 text-center">

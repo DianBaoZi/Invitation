@@ -663,6 +663,10 @@ function CustomizePageContent() {
   const [photoUrl2, setPhotoUrl2] = useState<string>(""); // Second photo - inside scrapbook
   const [photoUrl3, setPhotoUrl3] = useState<string>(""); // Third photo - for elegant-invitation
   const [userId, setUserId] = useState<string | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // Check if this is a paid template that requires sign-in
+  const requiresAuth = template && !template.is_free;
 
   // Get current user if logged in
   useEffect(() => {
@@ -671,6 +675,9 @@ function CustomizePageContent() {
       if (user) {
         setUserId(user.id);
       }
+      setAuthLoading(false);
+    }).catch(() => {
+      setAuthLoading(false);
     });
   }, []);
 
@@ -920,6 +927,115 @@ function CustomizePageContent() {
     if (step === totalSteps) return "Preview your invite";
     return "Customize your invite";
   };
+
+  // ==========================================
+  // AUTH GATE: Show sign-in overlay for paid templates
+  // ==========================================
+  if (requiresAuth && !authLoading && !userId) {
+    const returnUrl = `/customize?template=${templateId}`;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 flex items-center justify-center p-4">
+        {/* Background blur effect */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-100/50 via-pink-100/50 to-rose-100/50 backdrop-blur-sm" />
+        </div>
+
+        {/* Auth card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="relative z-10 bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center"
+        >
+          {/* Template preview thumbnail */}
+          <div className="mb-6">
+            <div className="w-20 h-20 mx-auto bg-gradient-to-br from-pink-100 to-rose-100 rounded-2xl flex items-center justify-center text-4xl shadow-lg">
+              {template?.emoji || "💝"}
+            </div>
+          </div>
+
+          {/* Title */}
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Sign in to continue
+          </h2>
+
+          {/* Template name */}
+          <p className="text-gray-600 mb-2">
+            You&apos;re customizing <span className="font-semibold text-pink-600">{template?.name}</span>
+          </p>
+
+          {/* Description */}
+          <p className="text-gray-500 text-sm mb-8">
+            Create an account to save your invite and track responses
+          </p>
+
+          {/* Sign in button */}
+          <Button
+            onClick={() => router.push(`/login?returnTo=${encodeURIComponent(returnUrl)}`)}
+            className="w-full h-14 text-lg font-semibold rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white shadow-lg hover:shadow-xl transition-all"
+          >
+            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            Continue with Google
+          </Button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-6">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-gray-400 uppercase tracking-wide">or</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
+
+          {/* Free template link */}
+          <button
+            onClick={() => router.push("/customize?template=runaway-button")}
+            className="text-sm text-gray-500 hover:text-pink-600 transition-colors"
+          >
+            Try our <span className="font-medium">free template</span> instead
+          </button>
+
+          {/* Back button */}
+          <button
+            onClick={() => router.back()}
+            className="mt-6 text-sm text-gray-400 hover:text-gray-600 transition-colors flex items-center justify-center gap-1 mx-auto"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Go back
+          </button>
+        </motion.div>
+
+        {/* Floating decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute text-pink-200"
+              style={{
+                left: `${15 + Math.random() * 70}%`,
+                top: `${15 + Math.random() * 70}%`,
+                fontSize: `${20 + Math.random() * 15}px`,
+              }}
+              animate={{
+                y: [0, -20, 0],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                duration: 4 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            >
+              ♥
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   // ==========================================
   // STEP 3 (or 2 for minimal templates): FULL PREVIEW
