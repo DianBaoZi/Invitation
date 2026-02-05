@@ -257,9 +257,9 @@ function DesktopScrapbook({
               <span style={{ fontSize: 14 }}>←</span> tap to go back
             </div>
           )}
-          {/* Inside of cover (visible when cover is flipped) */}
+          {/* Inside of cover (visible when cover is flipped, hide immediately when flipping back) */}
           <AnimatePresence>
-            {(flippedPages.includes(0) || currentPage >= 1) && (
+            {(flippedPages.includes(0) || currentPage >= 1) && !(flippingPage === 0 && flipDirection === "backward") && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -279,9 +279,9 @@ function DesktopScrapbook({
             )}
           </AnimatePresence>
 
-          {/* Back of message page (visible when page 1 is flipped) */}
+          {/* Back of message page (visible when page 1 is flipped, hide immediately when flipping back) */}
           <AnimatePresence>
-            {(flippedPages.includes(1) || currentPage >= 2) && (
+            {(flippedPages.includes(1) || currentPage >= 2) && !(flippingPage === 1 && flipDirection === "backward") && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
