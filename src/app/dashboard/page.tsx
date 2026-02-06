@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Calendar, ExternalLink, Copy, CheckCircle, LogOut, Trash2, BarChart3, AlertTriangle, X, Mail } from "lucide-react";
+import { Plus, Calendar, ExternalLink, Copy, CheckCircle, Trash2, BarChart3, AlertTriangle, X, Mail } from "lucide-react";
 /* eslint-disable @next/next/no-img-element */
 import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/Navbar";
 import { getTemplateById } from "@/lib/supabase/templates";
 import type { User } from "@supabase/supabase-js";
 
@@ -77,12 +78,6 @@ export default function DashboardPage() {
     setLoading(false);
   };
 
-  const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/");
-  };
-
   const handleCopyLink = (slug: string) => {
     const url = `${window.location.origin}/i/${slug}`;
     navigator.clipboard.writeText(url);
@@ -131,33 +126,9 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-pink-100 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <button
-            onClick={() => router.push("/")}
-            className="flex items-center hover:opacity-80 transition"
-          >
-            <img src="/logo.svg" alt="YoursInvite" className="h-20 sm:h-28 w-auto" />
-          </button>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600 hidden sm:block">
-              {user?.email}
-            </span>
-            <Button
-              onClick={handleSignOut}
-              variant="ghost"
-              size="sm"
-              className="text-gray-600"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 py-8 pt-36 sm:pt-40">
         {/* Create New Button */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

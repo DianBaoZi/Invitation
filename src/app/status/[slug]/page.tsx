@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Heart, Copy, Check, Eye, Clock, Calendar, RefreshCw, AlertCircle, ArrowLeft, ExternalLink, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/Navbar";
 import { createClient } from "@/lib/supabase/client";
 /* eslint-disable @next/next/no-img-element */
 
@@ -162,7 +163,10 @@ function StatusPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-amber-50 p-4 py-8 sm:py-12">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-amber-50">
+      <Navbar />
+
+      <div className="p-4 pt-36 sm:pt-40 pb-8 sm:pb-12">
       {/* Decorative elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 left-10 w-72 h-72 bg-rose-200/20 rounded-full blur-3xl" />
@@ -370,6 +374,7 @@ function StatusPageContent() {
         >
           Share the link and wait for the magic ✨
         </motion.p>
+      </div>
       </div>
     </div>
   );

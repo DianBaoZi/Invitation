@@ -51,7 +51,8 @@
       "Bash(git push)",
       "Bash(git push:*)",
       "Bash(vercel --prod:*)",
-      "Bash(vercel link:*)"
+      "Bash(vercel link:*)",
+      "Bash(npm audit:*)"
     ]
   }
 }

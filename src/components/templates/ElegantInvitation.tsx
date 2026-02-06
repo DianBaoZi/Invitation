@@ -1031,16 +1031,34 @@ function RSVPSection({
         className="max-w-md mx-auto text-center"
         style={{ overflow: "visible" }}
       >
-        <p
-          className="mb-8"
+        <motion.h2
+          className="mb-10"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
           style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: "18px",
-            color: PALETTE.textMuted,
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: "clamp(2rem, 8vw, 3.5rem)",
+            fontWeight: 400,
+            fontStyle: "italic",
+            color: PALETTE.roseGold,
+            lineHeight: 1.2,
           }}
         >
-          Will you join me?
-        </p>
+          <motion.span
+            animate={{
+              textShadow: [
+                "0 0 0px rgba(183, 110, 121, 0)",
+                "0 0 30px rgba(183, 110, 121, 0.4)",
+                "0 0 0px rgba(183, 110, 121, 0)",
+              ],
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            Will you join me?
+          </motion.span>
+        </motion.h2>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 min-h-[200px]" style={{ overflow: "visible" }}>
           {/* Yes Button */}

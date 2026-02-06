@@ -69,27 +69,65 @@ export function sanitizeEmail(email: string): string | null {
 
 /**
  * Sanitize URL - only allow safe protocols
+ * Includes size limits to prevent DoS attacks via large data URLs
  */
 export function sanitizeUrl(url: string): string | null {
   if (typeof url !== "string") return null;
 
   const trimmed = url.trim();
 
-  // Only allow http, https, and data URLs for images
+  // Block javascript: URLs that might be encoded (check first for security)
+  const lowercased = trimmed.toLowerCase();
   if (
-    !trimmed.startsWith("http://") &&
-    !trimmed.startsWith("https://") &&
-    !trimmed.startsWith("data:image/")
+    lowercased.includes("javascript:") ||
+    lowercased.includes("vbscript:") ||
+    lowercased.includes("data:text/html")
   ) {
     return null;
   }
 
-  // Block javascript: URLs that might be encoded
-  if (trimmed.toLowerCase().includes("javascript:")) {
-    return null;
+  // Check for data URLs (images only)
+  if (trimmed.startsWith("data:image/")) {
+    // Limit data URL size to 5MB to prevent DoS
+    const MAX_DATA_URL_SIZE = 5 * 1024 * 1024; // 5MB
+    if (trimmed.length > MAX_DATA_URL_SIZE) {
+      console.warn(`Data URL rejected: size ${trimmed.length} exceeds limit`);
+      return null;
+    }
+
+    // Validate it's actually an image type
+    const validImageTypes = [
+      "data:image/jpeg",
+      "data:image/jpg",
+      "data:image/png",
+      "data:image/gif",
+      "data:image/webp",
+      "data:image/svg+xml",
+      "data:image/bmp",
+    ];
+
+    const isValidImage = validImageTypes.some((type) =>
+      lowercased.startsWith(type)
+    );
+
+    if (!isValidImage) {
+      return null;
+    }
+
+    return trimmed;
   }
 
-  return trimmed;
+  // Only allow http and https for external URLs
+  if (trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+
+  // Upgrade http to https for security
+  if (trimmed.startsWith("http://")) {
+    return trimmed.replace("http://", "https://");
+  }
+
+  return null;
 }
 
 /**

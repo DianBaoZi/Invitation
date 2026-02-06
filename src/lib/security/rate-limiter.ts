@@ -84,22 +84,81 @@ export function checkRateLimit(
 }
 
 /**
+ * Validate IP address format (basic check)
+ */
+function isValidIp(ip: string): boolean {
+  if (!ip || ip.length > 45) return false; // IPv6 max length
+
+  // IPv4 pattern
+  const ipv4Pattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+  // IPv6 pattern (simplified)
+  const ipv6Pattern = /^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/;
+
+  if (ipv4Pattern.test(ip)) {
+    // Validate each octet is 0-255
+    const octets = ip.split(".");
+    return octets.every((octet) => {
+      const num = parseInt(octet, 10);
+      return num >= 0 && num <= 255;
+    });
+  }
+
+  return ipv6Pattern.test(ip);
+}
+
+/**
+ * Simple string hash for fingerprinting
+ */
+function hashString(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+/**
  * Get client IP from request headers
+ * SECURITY: Only trusts headers set by known reverse proxies
  */
 export function getClientIp(request: Request): string {
-  // Check various headers that might contain the real IP
+  // Cloudflare-specific header (most reliable when using Cloudflare)
+  const cfConnectingIp = request.headers.get("cf-connecting-ip");
+  if (cfConnectingIp && isValidIp(cfConnectingIp)) {
+    return cfConnectingIp;
+  }
+
+  // Vercel-specific header
+  const vercelForwardedFor = request.headers.get("x-vercel-forwarded-for");
+  if (vercelForwardedFor) {
+    const ip = vercelForwardedFor.split(",")[0].trim();
+    if (isValidIp(ip)) {
+      return ip;
+    }
+  }
+
+  // Standard forwarded header
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {
-    return forwarded.split(",")[0].trim();
+    const ip = forwarded.split(",")[0].trim();
+    if (isValidIp(ip)) {
+      return ip;
+    }
   }
 
   const realIp = request.headers.get("x-real-ip");
-  if (realIp) {
+  if (realIp && isValidIp(realIp)) {
     return realIp;
   }
 
-  // Fallback to a default identifier
-  return "unknown";
+  // Fallback - fingerprint from request characteristics
+  const userAgent = request.headers.get("user-agent") || "";
+  const acceptLang = request.headers.get("accept-language") || "";
+  const fingerprint = `${userAgent.slice(0, 50)}:${acceptLang.slice(0, 20)}`;
+
+  return `fp:${hashString(fingerprint)}`;
 }
 
 /**
