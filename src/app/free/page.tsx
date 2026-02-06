@@ -44,44 +44,180 @@ export default function FreePage() {
 }
 
 // ============================================
-// SPLASH SCREEN
+// SPLASH SCREEN - Premium luxurious aesthetic
 // ============================================
 
 function SplashScreen() {
+  const particles = [
+    { left: 10, top: 15, size: 4, delay: 0 },
+    { left: 85, top: 20, size: 3, delay: 0.5 },
+    { left: 20, top: 70, size: 5, delay: 1 },
+    { left: 75, top: 75, size: 3, delay: 1.5 },
+    { left: 50, top: 10, size: 4, delay: 2 },
+    { left: 90, top: 50, size: 3, delay: 2.5 },
+    { left: 5, top: 45, size: 4, delay: 3 },
+    { left: 60, top: 85, size: 5, delay: 3.5 },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-rose-100 via-pink-50 to-purple-100"
+      transition={{ duration: 0.6 }}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden"
     >
+      {/* Deep luxurious gradient background */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `
+            radial-gradient(ellipse at 50% 0%, rgba(190,18,60,0.15) 0%, transparent 50%),
+            radial-gradient(ellipse at 0% 50%, rgba(157,23,77,0.1) 0%, transparent 40%),
+            radial-gradient(ellipse at 100% 50%, rgba(190,18,60,0.1) 0%, transparent 40%),
+            radial-gradient(ellipse at 50% 100%, rgba(136,19,55,0.2) 0%, transparent 50%),
+            linear-gradient(180deg, #1a0a0a 0%, #2d0a0a 30%, #1f0505 70%, #0d0303 100%)
+          `,
+        }}
+      />
+
+      {/* Subtle texture overlay */}
+      <div
+        className="absolute inset-0 opacity-30 pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* Elegant glow orbs */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
-        className="text-center"
-      >
+        className="absolute w-96 h-96 rounded-full pointer-events-none"
+        style={{
+          background: "radial-gradient(circle, rgba(225,29,72,0.15) 0%, transparent 60%)",
+          left: "30%",
+          top: "20%",
+          filter: "blur(60px)",
+        }}
+        animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute w-80 h-80 rounded-full pointer-events-none"
+        style={{
+          background: "radial-gradient(circle, rgba(190,18,60,0.12) 0%, transparent 60%)",
+          right: "20%",
+          bottom: "30%",
+          filter: "blur(50px)",
+        }}
+        animate={{ scale: [1.1, 1, 1.1], opacity: [0.3, 0.5, 0.3] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Floating gold particles */}
+      {particles.map((particle, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            left: `${particle.left}%`,
+            top: `${particle.top}%`,
+            width: `${particle.size}px`,
+            height: `${particle.size}px`,
+            background: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+            boxShadow: "0 0 12px 2px rgba(251,191,36,0.4)",
+          }}
+          animate={{
+            y: [0, -20, 0],
+            opacity: [0.2, 0.6, 0.2],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 5 + (i % 3),
+            repeat: Infinity,
+            delay: particle.delay,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+
+      {/* Center heart with premium glow */}
+      <div className="relative z-10 flex flex-col items-center">
+        {/* Outer glow ring */}
+        <motion.div
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            width: "200px",
+            height: "200px",
+            background: "radial-gradient(circle, rgba(225,29,72,0.2) 0%, transparent 70%)",
+            filter: "blur(30px)",
+          }}
+          animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        />
+
         {/* Heart icon */}
         <motion.div
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 1, repeat: Infinity }}
-          className="mb-4"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: [1, 1.08, 1], opacity: 1 }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Heart className="w-16 h-16 mx-auto text-pink-500 fill-pink-500" />
+          <Heart
+            className="w-28 h-28"
+            style={{
+              fill: "url(#splashHeartGradient)",
+              stroke: "url(#splashStrokeGradient)",
+              strokeWidth: "1",
+              filter: "drop-shadow(0 0 30px rgba(225,29,72,0.5)) drop-shadow(0 0 60px rgba(225,29,72,0.3))",
+            }}
+          />
+          <svg width="0" height="0">
+            <defs>
+              <linearGradient id="splashHeartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#f43f5e" />
+                <stop offset="50%" stopColor="#e11d48" />
+                <stop offset="100%" stopColor="#be123c" />
+              </linearGradient>
+              <linearGradient id="splashStrokeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#fda4af" />
+                <stop offset="100%" stopColor="#f43f5e" />
+              </linearGradient>
+            </defs>
+          </svg>
         </motion.div>
+      </div>
 
-        {/* Text */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          className="text-2xl md:text-3xl font-medium text-gray-700"
+      {/* Bottom branding */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 pb-12 pt-24 text-center z-20"
+        style={{
+          background: "linear-gradient(to top, rgba(13,3,3,0.95) 0%, transparent 100%)",
+        }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.8 }}
+      >
+        <p
+          className="text-rose-100/50 text-sm tracking-widest uppercase mb-3"
+          style={{ letterSpacing: "0.3em" }}
         >
-          Made with <span className="text-pink-500">❤️</span>
-        </motion.p>
+          Crafted with love by
+        </p>
+        <p
+          className="text-3xl md:text-4xl font-semibold tracking-wide"
+          style={{
+            background: "linear-gradient(135deg, #fda4af 0%, #fb7185 50%, #f43f5e 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            letterSpacing: "0.02em",
+          }}
+        >
+          YoursInvite.com
+        </p>
       </motion.div>
+
+      {/* Elegant corner accents */}
+      <div className="absolute top-8 left-8 w-16 h-16 border-t border-l border-rose-500/20 rounded-tl-lg pointer-events-none" />
+      <div className="absolute top-8 right-8 w-16 h-16 border-t border-r border-rose-500/20 rounded-tr-lg pointer-events-none" />
     </motion.div>
   );
 }

@@ -199,5 +199,5 @@ export const PRICING = {
 
 export function formatPrice(cents: number): string {
   // Always show decimals for charm pricing effect, with USD suffix
-  return `$${(cents / 100).toFixed(2)} USD`;
+  return `${(cents / 100).toFixed(2)} USD`;
 }
