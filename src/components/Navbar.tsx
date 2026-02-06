@@ -50,7 +50,7 @@ export function Navbar() {
   const avatarUrl = user?.user_metadata?.avatar_url;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-pink-100">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/40 backdrop-blur-xl border-b border-white/30 shadow-[0_4px_30px_rgba(0,0,0,0.05)]">
       <div className="w-full px-4 sm:px-6 py-2 flex items-center justify-between">
         {/* Logo */}
         <button
