@@ -1,9 +1,10 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Sparkles, AlertCircle, ArrowLeft, ArrowRight, Calendar, Clock, MapPin, PenLine, Eye, MessageSquare, ImagePlus, X } from "lucide-react";
+import { Heart, Sparkles, AlertCircle, ArrowLeft, ArrowRight, Calendar, Clock, MapPin, PenLine, Eye, MessageSquare, ImagePlus, X, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -1133,24 +1134,35 @@ function CustomizePageContent() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`sticky top-0 z-20 p-4 md:p-6 border-b ${getHeaderBorder(templateId)} bg-white/50 backdrop-blur-sm`}
+        className={`sticky top-0 z-20 p-3 md:p-4 border-b ${getHeaderBorder(templateId)} bg-white/50 backdrop-blur-sm`}
       >
-        <div className="max-w-6xl mx-auto flex items-center gap-4">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Home Logo */}
+            <button
+              onClick={() => router.push("/")}
+              className="flex items-center hover:opacity-80 transition"
+            >
+              <img src="/logo.svg" alt="YoursInvite" className="h-16 sm:h-20 w-auto" />
+            </button>
+            <div className="h-8 w-px bg-gray-200 hidden sm:block" />
+            <div className="hidden sm:block">
+              <h1 className="text-lg font-bold text-gray-900">
+                {getStepTitle()}
+              </h1>
+              <p className="text-gray-500 text-xs">
+                {template ? `${template.emoji} ${template.name}` : templateId}
+                {" · "}Step {step} of {totalSteps}
+              </p>
+            </div>
+          </div>
           <button
             onClick={() => step > 1 ? setStep(step - 1) : router.back()}
-            className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm text-sm font-medium"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Back</span>
           </button>
-          <div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-              {getStepTitle()}
-            </h1>
-            <p className="text-gray-500 text-sm">
-              {template ? `${template.emoji} ${template.name}` : templateId}
-              {" · "}Step {step} of {totalSteps}
-            </p>
-          </div>
         </div>
       </motion.div>
 

@@ -385,10 +385,10 @@ export default function StatusPage() {
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-pink-50 to-amber-50">
           <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <img src="/logo-with-name.svg" alt="YoursInvite" className="h-20 w-auto" />
+            <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto" />
           </motion.div>
         </div>
       }

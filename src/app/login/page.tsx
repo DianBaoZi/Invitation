@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -76,15 +77,12 @@ function LoginContent() {
       >
         <div className="text-center mb-8">
           <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
+            animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
             className="inline-block mb-4"
           >
-            <Heart className="w-12 h-12 text-pink-500 fill-pink-500" />
+            <img src="/logo-with-name.svg" alt="YoursInvite" className="h-24 w-auto mx-auto" />
           </motion.div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Welcome to Invitely
-          </h1>
           <p className="text-gray-600">
             Sign in or create an account to get started
           </p>
@@ -116,7 +114,11 @@ function LoginContent() {
           )}
         </Button>
 
-        <p className="mt-6 text-center text-xs text-gray-500">
+        <p className="mt-4 text-center text-sm text-gray-500">
+          New here? Your account will be created automatically
+        </p>
+
+        <p className="mt-4 text-center text-xs text-gray-400">
           By continuing, you agree to our Terms of Service and Privacy Policy
         </p>
 
@@ -138,7 +140,7 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
-          <Heart className="w-12 h-12 text-pink-500 animate-pulse" />
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto animate-pulse" />
         </div>
       }
     >

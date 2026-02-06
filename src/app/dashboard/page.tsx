@@ -120,10 +120,10 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
         <motion.div
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-20 w-auto" />
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto" />
         </motion.div>
       </div>
     );
@@ -138,7 +138,7 @@ export default function DashboardPage() {
             onClick={() => router.push("/")}
             className="flex items-center hover:opacity-80 transition"
           >
-            <img src="/logo.svg" alt="YoursInvite" className="h-14 w-auto" />
+            <img src="/logo.svg" alt="YoursInvite" className="h-20 sm:h-28 w-auto" />
           </button>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600 hidden sm:block">

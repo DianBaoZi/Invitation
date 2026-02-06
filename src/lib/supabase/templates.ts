@@ -162,7 +162,7 @@ export const TEMPLATES: Template[] = [
     is_free: false,
     price_cents: 199, // $1.99
     default_config: DEFAULT_ELEGANT_INVITATION_CONFIG,
-    badge: "Staff Pick",
+    badge: "New",
   },
 ];
 

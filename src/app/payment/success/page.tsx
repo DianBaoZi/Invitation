@@ -1,9 +1,10 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { CheckCircle, Copy, ExternalLink, Heart } from "lucide-react";
+import { CheckCircle, Copy, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function PaymentSuccessContent() {
@@ -109,10 +110,10 @@ export default function PaymentSuccessPage() {
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
           <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <Heart className="w-12 h-12 text-pink-500" />
+            <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto" />
           </motion.div>
         </div>
       }

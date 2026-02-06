@@ -55,7 +55,32 @@ export default function Home() {
   const [showMembershipModal, setShowMembershipModal] = useState(false);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0 });
-  const [inviteCount, setInviteCount] = useState(2847);
+  const [inviteCount, setInviteCount] = useState(0);
+
+  // Fetch real invite count from database on mount
+  useEffect(() => {
+    const fetchInviteCount = async () => {
+      try {
+        const res = await fetch("/api/invites");
+        const data = await res.json();
+        if (data.success && data.count !== undefined) {
+          setInviteCount(data.count);
+        }
+      } catch (error) {
+        console.error("Failed to fetch invite count:", error);
+      }
+    };
+
+    fetchInviteCount();
+  }, []);
+
+  // Increment counter by 1 every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setInviteCount((prev) => prev + 1);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Valentine's Day countdown timer - updates every minute
   useEffect(() => {
@@ -75,26 +100,6 @@ export default function Home() {
     updateCountdown();
     const interval = setInterval(updateCountdown, 60000); // Update every minute
     return () => clearInterval(interval);
-  }, []);
-
-  // Random invite count incrementer
-  useEffect(() => {
-    const incrementInvites = () => {
-      // Randomly increment by 1-3 invites
-      setInviteCount((prev) => prev + Math.floor(Math.random() * 3) + 1);
-    };
-
-    // Random interval between 2-6 seconds
-    const scheduleNext = () => {
-      const randomDelay = 2000 + Math.random() * 4000;
-      return setTimeout(() => {
-        incrementInvites();
-        scheduleNext();
-      }, randomDelay);
-    };
-
-    const timeoutId = scheduleNext();
-    return () => clearTimeout(timeoutId);
   }, []);
 
   useEffect(() => {

@@ -67,15 +67,13 @@ const PlayfulEditor = dynamic(
     ssr: false,
     loading: () => (
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50">
-        <div className="text-center">
-          <motion.div
-            animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            <Sparkles className="w-12 h-12 text-purple-500 mx-auto mb-4" />
-          </motion.div>
-          <p className="text-sm text-gray-600">Loading magic...</p>
-        </div>
+        <motion.div
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto" />
+        </motion.div>
       </div>
     ),
   }
@@ -88,15 +86,13 @@ const FabricEditor = dynamic(
     ssr: false,
     loading: () => (
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-white">
-        <div className="text-center">
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            <Wand2 className="w-12 h-12 text-purple-500 mx-auto mb-4" />
-          </motion.div>
-          <p className="text-sm text-gray-600">Loading editor...</p>
-        </div>
+        <motion.div
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto" />
+        </motion.div>
       </div>
     ),
   }
@@ -329,15 +325,13 @@ export default function CreatePage() {
   return (
     <Suspense fallback={
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-white">
-        <div className="text-center">
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            <Wand2 className="w-12 h-12 text-purple-500 mx-auto mb-4" />
-          </motion.div>
-          <p className="text-sm text-gray-600">Loading...</p>
-        </div>
+        <motion.div
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto" />
+        </motion.div>
       </div>
     }>
       <CreatePageInner />

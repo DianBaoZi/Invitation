@@ -2,7 +2,6 @@
 
 import { useState, useEffect, Suspense, lazy } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, HeartCrack } from "lucide-react";
@@ -173,20 +172,6 @@ function InvitePageContent() {
         )}
       </AnimatePresence>
 
-      {/* Floating Home Button - always visible after splash */}
-      {!showSplash && (
-        <Link
-          href="/"
-          className="fixed top-4 left-4 z-50 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-white hover:scale-105 transition-all duration-200 border border-gray-200/50"
-          title="Go to homepage"
-        >
-          <img
-            src="/logo.svg"
-            alt="Home"
-            className="w-6 h-6"
-          />
-        </Link>
-      )}
     </div>
   );
 }
