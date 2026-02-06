@@ -385,6 +385,8 @@ function HeroSection({
             color: PALETTE.roseGold,
             letterSpacing: "0.02em",
             lineHeight: 1.2,
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
           }}
         >
           {senderName}

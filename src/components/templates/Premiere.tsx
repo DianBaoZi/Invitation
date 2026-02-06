@@ -304,6 +304,8 @@ function CountdownScene({
               color: P.cream,
               textShadow: `0 0 40px rgba(212,160,23,0.4), 0 2px 4px rgba(0,0,0,0.5)`,
               letterSpacing: "0.03em",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
             }}
           >
             {senderName}
@@ -540,6 +542,8 @@ function CurtainScene({
               lineHeight: 1.3,
               textShadow: `0 0 30px rgba(212,160,23,0.3), 0 2px 4px rgba(0,0,0,0.5)`,
               minHeight: "3.6em",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
             }}
           >
             {revealed ? (
@@ -686,6 +690,8 @@ function ScrollContent({
               color: P.cream,
               lineHeight: 1.3,
               textShadow: `0 0 30px rgba(212,160,23,0.3), 0 2px 4px rgba(0,0,0,0.5)`,
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
             }}
           >
             {message}
@@ -1219,6 +1225,8 @@ function RSVPSection({
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
                 fontSize: "1.1rem", fontStyle: "italic",
                 color: P.cream, opacity: 0.7,
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.7 }}

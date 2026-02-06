@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { LogOut, User } from "lucide-react";
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 import { Button } from "@/components/ui/button";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -57,13 +57,10 @@ export function Navbar() {
           onClick={() => router.push("/")}
           className="flex items-center gap-1 hover:opacity-80 transition"
         >
-          <Image
+          <img
             src="/logo.svg"
             alt="YoursInvite"
-            width={160}
-            height={64}
             className="h-14 w-auto"
-            priority
           />
         </button>
 
@@ -114,23 +111,13 @@ export function Navbar() {
               </Button>
             </>
           ) : (
-            <>
-              <Button
-                onClick={() => router.push("/login")}
-                variant="ghost"
-                size="sm"
-                className="text-gray-600"
-              >
-                Sign In
-              </Button>
-              <Button
-                onClick={() => router.push("/login?mode=signup")}
-                size="sm"
-                className="bg-gradient-to-r from-pink-500 to-rose-500 text-white"
-              >
-                Sign Up
-              </Button>
-            </>
+            <Button
+              onClick={() => router.push("/login")}
+              size="sm"
+              className="bg-gradient-to-r from-pink-500 to-rose-500 text-white"
+            >
+              Sign In
+            </Button>
           )}
         </div>
       </div>

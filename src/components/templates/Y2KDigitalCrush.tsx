@@ -513,7 +513,7 @@ export function Y2KDigitalCrush({
                 {/* Sender */}
                 <p
                   className="text-xs text-center mb-1"
-                  style={{ fontFamily: FONT_MONO, color: "#666" }}
+                  style={{ fontFamily: FONT_MONO, color: "#666", wordBreak: "break-word", overflowWrap: "break-word" }}
                 >
                   From: {senderName}
                 </p>

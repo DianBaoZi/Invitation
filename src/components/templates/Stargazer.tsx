@@ -358,6 +358,8 @@ function SplashScene({
             color: PALETTE.starWhite,
             textShadow: `0 0 40px rgba(124,58,237,0.6), 0 0 80px rgba(124,58,237,0.3), 0 2px 4px rgba(0,0,0,0.5)`,
             letterSpacing: "0.02em",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
           }}
         >
           {senderName}
@@ -492,6 +494,8 @@ function AskScene({
             color: PALETTE.starWhite,
             lineHeight: 1.3,
             textShadow: "0 0 30px rgba(124,58,237,0.4), 0 2px 4px rgba(0,0,0,0.5)",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
           }}
         >
           {message.slice(0, displayedChars)}
