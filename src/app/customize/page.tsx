@@ -1150,7 +1150,7 @@ function CustomizePageContent() {
             {/* Home Logo */}
             <button
               onClick={() => router.push("/")}
-              className="flex items-center hover:opacity-80 transition"
+              className="flex items-center hover:opacity-80 transition ml-[-100px]"
             >
               <img src="/logo.svg" alt="YoursInvite" className="h-20 sm:h-28 w-auto" />
             </button>

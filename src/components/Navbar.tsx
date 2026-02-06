@@ -55,7 +55,7 @@ export function Navbar() {
         {/* Logo */}
         <button
           onClick={() => router.push("/")}
-          className="flex items-center gap-1 hover:opacity-80 transition select-none caret-transparent focus:outline-none ml-[80px]"
+          className="flex items-center gap-1 hover:opacity-80 transition select-none caret-transparent focus:outline-none ml-[130px]"
         >
           <img
             src="/logo.svg"
