@@ -1050,7 +1050,11 @@ function RSVPSection({
             transition={{ duration: 2, repeat: Infinity }}
             className="mb-6"
           >
-            <span style={{ fontSize: 48 }}>💕</span>
+            <img
+              src="/heart.png"
+              alt="Heart"
+              style={{ width: 80, height: 80, objectFit: "contain" }}
+            />
           </motion.div>
 
           <h3
