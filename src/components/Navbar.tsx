@@ -14,6 +14,17 @@ export function Navbar() {
   const [loading, setLoading] = useState(true);
   const [isPremium, setIsPremium] = useState(false);
 
+  // Check premium status via API (bypasses RLS)
+  const checkPremiumStatus = async () => {
+    try {
+      const response = await fetch("/api/premium-status");
+      const data = await response.json();
+      setIsPremium(data.isPremium);
+    } catch (error) {
+      console.error("Premium check failed:", error);
+    }
+  };
+
   useEffect(() => {
     const supabase = createClient();
 
@@ -25,15 +36,8 @@ export function Navbar() {
       setLoading(false);
 
       // Check premium status when user changes
-      if (session?.user?.email) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: purchases } = await (supabase as any)
-          .from("purchases")
-          .select("id")
-          .eq("email", session.user.email)
-          .eq("product_type", "premium")
-          .limit(1);
-        setIsPremium(purchases && purchases.length > 0);
+      if (session?.user) {
+        checkPremiumStatus();
       } else {
         setIsPremium(false);
       }
@@ -46,15 +50,8 @@ export function Navbar() {
         setLoading(false);
 
         // Check premium status
-        if (session?.user?.email) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { data: purchases } = await (supabase as any)
-            .from("purchases")
-            .select("id")
-            .eq("email", session.user.email)
-            .eq("product_type", "premium")
-            .limit(1);
-          setIsPremium(purchases && purchases.length > 0);
+        if (session?.user) {
+          checkPremiumStatus();
         }
       })
       .catch((error) => {
