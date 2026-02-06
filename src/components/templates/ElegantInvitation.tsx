@@ -893,15 +893,15 @@ const PETAL_COLORS = [
   "#d4a5a5", // dusty rose
 ];
 
-// Playful messages that appear as the button escapes
-const ESCAPE_MESSAGES = [
-  "Oh, you almost got me!",
-  "Not so fast, darling...",
-  "Catch me if you can!",
-  "I'm rather elusive today...",
-  "Perhaps try the other button?",
-  "You're persistent, I like that!",
-  "The heart wants what it wants...",
+// Poetic messages as the button becomes shy
+const SHY_MESSAGES = [
+  "I think I'm feeling a bit shy...",
+  "Getting harder to say no...",
+  "My resolve is weakening...",
+  "Your charm is quite persuasive...",
+  "I'm almost convinced...",
+  "One more try and I might vanish...",
+  "Perhaps love always wins?",
 ];
 
 // Floating Petal Component
@@ -996,96 +996,43 @@ function RSVPSection({
   senderName: string;
 }) {
   const [noHoverCount, setNoHoverCount] = useState(0);
-  const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
   const [showNoMessage, setShowNoMessage] = useState(false);
   const [currentMessage, setCurrentMessage] = useState("");
-  const [petals, setPetals] = useState<Array<{ id: number; x: number; y: number; color: string; delay: number }>>([]);
-  const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number; color: string }>>([]);
-  const [glowTrail, setGlowTrail] = useState<Array<{ id: number; x: number; y: number }>>([]);
-  const [buttonShrinking, setButtonShrinking] = useState(false);
+  const [bloomPetals, setBloomPetals] = useState<Array<{ id: number; angle: number; color: string }>>([]);
+  const [isBloomingAway, setIsBloomingAway] = useState(false);
   const effectIdRef = useRef(0);
+
+  // Calculate button opacity and scale based on hover count
+  const buttonOpacity = Math.max(0.3, 1 - noHoverCount * 0.12);
+  const buttonScale = Math.max(0.6, 1 - noHoverCount * 0.06);
+  const buttonRotation = noHoverCount * (noHoverCount % 2 === 0 ? 3 : -3);
+  const buttonBlur = noHoverCount > 3 ? (noHoverCount - 3) * 0.5 : 0;
 
   const handleNoHover = () => {
     const count = noHoverCount + 1;
     setNoHoverCount(count);
 
-    // Show a playful message
-    setCurrentMessage(ESCAPE_MESSAGES[Math.min(count - 1, ESCAPE_MESSAGES.length - 1)]);
+    // Show a poetic message
+    setCurrentMessage(SHY_MESSAGES[Math.min(count - 1, SHY_MESSAGES.length - 1)]);
 
     if (count >= 7) {
-      // After 7 hovers, show elegant surrender message
-      setButtonShrinking(true);
-      setTimeout(() => {
-        setShowNoMessage(true);
-      }, 500);
-    } else {
-      // Store old position for effects
-      const oldX = noPosition.x;
-      const oldY = noPosition.y;
+      // Transform into blooming flower petals and float away
+      setIsBloomingAway(true);
 
-      // Calculate escape - getting more dramatic with each attempt
-      const escapeMultiplier = 1 + count * 0.3;
-      const baseRange = 120 * escapeMultiplier;
-
-      // Calculate new position with some intelligence - try to stay somewhat visible
-      let newX = (Math.random() - 0.5) * baseRange * 2;
-      let newY = (Math.random() - 0.5) * baseRange;
-
-      // Constrain to reasonable bounds but allow some adventure
-      const maxX = 250;
-      const maxY = 150;
-      newX = Math.max(-maxX, Math.min(maxX, newX));
-      newY = Math.max(-maxY, Math.min(maxY, newY));
-
-      // Create elegant petal burst at old position
-      const newPetals: Array<{ id: number; x: number; y: number; color: string; delay: number }> = [];
-      const petalCount = 8 + count * 2;
-      for (let i = 0; i < petalCount; i++) {
-        const angle = (i / petalCount) * Math.PI * 2;
-        const distance = 20 + Math.random() * 40;
+      // Create petals that bloom outward
+      const newPetals: Array<{ id: number; angle: number; color: string }> = [];
+      for (let i = 0; i < 12; i++) {
         newPetals.push({
           id: effectIdRef.current++,
-          x: oldX + Math.cos(angle) * distance,
-          y: oldY + Math.sin(angle) * distance,
-          color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
-          delay: i * 0.03,
+          angle: (i / 12) * 360,
+          color: PETAL_COLORS[i % PETAL_COLORS.length],
         });
       }
-      setPetals(prev => [...prev, ...newPetals].slice(-50));
+      setBloomPetals(newPetals);
 
-      // Add sparkle stars at the landing position
-      const newSparkles: Array<{ id: number; x: number; y: number; color: string }> = [];
-      for (let i = 0; i < 5; i++) {
-        newSparkles.push({
-          id: effectIdRef.current++,
-          x: newX + (Math.random() - 0.5) * 60,
-          y: newY + (Math.random() - 0.5) * 60,
-          color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
-        });
-      }
-      setSparkles(prev => [...prev, ...newSparkles].slice(-20));
-
-      // Create a subtle glow trail between positions
-      const trailPoints = 6;
-      const newTrail: Array<{ id: number; x: number; y: number }> = [];
-      for (let i = 0; i <= trailPoints; i++) {
-        const progress = i / trailPoints;
-        newTrail.push({
-          id: effectIdRef.current++,
-          x: oldX + (newX - oldX) * progress,
-          y: oldY + (newY - oldY) * progress,
-        });
-      }
-      setGlowTrail(prev => [...prev, ...newTrail].slice(-30));
-
-      setNoPosition({ x: newX, y: newY });
-
-      // Clean up effects after animation
       setTimeout(() => {
-        setPetals(prev => prev.slice(petalCount));
-        setSparkles(prev => prev.slice(5));
-        setGlowTrail(prev => prev.slice(trailPoints + 1));
-      }, 1500);
+        setShowNoMessage(true);
+      }, 1200);
     }
   };
 
@@ -1207,37 +1154,46 @@ function RSVPSection({
             />
           </motion.button>
 
-          {/* No Button - Elegant escape with petals */}
+          {/* No Button - Shy fading effect with bloom transformation */}
           {!showNoMessage ? (
-            <div className="relative" style={{ overflow: "visible", minWidth: 140, minHeight: 50 }}>
-              {/* Glow trail */}
-              {glowTrail.map((t, i) => (
+            <div className="relative" style={{ overflow: "visible", minWidth: 140, minHeight: 60 }}>
+              {/* Blooming petals animation when button transforms */}
+              {isBloomingAway && bloomPetals.map((p) => (
                 <motion.div
-                  key={t.id}
-                  className="absolute rounded-full pointer-events-none"
+                  key={p.id}
+                  className="absolute pointer-events-none"
                   style={{
-                    width: 24,
-                    height: 24,
-                    background: `radial-gradient(circle, ${PALETTE.roseGoldLight} 0%, transparent 70%)`,
                     left: "50%",
                     top: "50%",
-                    filter: "blur(8px)",
-                    zIndex: 5,
+                    width: 20,
+                    height: 20,
+                    zIndex: 10,
                   }}
-                  initial={{ x: t.x - 12, y: t.y - 12, opacity: 0.6 }}
-                  animate={{ opacity: 0 }}
-                  transition={{ duration: 0.8, delay: i * 0.05 }}
-                />
-              ))}
-
-              {/* Floating petals */}
-              {petals.map((p) => (
-                <FloatingPetal key={p.id} x={p.x} y={p.y} color={p.color} delay={p.delay} />
-              ))}
-
-              {/* Sparkle stars */}
-              {sparkles.map((s) => (
-                <SparkleStarEffect key={s.id} x={s.x} y={s.y} color={s.color} />
+                  initial={{
+                    x: -10,
+                    y: -10,
+                    opacity: 1,
+                    scale: 0,
+                    rotate: p.angle,
+                  }}
+                  animate={{
+                    x: Math.cos((p.angle * Math.PI) / 180) * 80 - 10,
+                    y: Math.sin((p.angle * Math.PI) / 180) * 80 - 60,
+                    opacity: 0,
+                    scale: 1.5,
+                    rotate: p.angle + 180,
+                  }}
+                  transition={{
+                    duration: 1.2,
+                    ease: "easeOut",
+                    delay: Math.random() * 0.2,
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <ellipse cx="10" cy="10" rx="8" ry="4" fill={p.color} opacity="0.85" transform="rotate(-30 10 10)" />
+                    <ellipse cx="10" cy="10" rx="4" ry="8" fill={p.color} opacity="0.6" transform="rotate(15 10 10)" />
+                  </svg>
+                </motion.div>
               ))}
 
               <motion.button
@@ -1253,39 +1209,69 @@ function RSVPSection({
                   border: `1px solid ${PALETTE.blushDark}`,
                   cursor: "pointer",
                   boxShadow: "0 4px 16px rgba(183, 110, 121, 0.15)",
+                  filter: buttonBlur > 0 ? `blur(${buttonBlur}px)` : "none",
                 }}
                 animate={{
-                  x: noPosition.x,
-                  y: noPosition.y,
-                  scale: buttonShrinking ? 0 : 1,
-                  opacity: buttonShrinking ? 0 : 1,
+                  scale: isBloomingAway ? 0 : buttonScale,
+                  opacity: isBloomingAway ? 0 : buttonOpacity,
+                  rotate: isBloomingAway ? 360 : buttonRotation,
                 }}
                 transition={{
                   type: "spring",
-                  stiffness: 120,
-                  damping: 20,
-                  scale: { duration: 0.5 },
-                  opacity: { duration: 0.5 },
+                  stiffness: 300,
+                  damping: 25,
                 }}
                 onMouseEnter={handleNoHover}
                 onTouchStart={handleNoHover}
                 whileHover={{
                   borderColor: PALETTE.roseGoldLight,
-                  boxShadow: "0 6px 24px rgba(183, 110, 121, 0.25)",
+                  y: -2,
                 }}
               >
-                Perhaps Not
+                {noHoverCount === 0 ? "Perhaps Not" : noHoverCount < 4 ? "Maybe..." : noHoverCount < 6 ? "Well..." : "..."}
 
-                {/* Subtle inner glow on hover attempt */}
-                <motion.div
-                  className="absolute inset-0 rounded-full pointer-events-none"
-                  style={{
-                    background: `radial-gradient(circle at center, ${PALETTE.roseGoldLight}20 0%, transparent 70%)`,
-                  }}
-                  animate={{ opacity: noHoverCount > 0 ? [0, 0.5, 0] : 0 }}
-                  transition={{ duration: 0.3 }}
-                />
+                {/* Pulsing glow effect as button fades */}
+                {noHoverCount > 0 && !isBloomingAway && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full pointer-events-none"
+                    style={{
+                      background: `radial-gradient(circle at center, ${PALETTE.roseGold}30 0%, transparent 70%)`,
+                    }}
+                    animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.1, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                )}
               </motion.button>
+
+              {/* Fade trail sparkles */}
+              {noHoverCount > 2 && !isBloomingAway && (
+                <>
+                  {[0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute pointer-events-none"
+                      style={{
+                        left: `${40 + i * 20}%`,
+                        top: `${20 + i * 25}%`,
+                        color: PALETTE.roseGoldLight,
+                        fontSize: 10,
+                      }}
+                      animate={{
+                        opacity: [0, 0.6, 0],
+                        y: [0, -20],
+                        scale: [0.5, 1, 0.5],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: i * 0.4,
+                      }}
+                    >
+                      ✦
+                    </motion.div>
+                  ))}
+                </>
+              )}
             </div>
           ) : (
             <motion.div
@@ -1294,6 +1280,16 @@ function RSVPSection({
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="text-center"
             >
+              <motion.div
+                className="mb-3"
+                animate={{
+                  rotate: [0, 360],
+                  scale: [1, 1.2, 1],
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <span style={{ fontSize: 24, color: PALETTE.roseGold }}>❀</span>
+              </motion.div>
               <motion.p
                 style={{
                   fontFamily: "'Playfair Display', serif",
@@ -1311,7 +1307,7 @@ function RSVPSection({
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                &ldquo;No&rdquo; seems to have fluttered away...
+                It bloomed into something beautiful...
               </motion.p>
               <motion.p
                 initial={{ opacity: 0 }}
@@ -1323,7 +1319,7 @@ function RSVPSection({
                   color: PALETTE.textMuted,
                 }}
               >
-                Some things are simply meant to be ✨
+                Perhaps &ldquo;Yes&rdquo; was the only answer all along ✨
               </motion.p>
             </motion.div>
           )}

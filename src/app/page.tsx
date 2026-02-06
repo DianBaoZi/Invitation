@@ -1409,20 +1409,17 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
         return;
       }
 
-      // For testing: Skip Stripe and create premium purchase directly
-      const { error } = await (supabase as any).from("purchases").insert({
-        email: user.email || "",
-        name: user.user_metadata?.full_name || user.email?.split("@")[0] || "User",
-        product_type: "premium",
-        template_id: null,
-        amount_cents: 399,
-        stripe_session_id: `test_${Date.now()}`,
-        stripe_payment_id: `test_pi_${Date.now()}`,
+      // Call the API endpoint to process premium purchase
+      const response = await fetch("/api/purchase-premium", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
       });
 
-      if (error) {
-        console.error("Purchase error:", error);
-        alert("There was an error processing your purchase. Please try again.");
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        console.error("Purchase error:", data.error);
+        alert(data.error || "There was an error processing your purchase. Please try again.");
         setIsLoading(false);
         return;
       }
@@ -1456,7 +1453,7 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
         <div className="bg-rose-500 text-white text-center py-2 px-4">
           <span className="text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2">
             <Zap className="w-3 h-3" />
-            Valentine&apos;s Day Special — 63% OFF
+            Valentine&apos;s Day Special — 60% OFF
             <Zap className="w-3 h-3" />
           </span>
         </div>
@@ -1500,7 +1497,7 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
 
           <div className="space-y-4 mb-8">
             {[
-              "All 8 premium templates ($7.92 value)",
+              "All 5 premium templates ($9.95 USD value)",
               "Future templates included FREE",
               "Priority support",
               "One-time payment — no subscription",

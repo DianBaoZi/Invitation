@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Calendar, ExternalLink, Copy, CheckCircle, Trash2, BarChart3, AlertTriangle, X, Mail, Crown } from "lucide-react";
+import { Plus, Calendar, ExternalLink, Copy, CheckCircle, Trash2, BarChart3, AlertTriangle, X, Mail, Crown, Check, Square, CheckSquare } from "lucide-react";
 /* eslint-disable @next/next/no-img-element */
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
@@ -29,10 +29,11 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
   const [isPremium, setIsPremium] = useState(false);
-  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; inviteId: string | null; inviteName: string }>({
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; inviteIds: string[]; inviteCount: number }>({
     isOpen: false,
-    inviteId: null,
-    inviteName: "",
+    inviteIds: [],
+    inviteCount: 0,
   });
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -99,24 +100,51 @@ export default function DashboardPage() {
     setTimeout(() => setCopiedSlug(null), 2000);
   };
 
-  const openDeleteModal = (id: string, templateName: string) => {
-    setDeleteModal({ isOpen: true, inviteId: id, inviteName: templateName });
+  const toggleSelect = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const selectAll = () => {
+    setSelectedIds(new Set(invites.map((i) => i.id)));
+  };
+
+  const clearSelection = () => {
+    setSelectedIds(new Set());
+  };
+
+  const openDeleteModal = (ids: string[]) => {
+    setDeleteModal({ isOpen: true, inviteIds: ids, inviteCount: ids.length });
   };
 
   const closeDeleteModal = () => {
-    setDeleteModal({ isOpen: false, inviteId: null, inviteName: "" });
+    setDeleteModal({ isOpen: false, inviteIds: [], inviteCount: 0 });
   };
 
   const confirmDelete = async () => {
-    if (!deleteModal.inviteId) return;
+    if (deleteModal.inviteIds.length === 0) return;
 
     setIsDeleting(true);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const supabase = createClient() as any;
-    const { error } = await supabase.from("invites").delete().eq("id", deleteModal.inviteId);
+
+    // Delete all selected invites
+    const { error } = await supabase
+      .from("invites")
+      .delete()
+      .in("id", deleteModal.inviteIds);
 
     setIsDeleting(false);
     closeDeleteModal();
+    setSelectedIds(new Set());
 
     if (!error && user) {
       loadInvites(user.id);
@@ -173,6 +201,64 @@ export default function DashboardPage() {
           </Button>
         </motion.div>
 
+        {/* Selection Bar */}
+        <AnimatePresence>
+          {invites.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-6"
+            >
+              <div className="flex items-center justify-between bg-white rounded-xl shadow-sm border px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={selectedIds.size === invites.length ? clearSelection : selectAll}
+                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition"
+                  >
+                    {selectedIds.size === invites.length ? (
+                      <CheckSquare className="w-5 h-5 text-pink-500" />
+                    ) : selectedIds.size > 0 ? (
+                      <div className="w-5 h-5 rounded border-2 border-pink-500 bg-pink-50 flex items-center justify-center">
+                        <div className="w-2 h-0.5 bg-pink-500" />
+                      </div>
+                    ) : (
+                      <Square className="w-5 h-5" />
+                    )}
+                    <span className="font-medium">
+                      {selectedIds.size === 0
+                        ? "Select All"
+                        : selectedIds.size === invites.length
+                        ? "Deselect All"
+                        : `${selectedIds.size} selected`}
+                    </span>
+                  </button>
+                  {selectedIds.size > 0 && (
+                    <button
+                      onClick={clearSelection}
+                      className="text-sm text-gray-500 hover:text-gray-700 transition"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
+                {selectedIds.size > 0 && (
+                  <Button
+                    onClick={() => openDeleteModal(Array.from(selectedIds))}
+                    variant="outline"
+                    size="sm"
+                    className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete {selectedIds.size} {selectedIds.size === 1 ? "invite" : "invites"}
+                  </Button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Invites Grid */}
         {invites.length === 0 ? (
           <motion.div
@@ -207,13 +293,26 @@ export default function DashboardPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   onClick={() => router.push(`/status/${invite.slug}`)}
-                  className={`bg-white rounded-2xl shadow-sm border p-5 cursor-pointer hover:shadow-md hover:border-pink-200 transition-all ${
-                    expired ? "opacity-60" : ""
-                  }`}
+                  className={`bg-white rounded-2xl shadow-sm border p-5 cursor-pointer hover:shadow-md transition-all ${
+                    selectedIds.has(invite.id) ? "border-pink-400 ring-2 ring-pink-100" : "hover:border-pink-200"
+                  } ${expired ? "opacity-60" : ""}`}
                 >
                   {/* Template Info */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
+                      {/* Checkbox */}
+                      <button
+                        onClick={(e) => toggleSelect(invite.id, e)}
+                        className="flex-shrink-0"
+                      >
+                        {selectedIds.has(invite.id) ? (
+                          <div className="w-6 h-6 rounded-md bg-pink-500 flex items-center justify-center">
+                            <Check className="w-4 h-4 text-white" />
+                          </div>
+                        ) : (
+                          <div className="w-6 h-6 rounded-md border-2 border-gray-300 hover:border-pink-400 transition" />
+                        )}
+                      </button>
                       <span className="text-2xl">{template?.emoji || "💌"}</span>
                       <div>
                         <h3 className="font-semibold text-gray-900">
@@ -278,7 +377,7 @@ export default function DashboardPage() {
                       <ExternalLink className="w-4 h-4" />
                     </Button>
                     <Button
-                      onClick={() => openDeleteModal(invite.id, template?.name || invite.template_id)}
+                      onClick={() => openDeleteModal([invite.id])}
                       variant="outline"
                       size="sm"
                       className="text-red-500 hover:text-red-600 hover:bg-red-50"
@@ -336,14 +435,15 @@ export default function DashboardPage() {
                 </div>
 
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Delete this invite?
+                  Delete {deleteModal.inviteCount === 1 ? "this invite" : `${deleteModal.inviteCount} invites`}?
                 </h3>
                 <p className="text-gray-600 mb-2">
-                  You&apos;re about to delete your{" "}
-                  <span className="font-medium text-gray-800">{deleteModal.inviteName}</span> invite.
+                  {deleteModal.inviteCount === 1
+                    ? "You're about to delete this invite."
+                    : `You're about to delete ${deleteModal.inviteCount} invites at once.`}
                 </p>
                 <p className="text-sm text-gray-500 mb-6">
-                  This action cannot be undone. The invite link will stop working.
+                  This action cannot be undone. {deleteModal.inviteCount === 1 ? "The invite link" : "All invite links"} will stop working.
                 </p>
 
                 {/* Actions */}
