@@ -72,7 +72,7 @@ const PlayfulEditor = dynamic(
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto" />
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-[80vh] w-auto" />
         </motion.div>
       </div>
     ),
@@ -91,7 +91,7 @@ const FabricEditor = dynamic(
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto" />
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-[80vh] w-auto" />
         </motion.div>
       </div>
     ),
@@ -330,7 +330,7 @@ export default function CreatePage() {
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto" />
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-[80vh] w-auto" />
         </motion.div>
       </div>
     }>

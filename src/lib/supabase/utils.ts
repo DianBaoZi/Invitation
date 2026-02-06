@@ -27,5 +27,5 @@ export function getShareUrl(slug: string): string {
  * Get the app name for branding
  */
 export function getAppName(): string {
-  return process.env.NEXT_PUBLIC_APP_NAME || "InteractiveInvite";
+  return process.env.NEXT_PUBLIC_APP_NAME || "YoursInvite";
 }

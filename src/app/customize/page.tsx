@@ -2301,7 +2301,7 @@ function SplashPreview({ name, templateId, photoUrl1 }: { name: string; template
     );
   }
 
-  // Forest Adventure - Pixel RPG style
+  // Forest Adventure - Pixel RPG style (dark forest theme)
   if (templateId === "forest-adventure") {
     return (
       <motion.div
@@ -2309,27 +2309,28 @@ function SplashPreview({ name, templateId, photoUrl1 }: { name: string; template
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="absolute inset-0 flex flex-col items-center justify-center"
-        style={{ background: "linear-gradient(180deg, #0c1445 0%, #1a237e 40%, #283593 70%, #3949ab 100%)" }}
+        style={{ background: "linear-gradient(180deg, #0a1f0a 0%, #1a3c1a 40%, #2d5a2d 70%, #1a3c1a 100%)" }}
       >
-        {/* Pixel stars */}
-        {Array.from({ length: 10 }, (_, i) => (
+        {/* Firefly particles */}
+        {Array.from({ length: 12 }, (_, i) => (
           <motion.div
             key={i}
-            className="absolute"
+            className="absolute rounded-full"
             style={{
-              left: `${(i * 41 + 7) % 100}%`,
-              top: `${(i * 31 + 3) % 50}%`,
-              width: i % 3 === 0 ? 3 : 2,
-              height: i % 3 === 0 ? 3 : 2,
-              background: i % 4 === 0 ? "#ffd54f" : "#fff",
+              left: `${(i * 41 + 7) % 90 + 5}%`,
+              top: `${(i * 31 + 3) % 80 + 5}%`,
+              width: i % 3 === 0 ? 4 : 3,
+              height: i % 3 === 0 ? 4 : 3,
+              background: i % 4 === 0 ? "#ffd54f" : "#86efac",
+              boxShadow: `0 0 ${i % 3 === 0 ? 8 : 5}px ${i % 4 === 0 ? "#ffd54f" : "#86efac"}`,
             }}
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 1.5, delay: i * 0.15, repeat: Infinity }}
+            animate={{ opacity: [0.2, 0.9, 0.2], scale: [0.8, 1.3, 0.8] }}
+            transition={{ duration: 2 + i * 0.2, delay: i * 0.15, repeat: Infinity }}
           />
         ))}
 
         {/* Forest silhouette */}
-        <div className="absolute bottom-0 left-0 right-0 h-6" style={{ background: "#1a3d1a" }} />
+        <div className="absolute bottom-0 left-0 right-0 h-8" style={{ background: "linear-gradient(0deg, #0a1a0a 0%, transparent 100%)" }} />
 
         {/* RPG dialog box frame */}
         <div
@@ -2342,8 +2343,8 @@ function SplashPreview({ name, templateId, photoUrl1 }: { name: string; template
         >
           <div
             style={{
-              background: "linear-gradient(180deg, #1a237e 0%, #0d1445 100%)",
-              border: "2px solid #3949ab",
+              background: "linear-gradient(180deg, #1a3c1a 0%, #0f2a0f 100%)",
+              border: "2px solid #2d5a2d",
               padding: "10px 12px",
             }}
           >
@@ -2354,10 +2355,10 @@ function SplashPreview({ name, templateId, photoUrl1 }: { name: string; template
             >
               💌
             </motion.div>
-            <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "6px", color: "#90caf9", textAlign: "center", marginBottom: 4 }}>
+            <p style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "6px", color: "#86efac", textAlign: "center", marginBottom: 4 }}>
               A QUEST FROM
             </p>
-            <h2 style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "10px", color: "#ffd54f", textAlign: "center", textShadow: "1px 1px 0 #5d4037" }}>
+            <h2 style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "10px", color: "#ffd54f", textAlign: "center", textShadow: "1px 1px 0 #1a3c1a" }}>
               {name || "Your Name"}
             </h2>
           </div>
@@ -2541,11 +2542,11 @@ function MiniSplashPreview({ name, templateId, photoUrl1 }: { name: string; temp
   // Forest Adventure - Mini RPG
   if (templateId === "forest-adventure") {
     return (
-      <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "linear-gradient(180deg, #0c1445 0%, #283593 100%)" }}>
-        <div className="px-1 py-0.5 mb-0.5" style={{ background: "#1a237e", border: "1px solid #3949ab" }}>
+      <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "linear-gradient(180deg, #0a1f0a 0%, #1a3c1a 50%, #2d5a2d 100%)" }}>
+        <div className="px-1 py-0.5 mb-0.5" style={{ background: "#1a3c1a", border: "1px solid #2d5a2d" }}>
           <span className="text-[8px]">💌</span>
         </div>
-        <p className="text-[4px] text-[#90caf9]" style={{ fontFamily: "monospace" }}>A QUEST FROM</p>
+        <p className="text-[4px] text-[#86efac]" style={{ fontFamily: "monospace" }}>A QUEST FROM</p>
         <p className="text-[5px] text-[#ffd54f] truncate max-w-[50px]" style={{ fontFamily: "monospace" }}>{name || "Name"}</p>
       </div>
     );

@@ -469,6 +469,248 @@ export default function Home() {
 }
 
 // ============================================
+// LIGHTWEIGHT CSS-ONLY TEMPLATE BACKGROUNDS
+// ============================================
+
+function TemplatePreviewBg({ templateId }: { templateId: string }) {
+  switch (templateId) {
+    case "runaway-button":
+      return (
+        <div className="absolute inset-0 bg-gradient-to-br from-rose-100 via-pink-100 to-red-100">
+          {/* Floating hearts */}
+          {[...Array(10)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute text-pink-300/40 animate-pulse"
+              style={{
+                left: `${8 + (i * 9) % 85}%`,
+                top: `${10 + (i * 11) % 75}%`,
+                fontSize: 10 + (i % 4) * 6,
+                animationDelay: `${i * 0.3}s`,
+                animationDuration: `${2 + (i % 3)}s`,
+              }}
+            >
+              ♥
+            </div>
+          ))}
+          {/* Center heart glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="w-20 h-20 rounded-full bg-rose-300/30 blur-xl" />
+            <div className="absolute inset-0 flex items-center justify-center text-rose-400 text-4xl">♥</div>
+          </div>
+        </div>
+      );
+
+    case "love-letter-mailbox":
+      return (
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-rose-50 to-pink-100">
+          {/* Floating envelopes */}
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute text-rose-200/50 animate-pulse"
+              style={{
+                left: `${5 + (i * 12) % 85}%`,
+                top: `${8 + (i * 13) % 78}%`,
+                fontSize: 14 + (i % 3) * 4,
+                animationDelay: `${i * 0.4}s`,
+                animationDuration: `${2.5 + (i % 3)}s`,
+                transform: `rotate(${-15 + (i * 7) % 30}deg)`,
+              }}
+            >
+              ✉
+            </div>
+          ))}
+          {/* Center mailbox */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+            <div className="w-24 h-24 rounded-full bg-rose-200/30 blur-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            <div className="relative text-5xl">📮</div>
+          </div>
+        </div>
+      );
+
+    case "forest-adventure":
+      return (
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-800 via-green-700 to-emerald-900">
+          {/* Fireflies */}
+          {[...Array(15)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full animate-pulse"
+              style={{
+                left: `${5 + (i * 7) % 88}%`,
+                top: `${8 + (i * 9) % 82}%`,
+                width: 3 + (i % 3) * 2,
+                height: 3 + (i % 3) * 2,
+                backgroundColor: "rgba(253, 224, 71, 0.6)",
+                boxShadow: "0 0 8px 3px rgba(253, 224, 71, 0.4)",
+                animationDelay: `${i * 0.25}s`,
+                animationDuration: `${1.5 + (i % 4) * 0.5}s`,
+              }}
+            />
+          ))}
+          {/* Center tree */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+            <div className="w-24 h-24 rounded-full bg-emerald-400/20 blur-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            <div className="relative text-5xl">🌲</div>
+          </div>
+        </div>
+      );
+
+    case "stargazer":
+      return (
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-950 via-purple-900 to-slate-900">
+          {/* Twinkling stars */}
+          {[...Array(25)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white animate-pulse"
+              style={{
+                left: `${3 + (i * 4) % 94}%`,
+                top: `${3 + (i * 5) % 92}%`,
+                width: 1 + (i % 3),
+                height: 1 + (i % 3),
+                opacity: 0.3 + (i % 5) * 0.14,
+                animationDelay: `${i * 0.15}s`,
+                animationDuration: `${1.5 + (i % 3)}s`,
+              }}
+            />
+          ))}
+          {/* Center star */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+            <div className="w-28 h-28 rounded-full bg-yellow-300/10 blur-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            <div className="relative text-5xl animate-pulse" style={{ animationDuration: "3s" }}>⭐</div>
+          </div>
+        </div>
+      );
+
+    case "premiere":
+      return (
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-red-950">
+          {/* Spotlight rays */}
+          <div
+            className="absolute top-0 left-1/3 w-40 h-full opacity-10"
+            style={{
+              background: "linear-gradient(180deg, rgba(250,204,21,0.4) 0%, transparent 60%)",
+              transform: "skewX(-8deg)",
+            }}
+          />
+          <div
+            className="absolute top-0 right-1/3 w-40 h-full opacity-10"
+            style={{
+              background: "linear-gradient(180deg, rgba(250,204,21,0.4) 0%, transparent 60%)",
+              transform: "skewX(8deg)",
+            }}
+          />
+          {/* Stars */}
+          {[...Array(10)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute text-yellow-400/30 animate-pulse"
+              style={{
+                left: `${8 + (i * 9) % 82}%`,
+                top: `${10 + (i * 11) % 75}%`,
+                fontSize: 8 + (i % 3) * 4,
+                animationDelay: `${i * 0.3}s`,
+                animationDuration: `${2 + (i % 3)}s`,
+              }}
+            >
+              ★
+            </div>
+          ))}
+          {/* Film strip borders */}
+          <div className="absolute top-0 left-0 right-0 h-6 bg-black/40 flex items-center justify-around px-2">
+            {[...Array(12)].map((_, i) => (
+              <div key={i} className="w-3 h-2 rounded-sm bg-slate-700/60" />
+            ))}
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-6 bg-black/40 flex items-center justify-around px-2">
+            {[...Array(12)].map((_, i) => (
+              <div key={i} className="w-3 h-2 rounded-sm bg-slate-700/60" />
+            ))}
+          </div>
+          {/* Center clapper */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+            <div className="w-24 h-24 rounded-full bg-yellow-400/10 blur-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            <div className="relative text-5xl">🎬</div>
+          </div>
+        </div>
+      );
+
+    case "cozy-scrapbook":
+      return (
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100">
+          {/* Washi tape strips */}
+          <div className="absolute top-8 left-6 w-20 h-5 bg-pink-200/60 rounded-sm" style={{ transform: "rotate(-12deg)" }} />
+          <div className="absolute top-20 right-8 w-16 h-5 bg-sky-200/60 rounded-sm" style={{ transform: "rotate(8deg)" }} />
+          <div className="absolute bottom-24 left-10 w-18 h-5 bg-yellow-200/60 rounded-sm" style={{ transform: "rotate(-5deg)" }} />
+          <div className="absolute bottom-12 right-12 w-14 h-5 bg-green-200/60 rounded-sm" style={{ transform: "rotate(15deg)" }} />
+          {/* Paper scraps */}
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute bg-white/40 rounded-sm shadow-sm"
+              style={{
+                left: `${15 + (i * 18) % 70}%`,
+                top: `${20 + (i * 15) % 55}%`,
+                width: 30 + (i % 3) * 10,
+                height: 24 + (i % 2) * 10,
+                transform: `rotate(${-10 + (i * 8) % 20}deg)`,
+              }}
+            />
+          ))}
+          {/* Sticker emojis */}
+          <div className="absolute top-[30%] left-[20%] text-2xl opacity-40 animate-pulse" style={{ animationDelay: "0s" }}>🌸</div>
+          <div className="absolute top-[50%] right-[18%] text-xl opacity-40 animate-pulse" style={{ animationDelay: "0.5s" }}>⭐</div>
+          <div className="absolute bottom-[35%] left-[35%] text-2xl opacity-40 animate-pulse" style={{ animationDelay: "1s" }}>🦋</div>
+          {/* Center book */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+            <div className="w-24 h-24 rounded-full bg-amber-200/30 blur-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            <div className="relative text-5xl">📖</div>
+          </div>
+        </div>
+      );
+
+    case "elegant-invitation":
+      return (
+        <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-rose-50 to-amber-50">
+          {/* Gold corner ornaments */}
+          <div className="absolute top-4 left-4 w-16 h-16 border-t-2 border-l-2 border-amber-300/50 rounded-tl-lg" />
+          <div className="absolute top-4 right-4 w-16 h-16 border-t-2 border-r-2 border-amber-300/50 rounded-tr-lg" />
+          <div className="absolute bottom-4 left-4 w-16 h-16 border-b-2 border-l-2 border-amber-300/50 rounded-bl-lg" />
+          <div className="absolute bottom-4 right-4 w-16 h-16 border-b-2 border-r-2 border-amber-300/50 rounded-br-lg" />
+          {/* Floating florals */}
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute text-rose-200/40 animate-pulse"
+              style={{
+                left: `${10 + (i * 11) % 78}%`,
+                top: `${12 + (i * 12) % 72}%`,
+                fontSize: 12 + (i % 3) * 4,
+                animationDelay: `${i * 0.35}s`,
+                animationDuration: `${2 + (i % 3)}s`,
+              }}
+            >
+              {i % 2 === 0 ? "❀" : "✿"}
+            </div>
+          ))}
+          {/* Center camera */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+            <div className="w-24 h-24 rounded-full bg-rose-200/20 blur-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            <div className="relative text-5xl">📸</div>
+          </div>
+        </div>
+      );
+
+    default:
+      return (
+        <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-stone-50 to-stone-100" />
+      );
+  }
+}
+
+// ============================================
 // DESKTOP TEMPLATE CARD - Editorial Style
 // ============================================
 
@@ -511,15 +753,8 @@ function TemplateCard({
         }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Background with splash screen iframe preview */}
-        <div className="absolute inset-0">
-          <iframe
-            src={`/splash-preview/${template.id}`}
-            className="w-full h-full border-0 pointer-events-none"
-            title={`${template.name} preview`}
-            loading="lazy"
-          />
-        </div>
+        {/* Lightweight CSS background preview */}
+        <TemplatePreviewBg templateId={template.id} />
 
         {/* Blur overlay on hover */}
         <motion.div
@@ -655,15 +890,8 @@ function MobileCard({
       className="relative rounded-xl overflow-hidden active:scale-[0.97] transition-transform"
       style={{ height: 480 }}
     >
-      {/* Background with splash screen iframe preview */}
-      <div className="absolute inset-0">
-        <iframe
-          src={`/splash-preview/${template.id}`}
-          className="w-full h-full border-0 pointer-events-none"
-          title={`${template.name} preview`}
-          loading="lazy"
-        />
-      </div>
+      {/* Lightweight CSS background preview */}
+      <TemplatePreviewBg templateId={template.id} />
 
       {/* Gradient overlay */}
       <div

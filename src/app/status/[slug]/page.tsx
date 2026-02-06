@@ -388,7 +388,7 @@ export default function StatusPage() {
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto" />
+            <img src="/logo-with-name.svg" alt="YoursInvite" className="h-[80vh] w-auto" />
           </motion.div>
         </div>
       }

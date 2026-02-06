@@ -391,7 +391,7 @@ function DialogueBox({
     <motion.div
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="absolute bottom-4 left-4 right-4 cursor-pointer"
+      className="absolute bottom-20 left-4 right-4 cursor-pointer"
       onClick={handleClick}
     >
       <div
@@ -510,14 +510,66 @@ function InvitationReveal({
           boxShadow: "8px 8px 0 rgba(236, 72, 153, 0.3), 0 0 30px rgba(236, 72, 153, 0.4)",
         }}
       >
-        {/* Letter emoji */}
-        <motion.div
-          animate={{ rotate: [-5, 5, -5], y: [0, -5, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="text-center mb-6"
-        >
-          <span className="text-7xl">💌</span>
-        </motion.div>
+        {/* Letter emoji with glow */}
+        <div className="relative text-center mb-6">
+          {/* Pulsing glow behind letter */}
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center"
+            animate={{
+              opacity: [0.4, 0.8, 0.4],
+              scale: [0.8, 1.2, 0.8],
+            }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <div
+              className="w-24 h-24 rounded-full"
+              style={{
+                background: "radial-gradient(circle, rgba(236,72,153,0.5) 0%, rgba(236,72,153,0.2) 40%, transparent 70%)",
+                filter: "blur(8px)",
+              }}
+            />
+          </motion.div>
+          {/* Sparkle particles around letter */}
+          {Array.from({ length: 6 }).map((_, i) => (
+            <motion.div
+              key={`letter-sparkle-${i}`}
+              className="absolute"
+              style={{
+                left: `${50 + Math.cos(i * Math.PI / 3) * 35}%`,
+                top: `${50 + Math.sin(i * Math.PI / 3) * 35}%`,
+                width: 4,
+                height: 4,
+                borderRadius: "50%",
+                background: "#fff",
+                boxShadow: "0 0 6px 2px rgba(255,255,255,0.8), 0 0 12px 4px rgba(236,72,153,0.4)",
+              }}
+              animate={{
+                opacity: [0, 1, 0],
+                scale: [0.3, 1, 0.3],
+              }}
+              transition={{
+                duration: 1.5,
+                delay: i * 0.25,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+          <motion.div
+            animate={{ rotate: [-5, 5, -5], y: [0, -5, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="relative"
+          >
+            <span
+              className="text-7xl"
+              style={{
+                filter: "drop-shadow(0 0 12px rgba(236,72,153,0.6)) drop-shadow(0 0 24px rgba(236,72,153,0.3))",
+              }}
+            >
+              💌
+            </span>
+          </motion.div>
+        </div>
 
         <h2
           className="text-xl md:text-2xl text-center text-pink-700 mb-4"
@@ -873,6 +925,38 @@ export function ForestAdventure({
           background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%)",
         }}
       />
+
+      {/* Berry sparkles in bear encounter scene */}
+      {currentScreen === "bear_encounter" && (
+        <div className="absolute inset-0 pointer-events-none">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <motion.div
+              key={`berry-sparkle-${i}`}
+              className="absolute"
+              style={{
+                left: `${15 + (i * 7) % 35}%`,
+                bottom: `${18 + (i * 5) % 20}%`,
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: "radial-gradient(circle, #fff 0%, rgba(255,255,100,0.8) 40%, transparent 70%)",
+                boxShadow: "0 0 8px 2px rgba(255,255,100,0.6)",
+              }}
+              animate={{
+                opacity: [0, 1, 0],
+                scale: [0.5, 1.2, 0.5],
+                y: [0, -8, 0],
+              }}
+              transition={{
+                duration: 1.2 + i * 0.15,
+                delay: i * 0.2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Dialogue box for normal screens */}
       {screenData.dialogue.length > 0 &&

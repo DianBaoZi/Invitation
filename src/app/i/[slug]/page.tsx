@@ -379,7 +379,7 @@ function InteractiveTemplate({
   // Extract common fields from config
   const configAny = config as unknown as Record<string, unknown>;
   const message = (configAny.questionText || configAny.message || "Will you be my Valentine?") as string;
-  const personalMessage = (configAny.personalMessage || "") as string;
+  const personalMessage = (configAny.personalMessage || configAny.plan || "") as string;
   const date = (configAny.date || configAny.eventDate || "") as string;
   const time = (configAny.time || configAny.eventTime || "") as string;
   const location = (configAny.location || configAny.eventLocation || "") as string;
@@ -415,6 +415,7 @@ function InteractiveTemplate({
         return (
           <LoveLetterMailbox
             senderName={senderName}
+            message={message}
             date={date}
             location={location}
             personalMessage={personalMessage}

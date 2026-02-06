@@ -633,7 +633,7 @@ function RevealScreen({
                   fontWeight: 600,
                   fontSize: "clamp(7px, 2vw, 11px)",
                   color: "#c62828",
-                  bottom: "18%",
+                  bottom: "calc(18% + 5px)",
                   left: "30%",
                   right: "10%",
                   overflow: "hidden",

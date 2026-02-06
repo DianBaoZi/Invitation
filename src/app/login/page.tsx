@@ -140,7 +140,7 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
-          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-32 w-auto animate-pulse" />
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-[80vh] w-auto animate-pulse" />
         </div>
       }
     >

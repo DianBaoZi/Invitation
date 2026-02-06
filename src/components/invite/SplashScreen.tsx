@@ -185,7 +185,7 @@ export function SplashScreen({ creatorName, isPaid, onComplete, templateId, phot
                 </span>
               </motion.div>
 
-              {isPaid && creatorName ? (
+              {creatorName ? (
                 <>
                   <motion.p
                     initial={{ opacity: 0, y: 5 }}
@@ -305,8 +305,8 @@ interface ThemedSplashProps {
 // ============================================
 
 function Y2KSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps) {
-  const displayName = isPaid && creatorName ? creatorName : appName;
-  const tagline = isPaid && creatorName ? "Programmed with love by" : "Powered by";
+  const displayName = creatorName || appName;
+  const tagline = creatorName ? "Programmed with love by" : "Powered by";
 
   const [bootLines, setBootLines] = useState<string[]>([]);
   const [bootDone, setBootDone] = useState(false);
@@ -456,8 +456,8 @@ function Y2KSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps) {
 // ============================================
 
 function GardenSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps) {
-  const displayName = isPaid && creatorName ? creatorName : appName;
-  const tagline = isPaid && creatorName ? "planted with love by" : "a gift from";
+  const displayName = creatorName || appName;
+  const tagline = creatorName ? "planted with love by" : "a gift from";
 
   return (
     <motion.div
@@ -613,8 +613,8 @@ function GardenSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps
 // ============================================
 
 function ScrapbookSplash({ creatorName, isPaid, appName, onTap, photoUrl1 }: ThemedSplashProps) {
-  const displayName = isPaid && creatorName ? creatorName : appName;
-  const tagline = isPaid && creatorName ? "lovingly crafted by" : "a little something from";
+  const displayName = creatorName || appName;
+  const tagline = creatorName ? "lovingly crafted by" : "a little something from";
 
   return (
     <motion.div
@@ -838,8 +838,8 @@ function ScrapbookSplash({ creatorName, isPaid, appName, onTap, photoUrl1 }: The
 // ============================================
 
 function LoveLetterSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps) {
-  const displayName = isPaid && creatorName ? creatorName : appName;
-  const tagline = isPaid && creatorName ? "Sealed with love by" : "A special delivery from";
+  const displayName = creatorName || appName;
+  const tagline = creatorName ? "Sealed with love by" : "A special delivery from";
 
   const [stampLanded, setStampLanded] = useState(false);
   const [sealRevealed, setSealRevealed] = useState(false);
@@ -1191,8 +1191,8 @@ function LoveLetterSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashP
 // ============================================
 
 function StargazerSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps) {
-  const displayName = isPaid && creatorName ? creatorName : appName;
-  const tagline = isPaid && creatorName ? "written in the stars by" : "crafted among the stars by";
+  const displayName = creatorName || appName;
+  const tagline = creatorName ? "written in the stars by" : "crafted among the stars by";
 
   return (
     <motion.div
@@ -1321,8 +1321,8 @@ function StargazerSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashPr
 // ============================================
 
 function PremiereSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps) {
-  const displayName = isPaid && creatorName ? creatorName : appName;
-  const tagline = isPaid && creatorName ? "a film by" : "presented by";
+  const displayName = creatorName || appName;
+  const tagline = creatorName ? "a film by" : "presented by";
 
   return (
     <motion.div
@@ -1469,8 +1469,8 @@ function PremiereSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashPro
 // ============================================
 
 function ForestAdventureSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps) {
-  const displayName = isPaid && creatorName ? creatorName : appName;
-  const tagline = isPaid && creatorName ? "A quest from" : "An adventure by";
+  const displayName = creatorName || appName;
+  const tagline = creatorName ? "A quest from" : "An adventure by";
 
   const [textIndex, setTextIndex] = useState(0);
   const [showName, setShowName] = useState(false);
@@ -1842,7 +1842,7 @@ function FloatingHearts() {
 // ============================================
 
 function ElegantInvitationSplash({ creatorName, isPaid, appName, onTap }: ThemedSplashProps) {
-  const displayName = isPaid && creatorName ? creatorName : appName;
+  const displayName = creatorName || appName;
 
   return (
     <motion.div
