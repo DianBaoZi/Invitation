@@ -24,166 +24,179 @@ export default function SplashPreviewPage() {
   );
 }
 
-// Runaway Button - Romantic dreamy aesthetic with depth
+// Runaway Button - Premium luxurious aesthetic
 function RunawayButtonSplash() {
-  // Deterministic heart positions to avoid hydration issues
-  const hearts = [
-    { left: 8, top: 12, size: 28, delay: 0 },
-    { left: 85, top: 8, size: 22, delay: 0.3 },
-    { left: 15, top: 75, size: 32, delay: 0.6 },
-    { left: 78, top: 68, size: 24, delay: 0.9 },
-    { left: 45, top: 5, size: 20, delay: 1.2 },
-    { left: 92, top: 45, size: 26, delay: 1.5 },
-    { left: 5, top: 42, size: 18, delay: 1.8 },
-    { left: 55, top: 85, size: 30, delay: 2.1 },
-    { left: 32, top: 22, size: 16, delay: 2.4 },
-    { left: 68, top: 35, size: 24, delay: 2.7 },
-    { left: 22, top: 55, size: 20, delay: 3.0 },
-    { left: 88, top: 82, size: 22, delay: 3.3 },
+  // Elegant floating particles
+  const particles = [
+    { left: 10, top: 15, size: 4, delay: 0 },
+    { left: 85, top: 20, size: 3, delay: 0.5 },
+    { left: 20, top: 70, size: 5, delay: 1 },
+    { left: 75, top: 75, size: 3, delay: 1.5 },
+    { left: 50, top: 10, size: 4, delay: 2 },
+    { left: 90, top: 50, size: 3, delay: 2.5 },
+    { left: 5, top: 45, size: 4, delay: 3 },
+    { left: 60, top: 85, size: 5, delay: 3.5 },
+    { left: 35, top: 25, size: 3, delay: 4 },
+    { left: 70, top: 40, size: 4, delay: 4.5 },
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Layered gradient background */}
+    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Deep luxurious gradient background */}
       <div
         className="absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse at 30% 20%, rgba(251,113,133,0.4) 0%, transparent 50%),
-            radial-gradient(ellipse at 70% 80%, rgba(244,63,94,0.3) 0%, transparent 50%),
-            radial-gradient(ellipse at 50% 50%, rgba(253,164,175,0.2) 0%, transparent 70%),
-            linear-gradient(135deg, #fdf2f8 0%, #fce7f3 25%, #fbcfe8 50%, #fecdd3 75%, #ffe4e6 100%)
+            radial-gradient(ellipse at 50% 0%, rgba(190,18,60,0.15) 0%, transparent 50%),
+            radial-gradient(ellipse at 0% 50%, rgba(157,23,77,0.1) 0%, transparent 40%),
+            radial-gradient(ellipse at 100% 50%, rgba(190,18,60,0.1) 0%, transparent 40%),
+            radial-gradient(ellipse at 50% 100%, rgba(136,19,55,0.2) 0%, transparent 50%),
+            linear-gradient(180deg, #1a0a0a 0%, #2d0a0a 30%, #1f0505 70%, #0d0303 100%)
           `,
         }}
       />
 
-      {/* Soft glow orbs */}
-      <motion.div
-        className="absolute w-64 h-64 rounded-full"
+      {/* Subtle texture overlay */}
+      <div
+        className="absolute inset-0 opacity-30"
         style={{
-          background: "radial-gradient(circle, rgba(251,113,133,0.3) 0%, transparent 70%)",
-          left: "20%",
-          top: "30%",
-          filter: "blur(40px)",
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
         }}
-        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
-        transition={{ duration: 4, repeat: Infinity }}
-      />
-      <motion.div
-        className="absolute w-48 h-48 rounded-full"
-        style={{
-          background: "radial-gradient(circle, rgba(244,63,94,0.25) 0%, transparent 70%)",
-          right: "15%",
-          bottom: "25%",
-          filter: "blur(35px)",
-        }}
-        animate={{ scale: [1.2, 1, 1.2], opacity: [0.6, 0.4, 0.6] }}
-        transition={{ duration: 5, repeat: Infinity }}
       />
 
-      {/* Floating hearts with depth */}
-      {hearts.map((heart, i) => (
+      {/* Elegant glow orbs */}
+      <motion.div
+        className="absolute w-96 h-96 rounded-full"
+        style={{
+          background: "radial-gradient(circle, rgba(225,29,72,0.15) 0%, transparent 60%)",
+          left: "30%",
+          top: "20%",
+          filter: "blur(60px)",
+        }}
+        animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute w-80 h-80 rounded-full"
+        style={{
+          background: "radial-gradient(circle, rgba(190,18,60,0.12) 0%, transparent 60%)",
+          right: "20%",
+          bottom: "30%",
+          filter: "blur(50px)",
+        }}
+        animate={{ scale: [1.1, 1, 1.1], opacity: [0.3, 0.5, 0.3] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Floating gold particles */}
+      {particles.map((particle, i) => (
         <motion.div
           key={i}
-          className="absolute"
+          className="absolute rounded-full"
           style={{
-            left: `${heart.left}%`,
-            top: `${heart.top}%`,
-            fontSize: `${heart.size}px`,
-            filter: heart.size > 24 ? "blur(0.5px)" : "none",
-            opacity: heart.size > 26 ? 0.6 : 0.4,
+            left: `${particle.left}%`,
+            top: `${particle.top}%`,
+            width: `${particle.size}px`,
+            height: `${particle.size}px`,
+            background: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+            boxShadow: "0 0 12px 2px rgba(251,191,36,0.4)",
           }}
           animate={{
-            y: [0, -15, 0],
-            x: [0, 5, -5, 0],
-            rotate: [0, 10, -10, 0],
-            scale: [1, 1.1, 1],
+            y: [0, -20, 0],
+            opacity: [0.2, 0.6, 0.2],
+            scale: [1, 1.2, 1],
           }}
           transition={{
-            duration: 4 + (i % 3),
+            duration: 5 + (i % 3),
             repeat: Infinity,
-            delay: heart.delay,
+            delay: particle.delay,
             ease: "easeInOut",
           }}
-        >
-          <span style={{
-            background: "linear-gradient(135deg, #fb7185, #f43f5e)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            textShadow: "0 4px 20px rgba(244,63,94,0.4)",
-          }}>
-            ♥
-          </span>
-        </motion.div>
+        />
       ))}
 
-      {/* Center heart with glow ring */}
-      <div className="relative z-10">
+      {/* Center heart with premium glow */}
+      <div className="relative z-10 flex flex-col items-center">
+        {/* Outer glow ring */}
         <motion.div
-          className="absolute inset-0 rounded-full"
+          className="absolute rounded-full"
           style={{
-            background: "radial-gradient(circle, rgba(244,63,94,0.4) 0%, transparent 70%)",
-            filter: "blur(20px)",
-            transform: "scale(2)",
+            width: "200px",
+            height: "200px",
+            background: "radial-gradient(circle, rgba(225,29,72,0.2) 0%, transparent 70%)",
+            filter: "blur(30px)",
           }}
-          animate={{ scale: [2, 2.5, 2], opacity: [0.6, 0.8, 0.6] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
+
+        {/* Heart icon */}
         <motion.div
           animate={{
-            scale: [1, 1.15, 1],
-            rotate: [0, 5, -5, 0],
+            scale: [1, 1.08, 1],
           }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
         >
           <Heart
-            className="w-24 h-24 drop-shadow-2xl"
+            className="w-28 h-28"
             style={{
-              fill: "url(#heartGradient)",
-              stroke: "none",
-              filter: "drop-shadow(0 8px 25px rgba(244,63,94,0.5))",
+              fill: "url(#premiumHeartGradient)",
+              stroke: "url(#heartStrokeGradient)",
+              strokeWidth: "1",
+              filter: "drop-shadow(0 0 30px rgba(225,29,72,0.5)) drop-shadow(0 0 60px rgba(225,29,72,0.3))",
             }}
           />
           <svg width="0" height="0">
             <defs>
-              <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#fb7185" />
-                <stop offset="50%" stopColor="#f43f5e" />
-                <stop offset="100%" stopColor="#e11d48" />
+              <linearGradient id="premiumHeartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#f43f5e" />
+                <stop offset="50%" stopColor="#e11d48" />
+                <stop offset="100%" stopColor="#be123c" />
+              </linearGradient>
+              <linearGradient id="heartStrokeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#fda4af" />
+                <stop offset="100%" stopColor="#f43f5e" />
               </linearGradient>
             </defs>
           </svg>
         </motion.div>
       </div>
 
-      {/* Sparkle particles */}
-      {[
-        { left: 25, top: 20, delay: 0 },
-        { left: 75, top: 25, delay: 0.5 },
-        { left: 30, top: 70, delay: 1 },
-        { left: 70, top: 75, delay: 1.5 },
-        { left: 50, top: 15, delay: 2 },
-        { left: 85, top: 55, delay: 2.5 },
-      ].map((sparkle, i) => (
-        <motion.div
-          key={`sparkle-${i}`}
-          className="absolute w-1 h-1 bg-white rounded-full"
+      {/* Bottom branding */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 pb-10 pt-20 text-center z-20"
+        style={{
+          background: "linear-gradient(to top, rgba(13,3,3,0.9) 0%, transparent 100%)",
+        }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 1 }}
+      >
+        <p
+          className="text-rose-100/60 text-sm tracking-widest uppercase mb-2"
+          style={{ fontFamily: "system-ui, sans-serif", letterSpacing: "0.25em" }}
+        >
+          Crafted with love by
+        </p>
+        <p
+          className="text-2xl md:text-3xl font-semibold tracking-wide"
           style={{
-            left: `${sparkle.left}%`,
-            top: `${sparkle.top}%`,
-            boxShadow: "0 0 6px 2px rgba(255,255,255,0.8)",
+            background: "linear-gradient(135deg, #fda4af 0%, #fb7185 50%, #f43f5e 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontFamily: "system-ui, sans-serif",
+            letterSpacing: "0.05em",
           }}
-          animate={{
-            opacity: [0, 1, 0],
-            scale: [0, 1.5, 0],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            delay: sparkle.delay,
-          }}
-        />
-      ))}
+        >
+          YoursInvite.com
+        </p>
+      </motion.div>
+
+      {/* Elegant corner accents */}
+      <div className="absolute top-8 left-8 w-16 h-16 border-t border-l border-rose-500/20 rounded-tl-lg" />
+      <div className="absolute top-8 right-8 w-16 h-16 border-t border-r border-rose-500/20 rounded-tr-lg" />
+      <div className="absolute bottom-32 left-8 w-16 h-16 border-b border-l border-rose-500/20 rounded-bl-lg" />
+      <div className="absolute bottom-32 right-8 w-16 h-16 border-b border-r border-rose-500/20 rounded-br-lg" />
     </div>
   );
 }
