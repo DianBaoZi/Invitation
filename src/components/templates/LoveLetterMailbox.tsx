@@ -447,7 +447,7 @@ function RevealScreen({
         <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 sm:px-5 py-8 sm:py-12">
           <div
             className="rounded-2xl overflow-hidden w-full"
-            style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
+            style={{ boxShadow: "0 20px 50px rgba(136,14,79,0.25), 0 8px 20px rgba(233,30,99,0.15)" }}
           >
             <img
               src="/images/valentine-header.png"
@@ -484,7 +484,7 @@ function RevealScreen({
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
             className="rounded-2xl overflow-hidden relative w-full"
-            style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
+            style={{ boxShadow: "0 20px 50px rgba(136,14,79,0.25), 0 8px 20px rgba(233,30,99,0.15)" }}
           >
             <img
               src="/images/valentine-card2.png"
@@ -544,7 +544,7 @@ function RevealScreen({
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
             className="rounded-2xl overflow-hidden relative w-full"
-            style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
+            style={{ boxShadow: "0 20px 50px rgba(136,14,79,0.25), 0 8px 20px rgba(233,30,99,0.15)" }}
           >
             <img
               src="/images/fourth-card.png"
