@@ -192,7 +192,7 @@ export default function Home() {
       </AnimatePresence>
 
       {/* Hero section */}
-      <div className="text-center pt-12 sm:pt-16 md:pt-24 pb-8 sm:pb-12 md:pb-16 px-4 relative z-10 overflow-visible">
+      <div className="text-center pt-28 sm:pt-36 md:pt-40 pb-8 sm:pb-12 md:pb-16 px-4 relative z-10 overflow-visible">
         {/* Floating hearts background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {[...Array(6)].map((_, i) => (
