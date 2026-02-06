@@ -124,6 +124,10 @@ function InvitePageContent() {
   const config = invite.configuration as TemplateConfig;
   const senderName = invite.creator_name || "Someone Special";
 
+  // Extract photoUrl1 for templates that show it in splash (e.g., cozy-scrapbook)
+  const configAnyForSplash = config as unknown as Record<string, unknown>;
+  const splashPhotoUrl1 = (configAnyForSplash.photo1Url || configAnyForSplash.photoUrl1 || "") as string;
+
   // Handle splash completion for custom splash screens
   const handleSplashComplete = () => {
     setShowSplash(false);
@@ -144,6 +148,7 @@ function InvitePageContent() {
           isPaid={invite.is_paid}
           onComplete={handleSplashComplete}
           templateId={invite.template_id}
+          photoUrl1={splashPhotoUrl1}
         />
       )}
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Monitor, Play, ArrowRight, Clock, Heart, Users, Zap } from "lucide-react";
 import { PreviewModal } from "@/components/landing/PreviewModal";
@@ -9,6 +10,7 @@ import { HeartFilled, HeartDouble, HeartMini } from "@/components/ui/hearts";
 import { Footer } from "@/components/landing/footer";
 import { TEMPLATES, PRICING, formatPrice } from "@/lib/supabase/templates";
 import { Template } from "@/lib/supabase/types";
+import { createClient } from "@/lib/supabase/client";
 
 // Flip counter component for animated number display
 function FlipCounter({ value }: { value: number }) {
@@ -473,247 +475,56 @@ export default function Home() {
 }
 
 // ============================================
-// LIGHTWEIGHT CSS-ONLY TEMPLATE BACKGROUNDS
+// INTERACTIVE IFRAME TEMPLATE BACKGROUNDS
 // ============================================
 
-function TemplatePreviewBg({ templateId }: { templateId: string }) {
-  switch (templateId) {
-    case "runaway-button":
-      return (
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-100 via-pink-100 to-red-100">
-          {/* Floating hearts */}
-          {[...Array(10)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-pulse"
-              style={{
-                left: `${8 + (i * 9) % 85}%`,
-                top: `${10 + (i * 11) % 75}%`,
-                animationDelay: `${i * 0.3}s`,
-                animationDuration: `${2 + (i % 3)}s`,
-                opacity: 0.4,
-              }}
-            >
-              <HeartMini size={10 + (i % 4) * 6} color="pink" />
-            </div>
-          ))}
-          {/* Center heart glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <div className="w-20 h-20 rounded-full bg-rose-300/30 blur-xl" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <HeartFilled size={36} color="rose" />
-            </div>
-          </div>
-        </div>
-      );
+function TemplateIframeBg({ templateId, cardHeight }: { templateId: string; cardHeight: number }) {
+  // Scale factor to fit mobile viewport (375x667) into card dimensions
+  // Card is approximately 320px wide, 600px tall on desktop
+  const cardWidth = 320;
+  const mobileWidth = 375;
+  const mobileHeight = 667;
 
-    case "love-letter-mailbox":
-      return (
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-rose-50 to-pink-100">
-          {/* Floating envelopes */}
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute text-rose-200/50 animate-pulse"
-              style={{
-                left: `${5 + (i * 12) % 85}%`,
-                top: `${8 + (i * 13) % 78}%`,
-                fontSize: 14 + (i % 3) * 4,
-                animationDelay: `${i * 0.4}s`,
-                animationDuration: `${2.5 + (i % 3)}s`,
-                transform: `rotate(${-15 + (i * 7) % 30}deg)`,
-              }}
-            >
-              ✉
-            </div>
-          ))}
-          {/* Center mailbox */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-            <div className="w-24 h-24 rounded-full bg-rose-200/30 blur-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-            <div className="relative text-5xl">📮</div>
-          </div>
-        </div>
-      );
+  // Calculate scale to fit while maintaining aspect ratio
+  const scaleX = cardWidth / mobileWidth;
+  const scaleY = cardHeight / mobileHeight;
+  const scale = Math.max(scaleX, scaleY) * 1.1; // Slightly larger to ensure coverage
 
-    case "forest-adventure":
-      return (
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-800 via-green-700 to-emerald-900">
-          {/* Fireflies */}
-          {[...Array(15)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full animate-pulse"
-              style={{
-                left: `${5 + (i * 7) % 88}%`,
-                top: `${8 + (i * 9) % 82}%`,
-                width: 3 + (i % 3) * 2,
-                height: 3 + (i % 3) * 2,
-                backgroundColor: "rgba(253, 224, 71, 0.6)",
-                boxShadow: "0 0 8px 3px rgba(253, 224, 71, 0.4)",
-                animationDelay: `${i * 0.25}s`,
-                animationDuration: `${1.5 + (i % 4) * 0.5}s`,
-              }}
-            />
-          ))}
-          {/* Center tree */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-            <div className="w-24 h-24 rounded-full bg-emerald-400/20 blur-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-            <div className="relative text-5xl">🌲</div>
-          </div>
-        </div>
-      );
-
-    case "stargazer":
-      return (
-        <div className="absolute inset-0 bg-gradient-to-b from-indigo-950 via-purple-900 to-slate-900">
-          {/* Twinkling stars */}
-          {[...Array(25)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full bg-white animate-pulse"
-              style={{
-                left: `${3 + (i * 4) % 94}%`,
-                top: `${3 + (i * 5) % 92}%`,
-                width: 1 + (i % 3),
-                height: 1 + (i % 3),
-                opacity: 0.3 + (i % 5) * 0.14,
-                animationDelay: `${i * 0.15}s`,
-                animationDuration: `${1.5 + (i % 3)}s`,
-              }}
-            />
-          ))}
-          {/* Center star */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-            <div className="w-28 h-28 rounded-full bg-yellow-300/10 blur-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-            <div className="relative text-5xl animate-pulse" style={{ animationDuration: "3s" }}>⭐</div>
-          </div>
-        </div>
-      );
-
-    case "premiere":
-      return (
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-red-950">
-          {/* Spotlight rays */}
-          <div
-            className="absolute top-0 left-1/3 w-40 h-full opacity-10"
-            style={{
-              background: "linear-gradient(180deg, rgba(250,204,21,0.4) 0%, transparent 60%)",
-              transform: "skewX(-8deg)",
-            }}
-          />
-          <div
-            className="absolute top-0 right-1/3 w-40 h-full opacity-10"
-            style={{
-              background: "linear-gradient(180deg, rgba(250,204,21,0.4) 0%, transparent 60%)",
-              transform: "skewX(8deg)",
-            }}
-          />
-          {/* Stars */}
-          {[...Array(10)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute text-yellow-400/30 animate-pulse"
-              style={{
-                left: `${8 + (i * 9) % 82}%`,
-                top: `${10 + (i * 11) % 75}%`,
-                fontSize: 8 + (i % 3) * 4,
-                animationDelay: `${i * 0.3}s`,
-                animationDuration: `${2 + (i % 3)}s`,
-              }}
-            >
-              ★
-            </div>
-          ))}
-          {/* Film strip borders */}
-          <div className="absolute top-0 left-0 right-0 h-6 bg-black/40 flex items-center justify-around px-2">
-            {[...Array(12)].map((_, i) => (
-              <div key={i} className="w-3 h-2 rounded-sm bg-slate-700/60" />
-            ))}
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 h-6 bg-black/40 flex items-center justify-around px-2">
-            {[...Array(12)].map((_, i) => (
-              <div key={i} className="w-3 h-2 rounded-sm bg-slate-700/60" />
-            ))}
-          </div>
-          {/* Center clapper */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-            <div className="w-24 h-24 rounded-full bg-yellow-400/10 blur-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-            <div className="relative text-5xl">🎬</div>
-          </div>
-        </div>
-      );
-
-    case "cozy-scrapbook":
-      return (
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100">
-          {/* Washi tape strips */}
-          <div className="absolute top-8 left-6 w-20 h-5 bg-pink-200/60 rounded-sm" style={{ transform: "rotate(-12deg)" }} />
-          <div className="absolute top-20 right-8 w-16 h-5 bg-sky-200/60 rounded-sm" style={{ transform: "rotate(8deg)" }} />
-          <div className="absolute bottom-24 left-10 w-18 h-5 bg-yellow-200/60 rounded-sm" style={{ transform: "rotate(-5deg)" }} />
-          <div className="absolute bottom-12 right-12 w-14 h-5 bg-green-200/60 rounded-sm" style={{ transform: "rotate(15deg)" }} />
-          {/* Paper scraps */}
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute bg-white/40 rounded-sm shadow-sm"
-              style={{
-                left: `${15 + (i * 18) % 70}%`,
-                top: `${20 + (i * 15) % 55}%`,
-                width: 30 + (i % 3) * 10,
-                height: 24 + (i % 2) * 10,
-                transform: `rotate(${-10 + (i * 8) % 20}deg)`,
-              }}
-            />
-          ))}
-          {/* Sticker emojis */}
-          <div className="absolute top-[30%] left-[20%] text-2xl opacity-40 animate-pulse" style={{ animationDelay: "0s" }}>🌸</div>
-          <div className="absolute top-[50%] right-[18%] text-xl opacity-40 animate-pulse" style={{ animationDelay: "0.5s" }}>⭐</div>
-          <div className="absolute bottom-[35%] left-[35%] text-2xl opacity-40 animate-pulse" style={{ animationDelay: "1s" }}>🦋</div>
-          {/* Center book */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-            <div className="w-24 h-24 rounded-full bg-amber-200/30 blur-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-            <div className="relative text-5xl">📖</div>
-          </div>
-        </div>
-      );
-
-    case "elegant-invitation":
-      return (
-        <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-rose-50 to-amber-50">
-          {/* Gold corner ornaments */}
-          <div className="absolute top-4 left-4 w-16 h-16 border-t-2 border-l-2 border-amber-300/50 rounded-tl-lg" />
-          <div className="absolute top-4 right-4 w-16 h-16 border-t-2 border-r-2 border-amber-300/50 rounded-tr-lg" />
-          <div className="absolute bottom-4 left-4 w-16 h-16 border-b-2 border-l-2 border-amber-300/50 rounded-bl-lg" />
-          <div className="absolute bottom-4 right-4 w-16 h-16 border-b-2 border-r-2 border-amber-300/50 rounded-br-lg" />
-          {/* Floating florals */}
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute text-rose-200/40 animate-pulse"
-              style={{
-                left: `${10 + (i * 11) % 78}%`,
-                top: `${12 + (i * 12) % 72}%`,
-                fontSize: 12 + (i % 3) * 4,
-                animationDelay: `${i * 0.35}s`,
-                animationDuration: `${2 + (i % 3)}s`,
-              }}
-            >
-              {i % 2 === 0 ? "❀" : "✿"}
-            </div>
-          ))}
-          {/* Center camera */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-            <div className="w-24 h-24 rounded-full bg-rose-200/20 blur-xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-            <div className="relative text-5xl">📸</div>
-          </div>
-        </div>
-      );
-
-    default:
-      return (
-        <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-stone-50 to-stone-100" />
-      );
-  }
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-stone-100">
+      {/* Scaled iframe container */}
+      <div
+        className="absolute"
+        style={{
+          width: mobileWidth,
+          height: mobileHeight,
+          left: "50%",
+          top: "50%",
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          transformOrigin: "center center",
+        }}
+      >
+        <iframe
+          src={`/test/${templateId}`}
+          className="w-full h-full border-0"
+          style={{
+            pointerEvents: "none",
+            overflow: "hidden",
+          }}
+          title={`${templateId} preview`}
+          loading="lazy"
+          allow="autoplay"
+        />
+      </div>
+      {/* Subtle vignette for depth */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.15) 100%)",
+        }}
+      />
+    </div>
+  );
 }
 
 // ============================================
@@ -759,8 +570,8 @@ function TemplateCard({
         }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Lightweight CSS background preview */}
-        <TemplatePreviewBg templateId={template.id} />
+        {/* Interactive iframe background preview */}
+        <TemplateIframeBg templateId={template.id} cardHeight={getCardHeight()} />
 
         {/* Blur overlay on hover */}
         <motion.div
@@ -887,6 +698,8 @@ function MobileCard({
   index: number;
   onClick: () => void;
 }) {
+  const cardHeight = 480;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -894,10 +707,10 @@ function MobileCard({
       transition={{ duration: 0.5, delay: index * 0.06 }}
       onClick={onClick}
       className="relative rounded-xl overflow-hidden active:scale-[0.97] transition-transform"
-      style={{ height: 480 }}
+      style={{ height: cardHeight }}
     >
-      {/* Lightweight CSS background preview */}
-      <TemplatePreviewBg templateId={template.id} />
+      {/* Interactive iframe background preview */}
+      <TemplateIframeBg templateId={template.id} cardHeight={cardHeight} />
 
       {/* Gradient overlay */}
       <div
@@ -1617,6 +1430,50 @@ function TemplatePreviewScene({ templateId, isHovered = false }: { templateId: s
 // ============================================
 
 function MembershipModal({ onClose }: { onClose: () => void }) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handlePurchase = async () => {
+    setIsLoading(true);
+    try {
+      const supabase = createClient();
+
+      // Check if user is signed in
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        // Redirect to login with return URL
+        router.push("/login?redirect=/&purchase=premium");
+        return;
+      }
+
+      // For testing: Skip Stripe and create premium purchase directly
+      const { error } = await (supabase as any).from("purchases").insert({
+        email: user.email || "",
+        name: user.user_metadata?.full_name || user.email?.split("@")[0] || "User",
+        product_type: "premium",
+        template_id: null,
+        amount_cents: 399,
+        stripe_session_id: `test_${Date.now()}`,
+        stripe_payment_id: `test_pi_${Date.now()}`,
+      });
+
+      if (error) {
+        console.error("Purchase error:", error);
+        alert("There was an error processing your purchase. Please try again.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Success! Redirect to dashboard
+      router.push("/dashboard?premium=true");
+    } catch (err) {
+      console.error("Purchase error:", err);
+      alert("There was an error processing your purchase. Please try again.");
+      setIsLoading(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -1716,14 +1573,14 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-3">
               <span
-                className="text-4xl text-stone-900"
+                className="text-6xl sm:text-7xl font-bold text-stone-900"
                 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
               >
                 {formatPrice(PRICING.lifetime)}
               </span>
             </div>
             <span
-              className="text-stone-400 text-sm"
+              className="text-stone-500 text-base mt-2 block"
               style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
             >
               one-time payment • lifetime access
@@ -1731,10 +1588,12 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <button
-            className="w-full py-4 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white font-medium hover:from-rose-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl active:scale-[0.98]"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "16px", letterSpacing: "0.02em" }}
+            onClick={handlePurchase}
+            disabled={isLoading}
+            className="w-full py-4 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white font-medium hover:from-rose-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "18px", letterSpacing: "0.02em" }}
           >
-            🎁 Unlock All Templates Now
+            {isLoading ? "Processing..." : "🎁 Unlock All Templates Now"}
           </button>
 
           {/* Urgency Text */}

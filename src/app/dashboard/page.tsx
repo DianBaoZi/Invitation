@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Calendar, ExternalLink, Copy, CheckCircle, Trash2, BarChart3, AlertTriangle, X, Mail } from "lucide-react";
+import { Plus, Calendar, ExternalLink, Copy, CheckCircle, Trash2, BarChart3, AlertTriangle, X, Mail, Crown } from "lucide-react";
 /* eslint-disable @next/next/no-img-element */
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
@@ -28,6 +28,7 @@ export default function DashboardPage() {
   const [invites, setInvites] = useState<InviteData[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+  const [isPremium, setIsPremium] = useState(false);
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; inviteId: string | null; inviteName: string }>({
     isOpen: false,
     inviteId: null,
@@ -39,13 +40,26 @@ export default function DashboardPage() {
     const supabase = createClient();
 
     // Check auth state
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) {
         router.push("/login");
         return;
       }
       setUser(user);
       loadInvites(user.id);
+
+      // Check premium status
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: purchases } = await (supabase as any)
+        .from("purchases")
+        .select("id")
+        .eq("email", user.email)
+        .eq("product_type", "premium")
+        .limit(1);
+
+      if (purchases && purchases.length > 0) {
+        setIsPremium(true);
+      }
     });
   }, [router]);
 
@@ -129,6 +143,21 @@ export default function DashboardPage() {
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-8 pt-36 sm:pt-40">
+        {/* Premium Badge */}
+        {isPremium && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full shadow-lg">
+              <Crown className="w-5 h-5 text-white" />
+              <span className="text-white font-semibold text-sm">Premium Member</span>
+              <span className="text-white/80 text-xs">• All Templates Unlocked</span>
+            </div>
+          </motion.div>
+        )}
+
         {/* Create New Button */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

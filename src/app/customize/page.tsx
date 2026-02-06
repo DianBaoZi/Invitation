@@ -1085,8 +1085,8 @@ function CustomizePageContent() {
             <CozyScrapbookFullPreview
               message={fieldValues.message || "Will you be my Valentine?"}
               senderName={name}
-              eventDate={fieldValues.date}
-              eventTime={fieldValues.time}
+              eventDate={formatDate(fieldValues.date)}
+              eventTime={formatTime(fieldValues.time)}
               eventLocation={fieldValues.location}
               photoUrl1={photoUrl1}
               photoUrl2={photoUrl2}
@@ -1099,8 +1099,8 @@ function CustomizePageContent() {
               senderName={name}
               message={fieldValues.message || "Will you be my Valentine?"}
               personalMessage={fieldValues.personalMessage}
-              date={fieldValues.date}
-              time={fieldValues.time}
+              date={formatDate(fieldValues.date)}
+              time={formatTime(fieldValues.time)}
               location={fieldValues.location}
               photo1Url={photoUrl1}
               photo2Url={photoUrl2}

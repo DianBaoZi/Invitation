@@ -582,7 +582,7 @@ function CurtainScene({
       <AnimatePresence>
         {showHint && !revealed && (
           <motion.div
-            className="absolute bottom-20 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-3"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-3"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -766,34 +766,22 @@ function ScrollContent({
 
             {/* Header */}
             <div className="px-6 pt-6 pb-4 text-center">
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "10px",
-                  letterSpacing: "0.4em",
-                  textTransform: "uppercase",
-                  color: P.gold,
-                  opacity: 0.6,
-                }}
-              >
-                admit one
-              </p>
-              <motion.h3
+              <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3, duration: 0.8 }}
                 style={{
                   fontFamily: "'Playfair Display', Georgia, serif",
-                  fontSize: "clamp(1.5rem, 5vw, 2rem)",
-                  fontWeight: 600,
-                  color: P.cream,
-                  marginTop: 8,
+                  fontSize: "clamp(1.3rem, 4vw, 1.8rem)",
+                  letterSpacing: "0.25em",
+                  textTransform: "uppercase",
+                  color: P.gold,
                   textShadow: `0 0 20px rgba(212,160,23,0.3)`,
                 }}
               >
-                Valentine&apos;s Premiere
-              </motion.h3>
+                Admission of One
+              </motion.p>
             </div>
 
             {/* Perforated line */}
@@ -996,11 +984,12 @@ function RSVPSection({
   const [noCount, setNoCount] = useState(0);
   const noHidden = noCount >= 4;
 
-  const CUT_MESSAGES = [
-    "CUT! Try that again...",
-    "The director says no",
-    "That take was rejected",
-    "Not in the script!",
+  const CUT_EMOJIS = ["😐", "😠", "😤", "🤬"];
+  const CUT_SUBTEXTS = [
+    "Take 2...",
+    "The director is not amused",
+    "This is getting ridiculous!",
+    "THAT'S A WRAP ON 'NO'!",
   ];
 
   const handleNo = () => {
@@ -1144,23 +1133,77 @@ function RSVPSection({
               </AnimatePresence>
             </div>
 
-            {/* CUT! messages */}
+            {/* CUT! action board */}
             <AnimatePresence mode="wait">
               {noCount > 0 && noCount <= 4 && (
-                <motion.p
-                  key={`msg-${noCount}`}
-                  initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
-                  animate={{ opacity: 0.6, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.5 }}
-                  style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "12px", color: P.crimson,
-                    letterSpacing: "0.1em", textAlign: "center", fontWeight: 600,
-                  }}
+                <motion.div
+                  key={`cut-${noCount}`}
+                  className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                 >
-                  {CUT_MESSAGES[noCount - 1]}
-                </motion.p>
+                  {/* Dark overlay */}
+                  <motion.div
+                    className="absolute inset-0 bg-black"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.85 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  />
+                  {/* CUT board */}
+                  <motion.div
+                    className="relative flex flex-col items-center gap-2"
+                    initial={{ scale: 0, rotate: -10 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    exit={{ scale: 0, rotate: 10, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                  >
+                    {/* Emoji */}
+                    <motion.span
+                      style={{ fontSize: `${40 + noCount * 15}px` }}
+                      animate={{
+                        scale: [1, 1.2, 1],
+                        rotate: noCount >= 3 ? [-5, 5, -5] : 0
+                      }}
+                      transition={{ duration: 0.3, repeat: noCount >= 3 ? 2 : 0 }}
+                    >
+                      {CUT_EMOJIS[noCount - 1]}
+                    </motion.span>
+                    {/* CUT text */}
+                    <motion.h1
+                      style={{
+                        fontFamily: "'Impact', 'Arial Black', sans-serif",
+                        fontSize: `${50 + noCount * 20}px`,
+                        fontWeight: 900,
+                        color: P.crimson,
+                        textShadow: `0 0 20px ${P.crimson}, 0 0 40px ${P.crimson}50`,
+                        letterSpacing: "0.1em",
+                      }}
+                      animate={{
+                        scale: [0.8, 1.1, 1],
+                      }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      CUT!
+                    </motion.h1>
+                    {/* Subtext */}
+                    <motion.p
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: "14px",
+                        color: P.cream,
+                        letterSpacing: "0.15em",
+                        textTransform: "uppercase",
+                      }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 0.8, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      {CUT_SUBTEXTS[noCount - 1]}
+                    </motion.p>
+                  </motion.div>
+                </motion.div>
               )}
             </AnimatePresence>
 

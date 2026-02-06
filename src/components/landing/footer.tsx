@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 /* eslint-disable @next/next/no-img-element */
-import { Heart, Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Footer() {
@@ -26,19 +26,6 @@ export function Footer() {
                 make saying yes irresistible. Spread love with a touch of fun and
                 magic!
               </p>
-
-              {/* Social icons placeholder */}
-              <div className="flex gap-4 mt-6">
-                {["twitter", "instagram", "tiktok"].map((social) => (
-                  <a
-                    key={social}
-                    href="#"
-                    className="w-10 h-10 rounded-xl bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors group"
-                  >
-                    <Heart className="w-4 h-4 text-gray-500 group-hover:text-primary transition-colors" />
-                  </a>
-                ))}
-              </div>
             </div>
 
             {/* Product Links */}

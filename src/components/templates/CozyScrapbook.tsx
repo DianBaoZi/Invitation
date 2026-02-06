@@ -425,10 +425,10 @@ function MobileScrapbook({
               exit={{ height: 0, opacity: 0, marginBottom: 0 }}
               transition={{ duration: 0.4 }}
               style={{
-                background: "linear-gradient(145deg, #d4a574 0%, #c29366 100%)",
+                background: "linear-gradient(145deg, #a67c52 0%, #8b5e3c 50%, #7a4f32 100%)",
                 borderRadius: 12,
                 overflow: "hidden",
-                boxShadow: "0 4px 12px rgba(92,58,33,0.15)",
+                boxShadow: "0 4px 12px rgba(92,58,33,0.15), inset 0 1px 2px rgba(255,255,255,0.1)",
                 cursor: flippingPage === null && currentPage === 1 ? "pointer" : "default",
               }}
             >
@@ -602,7 +602,7 @@ function FlippablePageDesktop({
           backfaceVisibility: "hidden",
           WebkitBackfaceVisibility: "hidden",
           background: isCover
-            ? "linear-gradient(145deg, #d4a574 0%, #c29366 50%, #b8845a 100%)"
+            ? "linear-gradient(145deg, #a67c52 0%, #8b5e3c 30%, #7a4f32 60%, #6b4228 100%)"
             : "linear-gradient(145deg, #fdf8f0 0%, #f8f0e5 100%)",
           borderRadius: "4px 12px 12px 4px",
           boxShadow: isFlipping
@@ -676,7 +676,7 @@ function FlippablePageMobile({
           position: "absolute",
           inset: 0,
           background: isCover
-            ? "linear-gradient(145deg, #d4a574 0%, #c29366 50%, #b8845a 100%)"
+            ? "linear-gradient(145deg, #a67c52 0%, #8b5e3c 30%, #7a4f32 60%, #6b4228 100%)"
             : "linear-gradient(145deg, #fdf8f0 0%, #f8f0e5 100%)",
           borderRadius: 16,
           boxShadow: "0 8px 24px rgba(92,58,33,0.15)",
@@ -709,14 +709,81 @@ function CoverPage() {
         overflow: "hidden",
       }}
     >
-      {/* Paper texture overlay */}
+      {/* Leather grain texture - primary layer */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          opacity: 0.08,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          opacity: 0.15,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leather'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='6' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leather)'/%3E%3C/svg%3E")`,
           mixBlendMode: "multiply",
+        }}
+      />
+      {/* Leather subtle highlights */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "radial-gradient(ellipse 80% 60% at 30% 25%, rgba(255,255,255,0.08) 0%, transparent 50%)",
+          pointerEvents: "none",
+        }}
+      />
+      {/* Leather edge darkening (worn look) */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          boxShadow: "inset 0 0 40px rgba(60,30,10,0.25), inset 0 0 80px rgba(60,30,10,0.1)",
+          borderRadius: "inherit",
+          pointerEvents: "none",
+        }}
+      />
+      {/* Leather stitching - top */}
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 16,
+          right: 16,
+          height: 2,
+          backgroundImage: `repeating-linear-gradient(90deg, #8b6240 0px, #8b6240 6px, transparent 6px, transparent 10px)`,
+          opacity: 0.35,
+        }}
+      />
+      {/* Leather stitching - bottom */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 10,
+          left: 16,
+          right: 16,
+          height: 2,
+          backgroundImage: `repeating-linear-gradient(90deg, #8b6240 0px, #8b6240 6px, transparent 6px, transparent 10px)`,
+          opacity: 0.35,
+        }}
+      />
+      {/* Leather stitching - left */}
+      <div
+        style={{
+          position: "absolute",
+          top: 16,
+          bottom: 16,
+          left: 10,
+          width: 2,
+          backgroundImage: `repeating-linear-gradient(180deg, #8b6240 0px, #8b6240 6px, transparent 6px, transparent 10px)`,
+          opacity: 0.35,
+        }}
+      />
+      {/* Leather stitching - right */}
+      <div
+        style={{
+          position: "absolute",
+          top: 16,
+          bottom: 16,
+          right: 10,
+          width: 2,
+          backgroundImage: `repeating-linear-gradient(180deg, #8b6240 0px, #8b6240 6px, transparent 6px, transparent 10px)`,
+          opacity: 0.35,
         }}
       />
 
@@ -1016,7 +1083,35 @@ function MessagePage({ message, senderName, photoUrl2, showHint }: { message: st
           <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 16, color: "#8b7355", textAlign: "center", marginTop: 8 }}>us ♡</p>
         </motion.div>
       ) : (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} style={{ marginTop: 16, marginBottom: 20, fontSize: 56 }}>💝</motion.div>
+        <motion.div
+          initial={{ opacity: 0, rotate: -3 }}
+          animate={{ opacity: 1, rotate: 2 }}
+          transition={{ delay: 0.2 }}
+          style={{
+            background: "#fff",
+            padding: "6px 6px 24px 6px",
+            borderRadius: 2,
+            boxShadow: "0 5px 18px rgba(107,82,64,0.2)",
+            marginTop: 8,
+            marginBottom: 12,
+          }}
+        >
+          {/* Empty polaroid frame */}
+          <div
+            style={{
+              width: 100,
+              height: 100,
+              background: "linear-gradient(145deg, #f5ebe0 0%, #ede0d4 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: "1px dashed rgba(139,115,85,0.3)",
+            }}
+          >
+            <span style={{ fontSize: 28, opacity: 0.3 }}>📷</span>
+          </div>
+          <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 14, color: "#b09878", textAlign: "center", marginTop: 8, fontStyle: "italic" }}>your photo here</p>
+        </motion.div>
       )}
 
       <motion.h3 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ fontFamily: "'Dancing Script', cursive", fontSize: 30, color: "#5c3a21", marginBottom: 8, position: "relative", zIndex: 1 }}>A Little Something</motion.h3>
@@ -1041,12 +1136,12 @@ function MessagePage({ message, senderName, photoUrl2, showHint }: { message: st
 
 function RSVPPage({ eventDate, eventTime, eventLocation, photoUrl1, onYes, onNoInteract, noClicks, noGone }: { eventDate: string; eventTime: string; eventLocation: string; photoUrl1?: string; onYes: () => void; onNoInteract: () => void; noClicks: number; noGone: boolean }) {
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 20px 24px", boxSizing: "border-box", overflow: "hidden" }}>
+    <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "16px 16px 20px", boxSizing: "border-box", overflow: "visible" }}>
       <div style={{ position: "absolute", inset: 0, background: `repeating-linear-gradient(transparent, transparent 26px, rgba(212,196,176,0.18) 26px, rgba(212,196,176,0.18) 27px)`, backgroundPositionY: 20, pointerEvents: "none" }} />
       <WashiTape style={{ position: "absolute", top: -6, right: 20, width: 65, transform: "rotate(5deg)" }} color="#8b9e6b" />
 
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} style={{ fontSize: 32, marginBottom: 4 }}>✨</motion.div>
-      <motion.h3 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontFamily: "'Dancing Script', cursive", fontSize: 30, color: "#5c3a21", marginBottom: 12, position: "relative", zIndex: 1 }}>Save the Date!</motion.h3>
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} style={{ fontSize: 26, marginBottom: 2 }}>✨</motion.div>
+      <motion.h3 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontFamily: "'Dancing Script', cursive", fontSize: 26, color: "#5c3a21", marginBottom: 8, position: "relative", zIndex: 1 }}>Save the Date!</motion.h3>
 
       {/* Photo Frame - Polaroid style */}
       {photoUrl1 && (
@@ -1056,10 +1151,10 @@ function RSVPPage({ eventDate, eventTime, eventLocation, photoUrl1, onYes, onNoI
           transition={{ delay: 0.25, type: "spring", stiffness: 200 }}
           style={{
             background: "#fff",
-            padding: "4px 4px 14px 4px",
+            padding: "3px 3px 10px 3px",
             borderRadius: 2,
             boxShadow: "0 4px 16px rgba(107,82,64,0.2)",
-            marginBottom: 8,
+            marginBottom: 6,
             transform: "rotate(2deg)",
           }}
         >
@@ -1067,33 +1162,33 @@ function RSVPPage({ eventDate, eventTime, eventLocation, photoUrl1, onYes, onNoI
             src={photoUrl1}
             alt="Our memory"
             style={{
-              width: 70,
-              height: 70,
+              width: 60,
+              height: 60,
               objectFit: "cover",
               display: "block",
             }}
           />
           <p style={{
             fontFamily: "'Dancing Script', cursive",
-            fontSize: 10,
+            fontSize: 9,
             color: "#8b7355",
             textAlign: "center",
-            marginTop: 4,
+            marginTop: 3,
           }}>
             us ♡
           </p>
         </motion.div>
       )}
 
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ display: "flex", flexDirection: "column", gap: 8, padding: "12px 16px", background: "rgba(255,255,255,0.8)", borderRadius: 10, border: "2px dashed #d4c4b0", marginBottom: 20, position: "relative", zIndex: 1, width: "100%", maxWidth: 260 }}>
-        <EventDetailRow icon="📅" label="When" value={eventDate} />
-        <EventDetailRow icon="⏰" label="Time" value={eventTime} />
-        <EventDetailRow icon="📍" label="Where" value={eventLocation} />
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ display: "flex", flexDirection: "column", gap: 6, padding: "10px 14px", background: "rgba(255,255,255,0.8)", borderRadius: 10, border: "2px dashed #d4c4b0", marginBottom: 14, position: "relative", zIndex: 1, width: "100%", maxWidth: 260 }}>
+        <EventDetailRow icon={<ScrapbookCalendarIcon />} label="When" value={eventDate} />
+        <EventDetailRow icon={<ScrapbookClockIcon />} label="Time" value={eventTime} />
+        <EventDetailRow icon={<ScrapbookLocationIcon />} label="Where" value={eventLocation} />
       </motion.div>
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
-        <h4 style={{ fontFamily: "'Dancing Script', cursive", fontSize: 24, color: "#5c3a21", marginBottom: 4 }}>What do you say?</h4>
-        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: "#a08060", fontStyle: "italic", marginBottom: 14 }}>Your answer means the world</p>
+        <h4 style={{ fontFamily: "'Dancing Script', cursive", fontSize: 22, color: "#5c3a21", marginBottom: 2 }}>What do you say?</h4>
+        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 14, color: "#a08060", fontStyle: "italic", marginBottom: 10 }}>Your answer means the world</p>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16, justifyContent: "center" }}>
           <motion.button onClick={onYes} whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }} style={{ fontFamily: "'Dancing Script', cursive", fontSize: 20, color: "#fff", background: "linear-gradient(135deg, #8b9e6b 0%, #7a8d5c 100%)", border: "none", borderRadius: 24, padding: "12px 32px", cursor: "pointer", boxShadow: "0 5px 18px rgba(139,158,107,0.4)" }}>
@@ -1166,7 +1261,9 @@ function SuccessState({ senderName }: { senderName: string }) {
       <motion.div initial={{ scale: 0.8, opacity: 0, rotate: -2 }} animate={{ scale: [1, 1.02, 1], opacity: 1, rotate: [0, 1, -1, 0] }} transition={{ scale: { duration: 4, repeat: Infinity }, rotate: { duration: 6, repeat: Infinity }, opacity: { duration: 0.5 } }} style={{ background: "linear-gradient(145deg, #fdf8f0 0%, #f5ebe0 100%)", borderRadius: 18, padding: "48px 40px", textAlign: "center", maxWidth: 340, boxShadow: "0 14px 44px rgba(107,82,64,0.18)", position: "relative", zIndex: 2, border: "1px solid rgba(212,165,116,0.2)" }}>
         <WashiTape style={{ position: "absolute", top: -7, left: 28, width: 65, transform: "rotate(-4deg)" }} color="#c27256" />
         <WashiTape style={{ position: "absolute", top: -7, right: 28, width: 65, transform: "rotate(4deg)" }} color="#8b9e6b" />
-        <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 3, repeat: Infinity }} style={{ fontSize: 58, marginBottom: 16 }}>🌿</motion.div>
+        <motion.div animate={{ rotate: [0, 8, -8, 0], scale: [1, 1.05, 1] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} style={{ marginBottom: 16 }}>
+          <ScrapbookSuccessFlower />
+        </motion.div>
         <h2 style={{ fontFamily: "'Dancing Script', cursive", fontSize: 34, color: "#5c3a21", marginBottom: 10, fontWeight: 700 }}>You said yes!</h2>
         <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 17, color: "#8b7355", fontStyle: "italic", lineHeight: 1.65 }}>This is the beginning of<br />something beautiful...</p>
         <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid rgba(212,196,176,0.4)" }}>
@@ -1189,10 +1286,10 @@ function WashiTape({ style, color }: { style: React.CSSProperties; color: string
   return <div style={{ height: 15, background: `linear-gradient(90deg, ${color}cc, ${color}aa)`, opacity: 0.55, borderRadius: 2, ...style }} />;
 }
 
-function EventDetailRow({ icon, label, value }: { icon: string; label: string; value: string }) {
+function EventDetailRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ fontSize: 22, flexShrink: 0 }}>{icon}</span>
+      <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>{icon}</div>
       <div style={{ minWidth: 0, flex: 1 }}>
         <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 13, color: "#a08060", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 2 }}>{label}</p>
         <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 19, color: "#5c3a21", fontWeight: 600, wordBreak: "break-word", overflowWrap: "break-word" }}>{value}</p>
@@ -1218,6 +1315,144 @@ function SketchyHeart({ size, color }: { size: number; color: string }) {
       <div style={{ position: "absolute", top: 0, left: half / 2, width: half, height: half, borderRadius: `${half}px ${half}px 0 0`, background: color, transform: "rotate(-45deg)", transformOrigin: "0 100%" }} />
       <div style={{ position: "absolute", top: 0, left: 0, width: half, height: half, borderRadius: `${half}px ${half}px 0 0`, background: color, transform: "rotate(45deg)", transformOrigin: "100% 100%" }} />
     </div>
+  );
+}
+
+// Hand-drawn style calendar icon for scrapbook aesthetic
+function ScrapbookCalendarIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ filter: "drop-shadow(1px 1px 0px rgba(139,115,85,0.15))" }}>
+      {/* Calendar body - slightly imperfect rectangle */}
+      <path
+        d="M4.5 7C4.5 5.8 5.4 5 6.5 5H17.5C18.6 5 19.5 5.9 19.5 7V18C19.5 19.1 18.5 20 17.5 20H6.5C5.4 20 4.5 19 4.5 18V7Z"
+        fill="#faf5ef"
+        stroke="#8b7355"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Top bar with rings */}
+      <path d="M4.5 10H19.5" stroke="#c27256" strokeWidth="1.5" strokeLinecap="round" />
+      {/* Ring holes - decorative circles */}
+      <circle cx="8" cy="4" r="1.2" fill="#d4c4b0" stroke="#8b7355" strokeWidth="0.8" />
+      <circle cx="16" cy="4" r="1.2" fill="#d4c4b0" stroke="#8b7355" strokeWidth="0.8" />
+      {/* Ring arcs */}
+      <path d="M8 3V6" stroke="#8b7355" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M16 3V6" stroke="#8b7355" strokeWidth="1.2" strokeLinecap="round" />
+      {/* Heart mark on calendar */}
+      <path
+        d="M12 13.5C12 13.5 10 12 10 13.5C10 14.5 12 16 12 16C12 16 14 14.5 14 13.5C14 12 12 13.5 12 13.5Z"
+        fill="#c27256"
+        stroke="#c27256"
+        strokeWidth="0.5"
+      />
+      {/* Decorative corner fold */}
+      <path d="M17 17L19.5 20" stroke="#d4c4b0" strokeWidth="1" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// Vintage clock icon for scrapbook aesthetic
+function ScrapbookClockIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ filter: "drop-shadow(1px 1px 0px rgba(139,115,85,0.15))" }}>
+      {/* Clock face - slightly organic circle */}
+      <circle cx="12" cy="12" r="9" fill="#faf5ef" stroke="#8b7355" strokeWidth="1.5" />
+      {/* Inner decorative ring */}
+      <circle cx="12" cy="12" r="7" fill="none" stroke="#d4c4b0" strokeWidth="0.8" strokeDasharray="2 2" />
+      {/* Hour markers with hearts at 12 and 6 */}
+      <circle cx="12" cy="5.5" r="0.8" fill="#c27256" />
+      <circle cx="12" cy="18.5" r="0.8" fill="#c27256" />
+      <circle cx="5.5" cy="12" r="0.6" fill="#8b7355" />
+      <circle cx="18.5" cy="12" r="0.6" fill="#8b7355" />
+      {/* Clock hands - slightly whimsical */}
+      <path d="M12 12L12 7.5" stroke="#5c3a21" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M12 12L15.5 12" stroke="#c27256" strokeWidth="1.5" strokeLinecap="round" />
+      {/* Center dot with decorative ring */}
+      <circle cx="12" cy="12" r="1.5" fill="#c27256" />
+      <circle cx="12" cy="12" r="0.6" fill="#faf5ef" />
+      {/* Small flower decoration at top */}
+      <circle cx="18" cy="5" r="1.5" fill="#f5e6d8" stroke="#8b9e6b" strokeWidth="0.6" />
+      <circle cx="18" cy="5" r="0.5" fill="#c27256" />
+    </svg>
+  );
+}
+
+// Location pin icon for scrapbook aesthetic
+function ScrapbookLocationIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ filter: "drop-shadow(1px 1px 0px rgba(139,115,85,0.15))" }}>
+      {/* Pin body - organic teardrop shape */}
+      <path
+        d="M12 2C8 2 5 5 5 9C5 14 12 22 12 22C12 22 19 14 19 9C19 5 16 2 12 2Z"
+        fill="linear-gradient(180deg, #c27256 0%, #a85d42 100%)"
+        stroke="#8b7355"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Gradient fill simulation with layered shapes */}
+      <path
+        d="M12 2C8 2 5 5 5 9C5 14 12 22 12 22C12 22 19 14 19 9C19 5 16 2 12 2Z"
+        fill="#c27256"
+      />
+      <path
+        d="M12 3C8.5 3 6 5.5 6 9C6 13 12 20 12 20C12 20 18 13 18 9C18 5.5 15.5 3 12 3Z"
+        fill="#d4846a"
+      />
+      {/* Inner circle - like a vintage map marker */}
+      <circle cx="12" cy="9" r="3.5" fill="#faf5ef" stroke="#8b7355" strokeWidth="0.8" />
+      {/* Heart in center */}
+      <path
+        d="M12 8C12 8 10.5 7 10.5 8C10.5 8.8 12 10 12 10C12 10 13.5 8.8 13.5 8C13.5 7 12 8 12 8Z"
+        fill="#c27256"
+      />
+      {/* Decorative highlight */}
+      <path d="M8 6C8.5 4.5 10 3.5 12 3.5" stroke="#faf5ef" strokeWidth="0.8" strokeLinecap="round" opacity="0.6" />
+    </svg>
+  );
+}
+
+// Beautiful hand-drawn flower for "You said yes!" success state
+function ScrapbookSuccessFlower() {
+  return (
+    <svg width="60" height="60" viewBox="0 0 60 60" fill="none" style={{ filter: "drop-shadow(2px 3px 4px rgba(139,115,85,0.2))" }}>
+      {/* Outer petals - soft pink blush */}
+      <ellipse cx="30" cy="14" rx="8" ry="12" fill="#f8d4d4" stroke="#e8a0a0" strokeWidth="1" transform="rotate(0 30 30)" />
+      <ellipse cx="30" cy="14" rx="8" ry="12" fill="#f5d0d0" stroke="#e8a0a0" strokeWidth="1" transform="rotate(72 30 30)" />
+      <ellipse cx="30" cy="14" rx="8" ry="12" fill="#f8d4d4" stroke="#e8a0a0" strokeWidth="1" transform="rotate(144 30 30)" />
+      <ellipse cx="30" cy="14" rx="8" ry="12" fill="#f5d0d0" stroke="#e8a0a0" strokeWidth="1" transform="rotate(216 30 30)" />
+      <ellipse cx="30" cy="14" rx="8" ry="12" fill="#f8d4d4" stroke="#e8a0a0" strokeWidth="1" transform="rotate(288 30 30)" />
+
+      {/* Inner petals - deeper rose */}
+      <ellipse cx="30" cy="19" rx="5" ry="8" fill="#f0b8b8" stroke="#d4846a" strokeWidth="0.8" transform="rotate(36 30 30)" />
+      <ellipse cx="30" cy="19" rx="5" ry="8" fill="#edb0b0" stroke="#d4846a" strokeWidth="0.8" transform="rotate(108 30 30)" />
+      <ellipse cx="30" cy="19" rx="5" ry="8" fill="#f0b8b8" stroke="#d4846a" strokeWidth="0.8" transform="rotate(180 30 30)" />
+      <ellipse cx="30" cy="19" rx="5" ry="8" fill="#edb0b0" stroke="#d4846a" strokeWidth="0.8" transform="rotate(252 30 30)" />
+      <ellipse cx="30" cy="19" rx="5" ry="8" fill="#f0b8b8" stroke="#d4846a" strokeWidth="0.8" transform="rotate(324 30 30)" />
+
+      {/* Center - warm golden yellow */}
+      <circle cx="30" cy="30" r="8" fill="#f5e6c8" stroke="#d4a574" strokeWidth="1.5" />
+      <circle cx="30" cy="30" r="5" fill="#ecd9a8" />
+
+      {/* Center dots - like flower pollen */}
+      <circle cx="28" cy="28" r="1" fill="#c9a86c" />
+      <circle cx="32" cy="28" r="1" fill="#c9a86c" />
+      <circle cx="30" cy="32" r="1" fill="#c9a86c" />
+      <circle cx="27" cy="31" r="0.8" fill="#c9a86c" />
+      <circle cx="33" cy="31" r="0.8" fill="#c9a86c" />
+      <circle cx="30" cy="27" r="0.8" fill="#c9a86c" />
+
+      {/* Highlight on center */}
+      <circle cx="28" cy="29" r="2" fill="white" opacity="0.3" />
+
+      {/* Small leaves at bottom */}
+      <path d="M25 48C25 48 22 42 25 38C28 42 25 48 25 48Z" fill="#8b9e6b" stroke="#6b7e4b" strokeWidth="0.8" />
+      <path d="M35 48C35 48 38 42 35 38C32 42 35 48 35 48Z" fill="#8b9e6b" stroke="#6b7e4b" strokeWidth="0.8" />
+
+      {/* Stem hint */}
+      <path d="M30 38V48" stroke="#6b7e4b" strokeWidth="2" strokeLinecap="round" />
+    </svg>
   );
 }
 

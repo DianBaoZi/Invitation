@@ -69,6 +69,7 @@ export function LoveLetterMailbox({
             message={message}
             plan={plan}
             date={date}
+            time={time}
             location={location}
             imageUrl={imageUrl}
             senderName={senderName}
@@ -316,6 +317,7 @@ function RevealScreen({
   message,
   plan,
   date,
+  time,
   location,
   imageUrl,
   senderName,
@@ -325,6 +327,7 @@ function RevealScreen({
   message: string;
   plan: string;
   date: string;
+  time?: string;
   location: string;
   imageUrl?: string;
   senderName: string;
