@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Calendar, ExternalLink, Copy, CheckCircle, Trash2, BarChart3, AlertTriangle, X, Mail, Crown, Check, Square, CheckSquare } from "lucide-react";
+import confetti from "canvas-confetti";
+import { Plus, Calendar, ExternalLink, Copy, CheckCircle, Trash2, BarChart3, AlertTriangle, X, Mail, Crown, Check, Square, CheckSquare, Sparkles } from "lucide-react";
 /* eslint-disable @next/next/no-img-element */
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
@@ -22,8 +23,9 @@ interface InviteData {
   expires_at: string;
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [invites, setInvites] = useState<InviteData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,12 +33,48 @@ export default function DashboardPage() {
   const [isPremium, setIsPremium] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [showPremiumSuccess, setShowPremiumSuccess] = useState(false);
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; inviteIds: string[]; inviteCount: number }>({
     isOpen: false,
     inviteIds: [],
     inviteCount: 0,
   });
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Check for premium purchase success
+  useEffect(() => {
+    if (searchParams.get("premium") === "true") {
+      setShowPremiumSuccess(true);
+      // Fire confetti celebration
+      const duration = 3000;
+      const end = Date.now() + duration;
+
+      const frame = () => {
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.8 },
+          colors: ["#f43f5e", "#ec4899", "#fbbf24", "#a855f7"],
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.8 },
+          colors: ["#f43f5e", "#ec4899", "#fbbf24", "#a855f7"],
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
+      frame();
+
+      // Remove the query param from URL without refresh
+      window.history.replaceState({}, "", "/dashboard");
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -474,6 +512,129 @@ export default function DashboardPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Premium Purchase Success Modal */}
+      <AnimatePresence>
+        {showPremiumSuccess && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowPremiumSuccess(false)}
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 30 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+              className="relative bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden"
+            >
+              {/* Golden gradient header */}
+              <div
+                className="p-8 text-center"
+                style={{
+                  background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%)",
+                }}
+              >
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                  className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/90 flex items-center justify-center shadow-lg"
+                >
+                  <Crown className="w-10 h-10 text-amber-500" />
+                </motion.div>
+
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-2xl font-bold text-amber-900 mb-2"
+                >
+                  Welcome to Premium!
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-amber-800/80"
+                >
+                  You now have unlimited access to all templates
+                </motion.p>
+              </div>
+
+              {/* Features list */}
+              <div className="p-6">
+                <div className="space-y-3 mb-6">
+                  {[
+                    "Access all premium templates",
+                    "Unlimited invites forever",
+                    "Early access to new templates",
+                    "Priority support",
+                  ].map((feature, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.5 + i * 0.1 }}
+                      className="flex items-center gap-3 text-gray-700"
+                    >
+                      <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                        <Check className="w-3 h-3 text-green-600" />
+                      </div>
+                      <span className="text-sm">{feature}</span>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9 }}
+                >
+                  <Button
+                    onClick={() => setShowPremiumSuccess(false)}
+                    className="w-full h-12 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Start Creating
+                  </Button>
+                </motion.div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
+          <motion.div
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-with-name.svg" alt="YoursInvite" className="h-[80vh] w-auto" />
+          </motion.div>
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }
