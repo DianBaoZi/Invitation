@@ -49,7 +49,7 @@ const faqs = [
   {
     question: "Do you offer refunds?",
     answer:
-      "Due to the digital nature of our products, all purchases are generally final. However, we offer refunds for technical issues, duplicate purchases, or payment errors. Please see our full Refund Policy page for details, or contact us at hello@invitely.app within 7 days of purchase.",
+      "Due to the digital nature of our products, all purchases are generally final. However, we offer refunds for technical issues, duplicate purchases, or payment errors. Please see our full Refund Policy page for details, or contact us at hello@yoursinvite.com within 7 days of purchase.",
   },
   {
     question: "Will there be more templates in the future?",
@@ -137,7 +137,7 @@ export default function FAQPage() {
             className="text-stone-500 text-lg"
             style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
           >
-            Everything you need to know about Invitely
+            Everything you need to know about YoursInvite
           </p>
         </div>
 
@@ -156,7 +156,7 @@ export default function FAQPage() {
           >
             Still have questions?{" "}
             <a
-              href="mailto:hello@invitely.app"
+              href="mailto:hello@yoursinvite.com"
               className="text-rose-500 hover:text-rose-600 underline"
             >
               Contact us

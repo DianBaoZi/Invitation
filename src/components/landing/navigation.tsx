@@ -49,7 +49,7 @@ export function Navigation() {
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold text-foreground tracking-tight font-sans">
-                Invitely
+                YoursInvite
               </span>
               <span className="text-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent font-medium -mt-1 tracking-widest uppercase">
                 Interactive Invites

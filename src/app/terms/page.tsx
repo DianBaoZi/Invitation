@@ -33,7 +33,7 @@ export default function TermsPage() {
       sections={sections}
     >
       <p className="section-intro">
-        Welcome to Invitely. These Terms of Service govern your access to and use of our
+        Welcome to YoursInvite. These Terms of Service govern your access to and use of our
         platform for creating beautiful, interactive digital invitations.
       </p>
 
@@ -48,7 +48,7 @@ export default function TermsPage() {
 
       <h2 id="description">2. Description of Service</h2>
       <p>
-        Invitely provides a web-based platform that allows users to create, customize, and share
+        YoursInvite provides a web-based platform that allows users to create, customize, and share
         interactive digital invitations. The Service includes access to invitation templates,
         customization tools, shareable links, and response tracking features.
       </p>
@@ -141,7 +141,7 @@ export default function TermsPage() {
       <h2 id="ip">9. Intellectual Property</h2>
       <p>
         The Service and its original content (excluding User Content), features, and functionality
-        are and will remain the exclusive property of Invitely and its licensors. The Service is
+        are and will remain the exclusive property of YoursInvite and its licensors. The Service is
         protected by copyright, trademark, and other intellectual property laws. Our trademarks
         and trade dress may not be used in connection with any product or service without our
         prior written consent.
@@ -174,7 +174,7 @@ export default function TermsPage() {
       <div className="legal-notice">
         <p style={{ marginBottom: 0 }}>
           <strong>
-            TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL INVITELY, ITS DIRECTORS,
+            TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL YOURSINVITE, ITS DIRECTORS,
             EMPLOYEES, PARTNERS, AGENTS, SUPPLIERS, OR AFFILIATES BE LIABLE FOR ANY INDIRECT,
             INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES,
           </strong>{" "}
@@ -187,7 +187,7 @@ export default function TermsPage() {
 
       <h2 id="indemnification">13. Indemnification</h2>
       <p>
-        You agree to defend, indemnify, and hold harmless Invitely and its officers, directors,
+        You agree to defend, indemnify, and hold harmless YoursInvite and its officers, directors,
         employees, and agents from and against any claims, liabilities, damages, losses, and
         expenses, including reasonable attorneys&apos; fees, arising out of or in any way connected
         with:
@@ -234,7 +234,7 @@ export default function TermsPage() {
       <h3>Entire Agreement</h3>
       <p>
         These Terms, together with our Privacy Policy, constitute the entire agreement between you
-        and Invitely regarding your use of the Service and supersede all prior agreements and
+        and YoursInvite regarding your use of the Service and supersede all prior agreements and
         understandings.
       </p>
 
@@ -242,11 +242,11 @@ export default function TermsPage() {
       <p>If you have any questions about these Terms, please contact us:</p>
       <div className="contact-box">
         <p style={{ marginBottom: "0.5rem" }}>
-          <strong>Invitely Legal</strong>
+          <strong>YoursInvite Legal</strong>
         </p>
         <p style={{ marginBottom: 0 }}>
           Email:{" "}
-          <a href="mailto:legal@invitely.app">legal@invitely.app</a>
+          <a href="mailto:legal@yoursinvite.com">legal@yoursinvite.com</a>
         </p>
       </div>
     </LegalPageLayout>

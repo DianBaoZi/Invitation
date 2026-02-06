@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the base URL for redirects
-    const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_BASE_URL || "https://yoursinvite.com";
 
     // TESTING MODE: Bypass Stripe payment
     // TODO: Remove this bypass and uncomment the Stripe code below for production

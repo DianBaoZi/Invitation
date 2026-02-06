@@ -1148,7 +1148,7 @@ export function FabricEditor({ onPreview, onSave }: FabricEditorProps) {
               </div>
             </motion.div>
             <div>
-              <h1 className="font-sans text-xl font-bold text-gray-800 tracking-tight">Invitely</h1>
+              <h1 className="font-sans text-xl font-bold text-gray-800 tracking-tight">YoursInvite</h1>
               <p className="text-xs bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent font-medium tracking-widest uppercase">Interactive Invites</p>
             </div>
           </div>

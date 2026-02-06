@@ -19,7 +19,7 @@ export function generateSlug(): string {
  * Build the full share URL for an invite
  */
 export function getShareUrl(slug: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://yoursinvite.com";
   return `${baseUrl}/i/${slug}`;
 }
 

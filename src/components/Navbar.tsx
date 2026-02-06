@@ -16,24 +16,24 @@ export function Navbar() {
   useEffect(() => {
     const supabase = createClient();
 
-    // Get initial user
-    supabase.auth.getUser()
-      .then(({ data: { user } }) => {
-        setUser(user);
+    // Listen for auth changes FIRST (catches OAuth redirects)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Then get initial session (use getSession for faster local check)
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        setUser(session?.user ?? null);
         setLoading(false);
       })
       .catch((error) => {
         console.error("Auth check failed:", error);
         setLoading(false);
       });
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -51,7 +51,7 @@ export function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-pink-100">
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 flex items-center justify-between">
+      <div className="w-full px-4 sm:px-6 py-2 flex items-center justify-between">
         {/* Logo */}
         <button
           onClick={() => router.push("/")}

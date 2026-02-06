@@ -291,10 +291,10 @@ export function LegalPageLayout({
                 >
                   Questions? Contact us at{" "}
                   <a
-                    href="mailto:legal@invitely.app"
+                    href="mailto:legal@yoursinvite.com"
                     className="text-rose-500 hover:text-rose-600 underline decoration-rose-200 underline-offset-2"
                   >
-                    legal@invitely.app
+                    legal@yoursinvite.com
                   </a>
                 </p>
               </div>

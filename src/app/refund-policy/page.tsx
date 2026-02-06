@@ -23,7 +23,7 @@ export default function RefundPolicyPage() {
     >
       <p className="section-intro">
         We want you to be completely satisfied with your purchase. This policy outlines
-        our refund terms for digital products purchased on Invitely.
+        our refund terms for digital products purchased on YoursInvite.
       </p>
 
       <h2 id="overview">1. Overview</h2>
@@ -66,7 +66,7 @@ export default function RefundPolicyPage() {
         To request a refund:
       </p>
       <ol>
-        <li>Contact us at <a href="mailto:hello@invitely.app">hello@invitely.app</a> within
+        <li>Contact us at <a href="mailto:hello@yoursinvite.com">hello@yoursinvite.com</a> within
         7 days of your purchase</li>
         <li>Include your order confirmation email or transaction ID</li>
         <li>Describe the issue you encountered</li>
@@ -89,11 +89,11 @@ export default function RefundPolicyPage() {
         please contact us:
       </p>
       <ul>
-        <li>Email: <a href="mailto:hello@invitely.app">hello@invitely.app</a></li>
+        <li>Email: <a href="mailto:hello@yoursinvite.com">hello@yoursinvite.com</a></li>
       </ul>
       <p>
         We are committed to resolving any issues and ensuring you have a positive experience
-        with Invitely. Please don&apos;t hesitate to reach out if you encounter any problems.
+        with YoursInvite. Please don&apos;t hesitate to reach out if you encounter any problems.
       </p>
 
       <p className="mt-8 text-sm text-stone-500">

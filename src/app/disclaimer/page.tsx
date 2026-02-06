@@ -28,7 +28,7 @@ export default function DisclaimerPage() {
       sections={sections}
     >
       <p className="section-intro">
-        The information provided by Invitely on our website and through our services is for general
+        The information provided by YoursInvite on our website and through our services is for general
         informational and entertainment purposes only. Please read this Disclaimer carefully before
         using the Service.
       </p>
@@ -62,7 +62,7 @@ export default function DisclaimerPage() {
       <div className="legal-notice">
         <p style={{ marginBottom: 0 }}>
           <strong>
-            TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL INVITELY, ITS
+            TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL YOURSINVITE, ITS
             DIRECTORS, EMPLOYEES, PARTNERS, AGENTS, SUPPLIERS, OR AFFILIATES BE LIABLE FOR ANY
             INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES,
           </strong>{" "}
@@ -90,7 +90,7 @@ export default function DisclaimerPage() {
       <h2 id="external-links">5. External Links</h2>
       <p>
         The Service may contain links to external websites or services that are not owned or
-        controlled by Invitely. We have no control over, and assume no responsibility for, the
+        controlled by YoursInvite. We have no control over, and assume no responsibility for, the
         content, privacy policies, or practices of any third-party websites or services. We do not
         warrant the accuracy, completeness, or reliability of any information found on external
         websites. Your use of third-party websites is at your own risk.
@@ -125,7 +125,7 @@ export default function DisclaimerPage() {
 
       <h2 id="indemnification">9. Indemnification</h2>
       <p>
-        You agree to indemnify, defend, and hold harmless Invitely and its officers, directors,
+        You agree to indemnify, defend, and hold harmless YoursInvite and its officers, directors,
         employees, agents, and affiliates from and against any and all claims, damages, losses,
         costs, and expenses (including reasonable attorneys&apos; fees) arising out of or related to
         your use of the Service, your violation of this Disclaimer or our Terms of Service, or your
@@ -150,10 +150,10 @@ export default function DisclaimerPage() {
       <p>If you have any questions about this Disclaimer, please contact us:</p>
       <div className="contact-box">
         <p style={{ marginBottom: "0.5rem" }}>
-          <strong>Invitely Legal</strong>
+          <strong>YoursInvite Legal</strong>
         </p>
         <p style={{ marginBottom: 0 }}>
-          Email: <a href="mailto:legal@invitely.app">legal@invitely.app</a>
+          Email: <a href="mailto:legal@yoursinvite.com">legal@yoursinvite.com</a>
         </p>
       </div>
       <p>

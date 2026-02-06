@@ -911,17 +911,43 @@ function FinaleScene({
   senderName: string;
 }) {
   const [noCount, setNoCount] = useState(0);
-  const noHidden = noCount >= 4;
+  const noHidden = noCount >= 5;
 
   const NO_MESSAGES = [
-    "The stars disagree...",
-    "A black hole swallowed that answer",
-    "The universe rejected your input",
-    "The cosmos says try again",
+    "A star appears...",
+    "Another line connects...",
+    "The constellation grows...",
+    "Almost there...",
+    "✦ A star is born! ✦",
   ];
 
+  // Star constellation points (5-pointed star)
+  // Center at (60, 60), radius 50 for outer points
+  const starPoints = useMemo(() => {
+    const cx = 60, cy = 60, r = 50;
+    const points = [];
+    for (let i = 0; i < 5; i++) {
+      const angle = (i * 72 - 90) * (Math.PI / 180);
+      points.push({
+        x: cx + r * Math.cos(angle),
+        y: cy + r * Math.sin(angle),
+      });
+    }
+    return points;
+  }, []);
+
+  // Lines to draw the star (connecting alternate points)
+  // Order: 0→2, 2→4, 4→1, 1→3, 3→0
+  const starLines = useMemo(() => [
+    { from: starPoints[0], to: starPoints[2] }, // top to bottom-right
+    { from: starPoints[2], to: starPoints[4] }, // bottom-right to left
+    { from: starPoints[4], to: starPoints[1] }, // left to upper-right
+    { from: starPoints[1], to: starPoints[3] }, // upper-right to bottom-left
+    { from: starPoints[3], to: starPoints[0] }, // bottom-left back to top
+  ], [starPoints]);
+
   const handleNo = () => {
-    if (noCount < 4) setNoCount((c) => c + 1);
+    if (noCount < 5) setNoCount((c) => c + 1);
   };
 
   return (
@@ -931,6 +957,78 @@ function FinaleScene({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
     >
+      {/* Star constellation formed by pressing No */}
+      {noCount > 0 && (
+        <motion.svg
+          className="fixed pointer-events-none z-20"
+          style={{
+            top: "15%",
+            right: "10%",
+            width: 120,
+            height: 120,
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Draw constellation lines based on noCount */}
+          {starLines.slice(0, noCount).map((line, i) => (
+            <motion.line
+              key={i}
+              x1={line.from.x}
+              y1={line.from.y}
+              x2={line.to.x}
+              y2={line.to.y}
+              stroke={PALETTE.gold}
+              strokeWidth="2"
+              strokeLinecap="round"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.9 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              style={{
+                filter: `drop-shadow(0 0 6px ${PALETTE.gold})`,
+              }}
+            />
+          ))}
+          {/* Star points (dots at vertices) */}
+          {starPoints.slice(0, Math.min(noCount + 1, 5)).map((point, i) => (
+            <motion.circle
+              key={`point-${i}`}
+              cx={point.x}
+              cy={point.y}
+              r={noCount >= 5 ? 4 : 3}
+              fill={PALETTE.gold}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.3, delay: i === noCount ? 0 : 0.3 }}
+              style={{
+                filter: `drop-shadow(0 0 8px ${PALETTE.gold})`,
+              }}
+            />
+          ))}
+          {/* Glow effect when star is complete */}
+          {noCount >= 5 && (
+            <motion.circle
+              cx={60}
+              cy={60}
+              r={55}
+              fill="none"
+              stroke={PALETTE.gold}
+              strokeWidth="1"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{
+                opacity: [0, 0.5, 0.2, 0.5],
+                scale: [0.8, 1.1, 1, 1.1]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+              style={{
+                filter: `drop-shadow(0 0 15px ${PALETTE.gold})`,
+              }}
+            />
+          )}
+        </motion.svg>
+      )}
+
       {/* Supernova burst on accept */}
       <AnimatePresence>
         {accepted && (
@@ -1030,7 +1128,7 @@ function FinaleScene({
                 <span className="relative z-10">Yes, among the stars ✨</span>
               </motion.button>
 
-              {/* No button — gets sucked into a black hole */}
+              {/* No button — draws constellation lines */}
               <AnimatePresence>
                 {!noHidden && (
                   <motion.button
@@ -1038,50 +1136,58 @@ function FinaleScene({
                     onClick={handleNo}
                     className="relative overflow-hidden rounded-full px-4 md:px-8 py-4"
                     style={{
-                      background: "rgba(255,255,255,0.06)",
-                      border: "1px solid rgba(255,255,255,0.15)",
+                      background: noCount > 0 ? `rgba(251,191,36,${0.05 + noCount * 0.03})` : "rgba(255,255,255,0.06)",
+                      border: noCount > 0 ? `1px solid ${PALETTE.gold}40` : "1px solid rgba(255,255,255,0.15)",
                       fontFamily: "'Space Mono', monospace",
                       fontSize: "0.9rem",
                       fontWeight: 400,
-                      color: "rgba(255,255,255,0.4)",
+                      color: noCount > 0 ? PALETTE.gold : "rgba(255,255,255,0.4)",
                       letterSpacing: "0.05em",
                       cursor: "pointer",
                     }}
-                    initial={noCount > 0 ? { scale: 0, rotate: 180, opacity: 0, filter: "blur(8px)" } : { opacity: 0, y: 20 }}
-                    animate={{ scale: 1 - noCount * 0.15, rotate: 0, opacity: 1 - noCount * 0.2, y: 0, filter: "blur(0px)" }}
+                    initial={noCount > 0 ? { scale: 0.9, opacity: 0.5 } : { opacity: 0, y: 20 }}
+                    animate={{
+                      scale: 1,
+                      opacity: 1,
+                      y: 0,
+                    }}
                     exit={{
-                      scale: 0,
-                      rotate: -360,
+                      scale: 1.2,
                       opacity: 0,
-                      filter: "blur(12px)",
+                      filter: "blur(8px)",
                     }}
                     transition={{
                       type: "spring",
-                      stiffness: 200,
-                      damping: 15,
+                      stiffness: 300,
+                      damping: 20,
                     }}
-                    whileHover={{ scale: Math.max(0.5, 1 - noCount * 0.15 - 0.05) }}
-                    whileTap={{ scale: 0.8 }}
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow: `0 0 15px ${PALETTE.gold}40`,
+                    }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <span className="relative z-10">No</span>
+                    <span className="relative z-10">
+                      {noCount >= 4 ? "✦" : "No"}
+                    </span>
                   </motion.button>
                 )}
               </AnimatePresence>
             </div>
 
-            {/* Cosmic rejection message */}
+            {/* Constellation progress message */}
             <AnimatePresence mode="wait">
-              {noCount > 0 && noCount <= 4 && (
+              {noCount > 0 && noCount <= 5 && (
                 <motion.p
                   key={`msg-${noCount}`}
                   initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
-                  animate={{ opacity: 0.6, y: 0, filter: "blur(0px)" }}
+                  animate={{ opacity: 0.8, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.5 }}
                   style={{
                     fontFamily: "'Space Mono', monospace",
                     fontSize: "12px",
-                    color: PALETTE.starWhite,
+                    color: noCount >= 5 ? PALETTE.gold : PALETTE.starWhite,
                     letterSpacing: "0.1em",
                     textAlign: "center",
                   }}
@@ -1091,11 +1197,11 @@ function FinaleScene({
               )}
             </AnimatePresence>
 
-            {/* After No disappears */}
+            {/* After star is complete */}
             {noHidden && (
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 0.5, y: 0 }}
+                animate={{ opacity: 0.6, y: 0 }}
                 style={{
                   fontFamily: "'Space Mono', monospace",
                   fontSize: "12px",
@@ -1103,7 +1209,7 @@ function FinaleScene({
                   letterSpacing: "0.1em",
                 }}
               >
-                the stars have spoken ✦
+                you drew a constellation for {senderName} ♡
               </motion.p>
             )}
           </motion.div>

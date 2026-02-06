@@ -29,7 +29,10 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      // Add cache-busting to ensure fresh page load with new session
+      const redirectUrl = new URL(`${origin}${next}`);
+      redirectUrl.searchParams.set("_t", Date.now().toString());
+      return NextResponse.redirect(redirectUrl);
     }
   }
 

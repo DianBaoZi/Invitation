@@ -658,7 +658,7 @@ function CustomizePageContent() {
   const fieldConfig = getTemplateFields(templateId);
   const accent = getAccentClasses(fieldConfig.accentColor);
 
-  const [name, setName] = useState("invitely");
+  const [name, setName] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [photoUrl1, setPhotoUrl1] = useState<string>(""); // First photo - splash/cover
   const [photoUrl2, setPhotoUrl2] = useState<string>(""); // Second photo - inside scrapbook
@@ -1413,23 +1413,33 @@ function CustomizePageContent() {
                     </div>
                   )}
 
-                  {/* Next button */}
-                  <Button
-                    onClick={handleNext}
-                    className={`w-full h-14 text-lg font-semibold rounded-xl ${accent.bgGradient} text-white shadow-lg`}
-                  >
-                    {hasFields ? (
-                      <>
-                        Next
-                        <ArrowRight className="w-5 h-5 ml-2" />
-                      </>
-                    ) : (
-                      <>
-                        <Eye className="w-5 h-5 mr-2" />
-                        Preview your invite
-                      </>
-                    )}
-                  </Button>
+                  {/* Navigation buttons */}
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => router.back()}
+                      variant="outline"
+                      className="h-14 px-6 text-lg font-semibold rounded-xl border-gray-300"
+                    >
+                      <ArrowLeft className="w-5 h-5 mr-2" />
+                      Back
+                    </Button>
+                    <Button
+                      onClick={handleNext}
+                      className={`flex-1 h-14 text-lg font-semibold rounded-xl ${accent.bgGradient} text-white shadow-lg`}
+                    >
+                      {hasFields ? (
+                        <>
+                          Next
+                          <ArrowRight className="w-5 h-5 ml-2" />
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="w-5 h-5 mr-2" />
+                          Preview your invite
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             ) : step === 2 && hasFields ? (
@@ -1530,14 +1540,24 @@ function CustomizePageContent() {
                     </div>
                   ))}
 
-                  {/* Preview button */}
-                  <Button
-                    onClick={() => setStep(3)}
-                    className={`w-full h-14 text-lg font-semibold rounded-xl ${accent.bgGradient} text-white shadow-lg`}
-                  >
-                    <Eye className="w-5 h-5 mr-2" />
-                    Preview your invite
-                  </Button>
+                  {/* Navigation buttons */}
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => setStep(1)}
+                      variant="outline"
+                      className="h-14 px-6 text-lg font-semibold rounded-xl border-gray-300"
+                    >
+                      <ArrowLeft className="w-5 h-5 mr-2" />
+                      Back
+                    </Button>
+                    <Button
+                      onClick={() => setStep(3)}
+                      className={`flex-1 h-14 text-lg font-semibold rounded-xl ${accent.bgGradient} text-white shadow-lg`}
+                    >
+                      <Eye className="w-5 h-5 mr-2" />
+                      Preview your invite
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             ) : null}
@@ -1885,7 +1905,7 @@ function FullPreview({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="fixed bottom-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
+        className="fixed bottom-2 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
       >
         <Button
           onClick={onBack}
@@ -1970,7 +1990,7 @@ function CozyScrapbookFullPreview({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="fixed bottom-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
+          className="fixed bottom-2 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
         >
           <Button
             onClick={onBack}
@@ -2046,7 +2066,7 @@ function ElegantInvitationFullPreview({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="fixed bottom-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
+        className="fixed bottom-2 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
       >
         <Button
           onClick={onBack}
