@@ -55,7 +55,7 @@ export function Navbar() {
         {/* Logo */}
         <button
           onClick={() => router.push("/")}
-          className="flex items-center gap-1 hover:opacity-80 transition"
+          className="flex items-center gap-1 hover:opacity-80 transition select-none caret-transparent focus:outline-none"
         >
           <img
             src="/logo.svg"
@@ -82,7 +82,7 @@ export function Navbar() {
               {/* User info */}
               <button
                 onClick={() => router.push("/dashboard")}
-                className="flex items-center gap-2 hover:opacity-80 transition"
+                className="flex items-center gap-2 hover:opacity-80 transition select-none caret-transparent focus:outline-none"
               >
                 {avatarUrl ? (
                   <img

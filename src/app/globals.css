@@ -280,6 +280,16 @@
   }
 }
 
+/* Hide text cursor/caret on non-input elements */
+button, a, div, span, img, svg, p, h1, h2, h3, h4, h5, h6 {
+  caret-color: transparent;
+}
+
+/* Only show caret on actual input elements */
+input, textarea, [contenteditable="true"] {
+  caret-color: auto;
+}
+
 /* Custom selection color */
 ::selection {
   background: rgba(255, 75, 110, 0.2);
