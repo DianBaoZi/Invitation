@@ -4,7 +4,7 @@ import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ToastProvider } from "@/components/ui/toast";
 
-const GA_MEASUREMENT_ID = "G-ZRXCKB6TZC";
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-ZRXCKB6TZC";
 
 export const metadata: Metadata = {
   title: "YoursInvite - Create Valentine's Invites They Can't Say No To",
