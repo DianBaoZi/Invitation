@@ -1497,7 +1497,7 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
 
           <div className="space-y-4 mb-8">
             {[
-              "All 5 premium templates ($9.95 USD value)",
+              "All 5 premium templates (9.95 USD value)",
               "Future templates included FREE",
               "Priority support",
               "One-time payment — no subscription",

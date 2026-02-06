@@ -30,6 +30,7 @@ export default function DashboardPage() {
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
   const [isPremium, setIsPremium] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; inviteIds: string[]; inviteCount: number }>({
     isOpen: false,
     inviteIds: [],
@@ -119,6 +120,19 @@ export default function DashboardPage() {
 
   const clearSelection = () => {
     setSelectedIds(new Set());
+    setIsSelectionMode(false);
+  };
+
+  const enterSelectionMode = (preSelectId?: string) => {
+    setIsSelectionMode(true);
+    if (preSelectId) {
+      setSelectedIds(new Set([preSelectId]));
+    }
+  };
+
+  const exitSelectionMode = () => {
+    setIsSelectionMode(false);
+    setSelectedIds(new Set());
   };
 
   const openDeleteModal = (ids: string[]) => {
@@ -145,6 +159,7 @@ export default function DashboardPage() {
     setIsDeleting(false);
     closeDeleteModal();
     setSelectedIds(new Set());
+    setIsSelectionMode(false);
 
     if (!error && user) {
       loadInvites(user.id);
@@ -171,21 +186,6 @@ export default function DashboardPage() {
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-8 pt-36 sm:pt-40">
-        {/* Premium Badge */}
-        {isPremium && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full shadow-lg">
-              <Crown className="w-5 h-5 text-white" />
-              <span className="text-white font-semibold text-sm">Premium Member</span>
-              <span className="text-white/80 text-xs">• All Templates Unlocked</span>
-            </div>
-          </motion.div>
-        )}
-
         {/* Create New Button */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -201,9 +201,9 @@ export default function DashboardPage() {
           </Button>
         </motion.div>
 
-        {/* Selection Bar */}
+        {/* Selection Bar - Only shows in selection mode */}
         <AnimatePresence>
-          {invites.length > 0 && (
+          {isSelectionMode && invites.length > 0 && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
@@ -233,27 +233,29 @@ export default function DashboardPage() {
                         : `${selectedIds.size} selected`}
                     </span>
                   </button>
-                  {selectedIds.size > 0 && (
-                    <button
-                      onClick={clearSelection}
-                      className="text-sm text-gray-500 hover:text-gray-700 transition"
-                    >
-                      Clear
-                    </button>
-                  )}
                 </div>
 
-                {selectedIds.size > 0 && (
+                <div className="flex items-center gap-2">
+                  {selectedIds.size > 0 && (
+                    <Button
+                      onClick={() => openDeleteModal(Array.from(selectedIds))}
+                      variant="outline"
+                      size="sm"
+                      className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete {selectedIds.size}
+                    </Button>
+                  )}
                   <Button
-                    onClick={() => openDeleteModal(Array.from(selectedIds))}
+                    onClick={exitSelectionMode}
                     variant="outline"
                     size="sm"
-                    className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
+                    className="text-gray-500 hover:text-gray-700"
                   >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete {selectedIds.size} {selectedIds.size === 1 ? "invite" : "invites"}
+                    Cancel
                   </Button>
-                )}
+                </div>
               </div>
             </motion.div>
           )}
@@ -300,19 +302,21 @@ export default function DashboardPage() {
                   {/* Template Info */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      {/* Checkbox */}
-                      <button
-                        onClick={(e) => toggleSelect(invite.id, e)}
-                        className="flex-shrink-0"
-                      >
-                        {selectedIds.has(invite.id) ? (
-                          <div className="w-6 h-6 rounded-md bg-pink-500 flex items-center justify-center">
-                            <Check className="w-4 h-4 text-white" />
-                          </div>
-                        ) : (
-                          <div className="w-6 h-6 rounded-md border-2 border-gray-300 hover:border-pink-400 transition" />
-                        )}
-                      </button>
+                      {/* Checkbox - Only shows in selection mode */}
+                      {isSelectionMode && (
+                        <button
+                          onClick={(e) => toggleSelect(invite.id, e)}
+                          className="flex-shrink-0"
+                        >
+                          {selectedIds.has(invite.id) ? (
+                            <div className="w-6 h-6 rounded-md bg-pink-500 flex items-center justify-center">
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 rounded-md border-2 border-gray-300 hover:border-pink-400 transition" />
+                          )}
+                        </button>
+                      )}
                       <span className="text-2xl">{template?.emoji || "💌"}</span>
                       <div>
                         <h3 className="font-semibold text-gray-900">
@@ -377,7 +381,7 @@ export default function DashboardPage() {
                       <ExternalLink className="w-4 h-4" />
                     </Button>
                     <Button
-                      onClick={() => openDeleteModal([invite.id])}
+                      onClick={() => enterSelectionMode(invite.id)}
                       variant="outline"
                       size="sm"
                       className="text-red-500 hover:text-red-600 hover:bg-red-50"

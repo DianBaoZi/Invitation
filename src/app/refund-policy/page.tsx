@@ -38,8 +38,8 @@ export default function RefundPolicyPage() {
         Our digital products include:
       </p>
       <ul>
-        <li><strong>Single Template:</strong> One-time purchase of a premium invitation template ($1.99)</li>
-        <li><strong>Lifetime Access:</strong> Unlimited access to all templates forever ($3.99)</li>
+        <li><strong>Single Template:</strong> One-time purchase of a premium invitation template (1.99 USD)</li>
+        <li><strong>Lifetime Access:</strong> Unlimited access to all templates forever (3.99 USD)</li>
       </ul>
       <p>
         Once a template has been customized and an invitation link has been generated,

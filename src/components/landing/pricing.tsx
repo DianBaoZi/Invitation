@@ -7,7 +7,7 @@ import { Check, Sparkles, Heart, Crown, Zap, Star } from "lucide-react";
 const plans = [
   {
     name: "Single Template",
-    price: "$1.99",
+    price: "1.99 USD",
     period: "one-time",
     description: "Perfect for your special occasion",
     features: [
@@ -25,7 +25,7 @@ const plans = [
   },
   {
     name: "Lifetime Access",
-    price: "$3.99",
+    price: "3.99 USD",
     period: "one-time",
     description: "Best value - all templates forever",
     features: [

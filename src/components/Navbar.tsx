@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Crown } from "lucide-react";
 /* eslint-disable @next/next/no-img-element */
 import { Button } from "@/components/ui/button";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -12,6 +12,7 @@ export function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -19,16 +20,42 @@ export function Navbar() {
     // Listen for auth changes FIRST (catches OAuth redirects)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Check premium status when user changes
+      if (session?.user?.email) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: purchases } = await (supabase as any)
+          .from("purchases")
+          .select("id")
+          .eq("email", session.user.email)
+          .eq("product_type", "premium")
+          .limit(1);
+        setIsPremium(purchases && purchases.length > 0);
+      } else {
+        setIsPremium(false);
+      }
     });
 
     // Then get initial session (use getSession for faster local check)
     supabase.auth.getSession()
-      .then(({ data: { session } }) => {
+      .then(async ({ data: { session } }) => {
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Check premium status
+        if (session?.user?.email) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: purchases } = await (supabase as any)
+            .from("purchases")
+            .select("id")
+            .eq("email", session.user.email)
+            .eq("product_type", "premium")
+            .limit(1);
+          setIsPremium(purchases && purchases.length > 0);
+        }
       })
       .catch((error) => {
         console.error("Auth check failed:", error);
@@ -84,20 +111,34 @@ export function Navbar() {
                 onClick={() => router.push("/dashboard")}
                 className="flex items-center gap-2 hover:opacity-80 transition select-none caret-transparent focus:outline-none"
               >
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt={displayName}
-                    className="w-8 h-8 rounded-full border-2 border-pink-200"
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
-                )}
-                <span className="text-sm font-medium text-gray-700 hidden md:block max-w-[120px] truncate">
-                  {displayName}
-                </span>
+                <div className="relative">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt={displayName}
+                      className={`w-8 h-8 rounded-full border-2 ${isPremium ? "border-amber-400" : "border-pink-200"}`}
+                    />
+                  ) : (
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isPremium ? "bg-gradient-to-br from-amber-400 to-yellow-500" : "bg-gradient-to-br from-pink-400 to-rose-400"}`}>
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                  {isPremium && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-full flex items-center justify-center shadow-sm">
+                      <Crown className="w-2.5 h-2.5 text-white" />
+                    </div>
+                  )}
+                </div>
+                <div className="hidden md:flex items-center gap-1.5">
+                  <span className="text-sm font-medium text-gray-700 max-w-[120px] truncate">
+                    {displayName}
+                  </span>
+                  {isPremium && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-white rounded-full">
+                      PRO
+                    </span>
+                  )}
+                </div>
               </button>
 
               {/* Sign out */}
