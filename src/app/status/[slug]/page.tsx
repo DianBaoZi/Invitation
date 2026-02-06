@@ -131,7 +131,7 @@ function StatusPageContent() {
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-20 w-auto" />
+          <img src="/logo-with-name.svg" alt="YoursInvite" className="h-[80vh] w-auto" />
         </motion.div>
       </div>
     );

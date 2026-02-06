@@ -1211,14 +1211,18 @@ function TemplatePreviewScene({ templateId, isHovered = false }: { templateId: s
           }} />
           {/* Polaroid stack */}
           <div className="relative">
+            {/* Photo 1 - behind */}
             <motion.div
               className="absolute -left-4 -top-2 w-20 h-24 bg-white rounded-sm shadow-lg p-1.5 pb-6"
               style={{ transform: "rotate(-12deg)" }}
               animate={isHovered ? { rotate: [-12, -8, -12] } : {}}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <div className="w-full h-full bg-gradient-to-br from-amber-100 to-orange-100 rounded-sm" />
+              <div className="w-full h-full bg-gradient-to-br from-amber-100 to-orange-100 rounded-sm flex items-center justify-center">
+                <span className="text-[8px] text-amber-400/60 font-medium">Photo 1</span>
+              </div>
             </motion.div>
+            {/* Photo 2 - front */}
             <motion.div
               className="relative w-20 h-24 bg-white rounded-sm shadow-xl p-1.5 pb-6 z-10"
               style={{ transform: "rotate(3deg)" }}
@@ -1226,7 +1230,7 @@ function TemplatePreviewScene({ templateId, isHovered = false }: { templateId: s
               transition={{ duration: 2.5, repeat: Infinity }}
             >
               <div className="w-full h-full bg-gradient-to-br from-rose-100 to-pink-100 rounded-sm flex items-center justify-center">
-                <span className="text-2xl">📸</span>
+                <span className="text-[8px] text-rose-400/60 font-medium">Photo 2</span>
               </div>
             </motion.div>
             {/* Washi tape */}
