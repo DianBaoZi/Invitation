@@ -735,6 +735,7 @@ function CustomizePageContent() {
     // Map field values to the right query param names per template
     if (templateId === "love-letter-mailbox") {
       if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
+      if (fieldValues.time.trim()) params.set("time", fieldValues.time.trim());
       if (fieldValues.location.trim()) params.set("location", fieldValues.location.trim());
       if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
     } else if (templateId === "cozy-scrapbook") {
@@ -812,6 +813,7 @@ function CustomizePageContent() {
           message: fieldValues.message.trim() || getDefaultMessage(templateId),
           plan: fieldValues.personalMessage.trim() || "",
           date: fieldValues.date.trim() || "",
+          time: fieldValues.time.trim() || "",
           location: fieldValues.location.trim() || "",
           yesButtonText: "Yes!",
           declineButtonText: "Maybe later",
@@ -902,6 +904,7 @@ function CustomizePageContent() {
       // Add template-specific params for success page display
       if (templateId === "love-letter-mailbox") {
         if (fieldValues.date.trim()) params.set("date", fieldValues.date.trim());
+        if (fieldValues.time.trim()) params.set("time", fieldValues.time.trim());
         if (fieldValues.location.trim()) params.set("location", fieldValues.location.trim());
         if (fieldValues.personalMessage.trim()) params.set("personalMessage", fieldValues.personalMessage.trim());
       }

@@ -125,6 +125,7 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
         <LoveLetterMailbox
           senderName="Daniel"
           {...(formattedDate && { date: formattedDate })}
+          {...(formattedTime && { time: formattedTime })}
           {...(overrides.location && { location: overrides.location })}
           {...(overrides.personalMessage && { personalMessage: overrides.personalMessage })}
         />

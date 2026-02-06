@@ -959,7 +959,7 @@ function FinaleScene({
     >
       {/* Star constellation formed by pressing No */}
       {noCount > 0 && (
-        <motion.svg
+        <motion.div
           className="fixed pointer-events-none z-20"
           style={{
             top: "15%",
@@ -968,65 +968,96 @@ function FinaleScene({
             height: 120,
           }}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          animate={{
+            opacity: 1,
+            scale: noCount >= 5 ? [1, 1.05, 1] : 1,
+          }}
+          transition={{
+            opacity: { duration: 0.5 },
+            scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+          }}
         >
-          {/* Draw constellation lines based on noCount */}
-          {starLines.slice(0, noCount).map((line, i) => (
-            <motion.line
-              key={i}
-              x1={line.from.x}
-              y1={line.from.y}
-              x2={line.to.x}
-              y2={line.to.y}
-              stroke={PALETTE.gold}
-              strokeWidth="2"
-              strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 0.9 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              style={{
-                filter: `drop-shadow(0 0 6px ${PALETTE.gold})`,
-              }}
-            />
-          ))}
-          {/* Star points (dots at vertices) */}
-          {starPoints.slice(0, Math.min(noCount + 1, 5)).map((point, i) => (
-            <motion.circle
-              key={`point-${i}`}
-              cx={point.x}
-              cy={point.y}
-              r={noCount >= 5 ? 4 : 3}
-              fill={PALETTE.gold}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.3, delay: i === noCount ? 0 : 0.3 }}
-              style={{
-                filter: `drop-shadow(0 0 8px ${PALETTE.gold})`,
-              }}
-            />
-          ))}
-          {/* Glow effect when star is complete */}
+          <motion.svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 120 120"
+            style={{
+              filter: noCount >= 5 ? `drop-shadow(0 0 20px ${PALETTE.gold}) drop-shadow(0 0 40px ${PALETTE.gold}50)` : "none",
+            }}
+          >
+            {/* Draw constellation lines based on noCount */}
+            {starLines.slice(0, noCount).map((line, i) => (
+              <motion.line
+                key={i}
+                x1={line.from.x}
+                y1={line.from.y}
+                x2={line.to.x}
+                y2={line.to.y}
+                stroke={PALETTE.gold}
+                strokeWidth="2"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 0.9 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                style={{
+                  filter: `drop-shadow(0 0 6px ${PALETTE.gold})`,
+                }}
+              />
+            ))}
+            {/* Star points (dots at vertices) with pulsing when complete */}
+            {starPoints.slice(0, Math.min(noCount + 1, 5)).map((point, i) => (
+              <motion.circle
+                key={`point-${i}`}
+                cx={point.x}
+                cy={point.y}
+                r={noCount >= 5 ? 5 : 3}
+                fill={PALETTE.gold}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{
+                  scale: noCount >= 5 ? [1, 1.3, 1] : 1,
+                  opacity: 1
+                }}
+                transition={{
+                  scale: { duration: 1.5, repeat: Infinity, delay: i * 0.15, ease: "easeInOut" },
+                  opacity: { duration: 0.3, delay: i === noCount ? 0 : 0.3 }
+                }}
+                style={{
+                  filter: `drop-shadow(0 0 ${noCount >= 5 ? 12 : 8}px ${PALETTE.gold})`,
+                }}
+              />
+            ))}
+          </motion.svg>
+          {/* Sparkles when star is complete */}
           {noCount >= 5 && (
-            <motion.circle
-              cx={60}
-              cy={60}
-              r={55}
-              fill="none"
-              stroke={PALETTE.gold}
-              strokeWidth="1"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{
-                opacity: [0, 0.5, 0.2, 0.5],
-                scale: [0.8, 1.1, 1, 1.1]
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-              style={{
-                filter: `drop-shadow(0 0 15px ${PALETTE.gold})`,
-              }}
-            />
+            <>
+              {[...Array(6)].map((_, i) => (
+                <motion.div
+                  key={`sparkle-${i}`}
+                  className="absolute"
+                  style={{
+                    left: `${30 + Math.cos(i * Math.PI / 3) * 50}%`,
+                    top: `${30 + Math.sin(i * Math.PI / 3) * 50}%`,
+                    width: 4,
+                    height: 4,
+                    borderRadius: "50%",
+                    background: PALETTE.gold,
+                    boxShadow: `0 0 8px ${PALETTE.gold}, 0 0 16px ${PALETTE.gold}`,
+                  }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.5, 1.2, 0.5],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: i * 0.25,
+                    ease: "easeInOut",
+                  }}
+                />
+              ))}
+            </>
           )}
-        </motion.svg>
+        </motion.div>
       )}
 
       {/* Supernova burst on accept */}

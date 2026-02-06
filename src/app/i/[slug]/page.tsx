@@ -420,6 +420,7 @@ function InteractiveTemplate({
             senderName={senderName}
             message={message}
             date={date}
+            time={time}
             location={location}
             personalMessage={personalMessage}
             slug={slug}

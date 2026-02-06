@@ -9,6 +9,7 @@ interface LoveLetterMailboxProps {
   message?: string;
   plan?: string;
   date?: string;
+  time?: string;
   location?: string;
   imageUrl?: string;
   senderName?: string;
@@ -21,7 +22,8 @@ type Screen = "mailbox" | "reveal";
 export function LoveLetterMailbox({
   message = "I've been wanting to ask you this...",
   plan = "Valentine's Dinner",
-  date = "Feb 14th @ 7:30 PM",
+  date = "Feb 14th",
+  time = "7:30 PM",
   location = "The Little Italian Place",
   imageUrl,
   senderName = "Someone Special",
@@ -609,36 +611,30 @@ function RevealScreen({
             />
             {/* Overlay dynamic fields on the card image */}
             <div className="absolute inset-0">
+              {/* Date & Time field */}
               <p
-                className="absolute"
+                className="absolute text-[9px] sm:text-[19px] truncate"
                 style={{
                   fontFamily: "'Poppins', sans-serif",
                   fontWeight: 600,
-                  fontSize: "clamp(17px, 4vw, 21px)",
                   color: "#c62828",
-                  bottom: "calc(31% + 5px)",
+                  bottom: "calc(31% - 0px)",
                   left: "35%",
                   right: "10%",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
                 }}
               >
-                {date}
+                {date}{time ? ` @ ${time}` : ""}
               </p>
+              {/* Location field */}
               <p
-                className="absolute"
+                className="absolute text-[9px] sm:text-[19px] truncate"
                 style={{
                   fontFamily: "'Poppins', sans-serif",
                   fontWeight: 600,
-                  fontSize: "clamp(17px, 4vw, 21px)",
                   color: "#c62828",
-                  bottom: "calc(18% + 10px)",
+                  bottom: "calc(18% + 5px)",
                   left: "30%",
                   right: "10%",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
                 }}
               >
                 {location}
