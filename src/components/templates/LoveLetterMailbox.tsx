@@ -357,9 +357,17 @@ function RevealScreen({
         className="min-h-screen flex items-center justify-center px-6 relative z-10"
       >
         <div className="text-center">
-          <div className="text-5xl md:text-7xl mb-6">
-            💕
-          </div>
+          <motion.div
+            className="mb-6 flex justify-center"
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <img
+              src="/stamp-heart.png"
+              alt="Heart"
+              style={{ width: 180, height: 180, objectFit: "contain" }}
+            />
+          </motion.div>
           <h2
             className="text-3xl font-bold text-rose-800 mb-3"
             style={{ fontFamily: "Georgia, serif" }}
