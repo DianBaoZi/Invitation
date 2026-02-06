@@ -51,10 +51,10 @@ export function PreviewModal({ template, onClose }: PreviewModalProps) {
         />
       </div>
 
-      {/* Bottom CTA bar */}
-      <div className="absolute bottom-0 left-0 right-0 z-20">
+      {/* Bottom CTA bar - pointer-events-none on gradient, auto on button */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-none">
         <div className="bg-gradient-to-t from-black via-black/80 to-transparent pt-12 pb-6 px-6">
-          <div className="max-w-sm mx-auto">
+          <div className="max-w-sm mx-auto pointer-events-auto">
             <motion.button
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

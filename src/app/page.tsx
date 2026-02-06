@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Monitor, Play, ArrowRight, Clock, Heart, Users, Zap } from "lucide-react";
 import { PreviewModal } from "@/components/landing/PreviewModal";
 import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/landing/footer";
 import { TEMPLATES, PRICING, formatPrice } from "@/lib/supabase/templates";
 import { Template } from "@/lib/supabase/types";
 
@@ -464,6 +465,9 @@ export default function Home() {
           <MembershipModal onClose={() => setShowMembershipModal(false)} />
         )}
       </AnimatePresence>
+
+      {/* Footer with legal links */}
+      <Footer />
     </main>
   );
 }

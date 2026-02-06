@@ -421,6 +421,19 @@ function DialogueBox({
           )}
         </p>
 
+        {/* Tap to skip hint while typing */}
+        {isTyping && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0.4, 0.8, 0.4] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="absolute bottom-1.5 right-3 text-amber-500/70"
+            style={{ fontFamily: "'Press Start 2P', monospace", fontSize: "8px" }}
+          >
+            tap to skip
+          </motion.div>
+        )}
+
         {/* Continue indicator */}
         {!isTyping && currentIndex < messages.length - 1 && (
           <motion.div
