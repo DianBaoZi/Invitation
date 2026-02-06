@@ -32,6 +32,15 @@ export function LoveLetterMailbox({
 }: LoveLetterMailboxProps) {
   const [screen, setScreen] = useState<Screen>("mailbox");
   const [mailboxOpen, setMailboxOpen] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+
+  // Brief loading state to ensure animations are ready
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Prevent double scrollbar by hiding body overflow
   useEffect(() => {
@@ -60,10 +69,36 @@ export function LoveLetterMailbox({
       <ScatteredHearts />
 
       <AnimatePresence mode="wait">
-        {screen === "mailbox" && (
+        {!isReady ? (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="min-h-screen flex flex-col items-center justify-center"
+          >
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+              className="text-5xl"
+            >
+              💌
+            </motion.div>
+            <p
+              className="mt-4 text-sm"
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontStyle: "italic",
+                color: "#ad1457",
+              }}
+            >
+              Preparing your letter...
+            </p>
+          </motion.div>
+        ) : screen === "mailbox" ? (
           <MailboxScreen key="mailbox" isOpen={mailboxOpen} onTap={handleMailboxTap} />
-        )}
-        {screen === "reveal" && (
+        ) : (
           <RevealScreen
             key="reveal"
             message={message}
