@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Monitor, Play, ArrowRight, Clock, Heart, Users, Zap } from "lucide-react";
@@ -11,6 +11,7 @@ import { Footer } from "@/components/landing/footer";
 import { TEMPLATES, PRICING, formatPrice } from "@/lib/supabase/templates";
 import { Template } from "@/lib/supabase/types";
 import { createClient } from "@/lib/supabase/client";
+import { useShouldReduceAnimations } from "@/lib/hooks/usePerformance";
 
 // Flip counter component for animated number display
 function FlipCounter({ value }: { value: number }) {
@@ -195,34 +196,37 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* CSS keyframes for floating hearts - GPU accelerated */}
+      <style jsx global>{`
+        @keyframes floatHeart {
+          0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+          15% { opacity: 0.4; }
+          85% { opacity: 0.4; }
+          100% { transform: translateY(-80px) translateX(10px) rotate(15deg); opacity: 0; }
+        }
+        .floating-heart {
+          animation: floatHeart 4s ease-out infinite;
+          will-change: transform, opacity;
+        }
+      `}</style>
+
       {/* Hero section */}
       <div className="text-center pt-28 sm:pt-36 md:pt-40 pb-8 sm:pb-12 md:pb-16 px-4 relative z-10 overflow-visible">
-        {/* Floating hearts background */}
+        {/* Floating hearts background - CSS only for performance */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(6)].map((_, i) => (
-            <motion.div
+          {[0, 1, 2, 3].map((i) => (
+            <div
               key={i}
-              className="absolute"
+              className="absolute floating-heart"
               style={{
-                left: `${10 + i * 15}%`,
-                top: `${20 + (i % 3) * 20}%`,
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{
-                opacity: [0, 0.4, 0],
-                y: [-20, -60, -100],
-                x: [0, (i % 2 === 0 ? 10 : -10), 0],
-                rotate: [0, (i % 2 === 0 ? 15 : -15), 0],
-              }}
-              transition={{
-                duration: 4 + i * 0.5,
-                repeat: Infinity,
-                delay: i * 0.8,
-                ease: "easeOut",
+                left: `${15 + i * 20}%`,
+                top: `${25 + (i % 2) * 15}%`,
+                animationDelay: `${i * 1}s`,
+                animationDuration: `${4 + i * 0.5}s`,
               }}
             >
-              <HeartMini size={12 + (i % 4) * 6} color="rose" />
-            </motion.div>
+              <HeartMini size={14 + (i % 2) * 4} color="rose" />
+            </div>
           ))}
         </div>
 
@@ -286,7 +290,7 @@ export default function Home() {
               </motion.span>
             ))}
           </span>{" "}
-          {/* Animated "date" with special effects */}
+          {/* Animated "date" with simplified effects */}
           <motion.span
             className="relative inline-block overflow-visible"
             style={{ paddingRight: "3rem" }}
@@ -294,50 +298,41 @@ export default function Home() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Glow effect behind "date" */}
-            <motion.span
-              className="absolute inset-0 blur-xl"
+            {/* Static glow effect - no animation */}
+            <span
+              className="absolute inset-0"
               style={{
-                background: "radial-gradient(ellipse, rgba(225,29,72,0.3) 0%, transparent 70%)",
+                background: "radial-gradient(ellipse, rgba(225,29,72,0.2) 0%, transparent 70%)",
+                filter: "blur(12px)",
               }}
-              animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.5, 0.8, 0.5],
-              }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
-            {/* The word "date" with shimmer */}
-            <motion.span
+            {/* The word "date" - static gradient, no animation */}
+            <span
               className="relative italic"
               style={{
                 fontFamily: "'Dancing Script', cursive",
                 fontSize: "1.15em",
-                background: "linear-gradient(90deg, #be123c, #e11d48, #f43f5e, #fb7185, #f43f5e, #e11d48, #be123c)",
-                backgroundSize: "200% 100%",
+                background: "linear-gradient(90deg, #be123c, #e11d48, #f43f5e)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 paddingRight: "0.15em",
               }}
-              animate={{
-                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             >
               date
-            </motion.span>
-            {/* Sparkle decorations */}
+            </span>
+            {/* Sparkle decorations - entrance only, no infinite */}
             <motion.span
               className="absolute -top-4 -right-2 text-rose-400/80 text-xl md:text-2xl"
               initial={{ opacity: 0, scale: 0, rotate: -30 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ delay: 1.5, duration: 0.5, type: "spring", stiffness: 200 }}
+              transition={{ delay: 1.5, duration: 0.5 }}
             >
               ✦
             </motion.span>
             <motion.span
               className="absolute -bottom-2 -left-4 text-rose-300/60 text-base md:text-lg"
               initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: [0, 1, 0.6], scale: 1 }}
+              animate={{ opacity: 0.6, scale: 1 }}
               transition={{ delay: 1.7, duration: 0.5 }}
             >
               ✦
@@ -345,8 +340,8 @@ export default function Home() {
             <motion.span
               className="absolute top-1/2 -right-8 text-amber-400/50 text-sm md:text-base"
               initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.8, 0.4], rotate: [0, 180, 360] }}
-              transition={{ delay: 1.9, duration: 2, repeat: Infinity }}
+              animate={{ opacity: 0.5 }}
+              transition={{ delay: 1.9, duration: 0.5 }}
             >
               ✧
             </motion.span>
@@ -433,21 +428,15 @@ export default function Home() {
       >
         <button
           onClick={() => setShowMembershipModal(true)}
-          className="w-full md:w-auto bg-gradient-to-r from-rose-500 to-pink-500 text-white px-6 py-3.5 rounded-full flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all hover:from-rose-600 hover:to-pink-600 active:scale-[0.98] relative overflow-hidden"
+          className="w-full md:w-auto bg-gradient-to-r from-rose-500 to-pink-500 text-white px-6 py-3.5 rounded-full flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all hover:from-rose-600 hover:to-pink-600 active:scale-[0.98]"
           style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
         >
-          {/* Shimmer effect */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-            animate={{ x: ["-100%", "100%"] }}
-            transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-          />
-          <Sparkles className="w-4 h-4 text-white relative z-10" />
-          <span className="text-sm tracking-wide relative z-10">
+          <Sparkles className="w-4 h-4 text-white" />
+          <span className="text-sm tracking-wide">
             <span className="font-semibold">{formatPrice(PRICING.lifetime)}</span>
             <span className="hidden sm:inline"> — Lifetime Access to All Templates</span>
           </span>
-          <ArrowRight className="w-4 h-4 text-white/80 relative z-10" />
+          <ArrowRight className="w-4 h-4 text-white/80" />
         </button>
       </motion.div>
 
@@ -780,27 +769,18 @@ function ComingSoonCard({ index }: { index: number }) {
         className="relative rounded-2xl overflow-hidden"
         style={{ height: 600 }}
       >
-        {/* Gradient background with animated particles */}
+        {/* Gradient background - static dots for performance */}
         <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-stone-50 to-stone-100">
-          {/* Animated dots */}
-          {[...Array(12)].map((_, i) => (
-            <motion.div
+          {/* Static dots - no animation */}
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div
               key={i}
               className="absolute rounded-full bg-stone-300/30"
               style={{
-                width: 4 + (i % 3) * 2,
-                height: 4 + (i % 3) * 2,
-                left: `${10 + (i * 8) % 80}%`,
-                top: `${15 + (i * 7) % 70}%`,
-              }}
-              animate={{
-                y: [0, -10, 0],
-                opacity: [0.3, 0.6, 0.3],
-              }}
-              transition={{
-                duration: 3 + i * 0.2,
-                repeat: Infinity,
-                delay: i * 0.3,
+                width: 4 + (i % 2) * 2,
+                height: 4 + (i % 2) * 2,
+                left: `${15 + i * 18}%`,
+                top: `${20 + (i % 3) * 25}%`,
               }}
             />
           ))}
@@ -808,13 +788,9 @@ function ComingSoonCard({ index }: { index: number }) {
 
         {/* Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
-          <motion.div
-            animate={{ rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="text-5xl mb-6"
-          >
+          <div className="text-5xl mb-6">
             ✨
-          </motion.div>
+          </div>
           <h3
             className="text-stone-400 text-xl font-medium mb-3 text-center"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
@@ -849,27 +825,17 @@ function MobileComingSoonCard({ index }: { index: number }) {
       className="relative rounded-xl overflow-hidden"
       style={{ height: 480 }}
     >
-      {/* Gradient background */}
+      {/* Gradient background - static dots */}
       <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-stone-50 to-stone-100">
-        {/* Animated dots */}
-        {[...Array(6)].map((_, i) => (
-          <motion.div
+        {[0, 1, 2].map((i) => (
+          <div
             key={i}
             className="absolute rounded-full bg-stone-300/30"
             style={{
               width: 3 + (i % 2) * 2,
               height: 3 + (i % 2) * 2,
-              left: `${15 + (i * 12) % 70}%`,
-              top: `${20 + (i * 10) % 60}%`,
-            }}
-            animate={{
-              y: [0, -8, 0],
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{
-              duration: 2.5 + i * 0.2,
-              repeat: Infinity,
-              delay: i * 0.3,
+              left: `${20 + i * 25}%`,
+              top: `${25 + (i % 2) * 30}%`,
             }}
           />
         ))}
@@ -877,13 +843,9 @@ function MobileComingSoonCard({ index }: { index: number }) {
 
       {/* Content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-        <motion.div
-          animate={{ rotate: [0, 5, -5, 0] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="text-3xl mb-4"
-        >
+        <div className="text-3xl mb-4">
           ✨
-        </motion.div>
+        </div>
         <h3
           className="text-stone-400 text-sm font-medium mb-2 text-center"
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
@@ -1490,17 +1452,13 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
         className="bg-[#faf9f7] rounded-3xl shadow-2xl max-w-md w-full overflow-hidden"
       >
-        {/* Limited Time Badge */}
+        {/* Limited Time Badge - no animation */}
         <div className="bg-rose-500 text-white text-center py-2 px-4">
-          <motion.span
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2"
-          >
+          <span className="text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2">
             <Zap className="w-3 h-3" />
             Valentine&apos;s Day Special — 63% OFF
             <Zap className="w-3 h-3" />
-          </motion.span>
+          </span>
         </div>
 
         <div

@@ -98,28 +98,25 @@ function MailboxScreen({ isOpen, onTap }: { isOpen: boolean; onTap: () => void }
     >
       <FallingPetals />
 
-      {/* Soft ambient glow */}
-      <motion.div
+      {/* Static ambient glow - no animation */}
+      <div
         className="absolute"
         style={{
           width: "350px",
           height: "350px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(233,30,99,0.12) 0%, transparent 65%)",
-          filter: "blur(50px)",
+          background: "radial-gradient(circle, rgba(233,30,99,0.1) 0%, transparent 65%)",
         }}
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Envelope with wax seal */}
+      {/* Envelope with wax seal - simplified animation */}
       <motion.div
-        animate={isOpen ? { scale: 1.05 } : { y: [0, -8, 0] }}
-        transition={isOpen ? { duration: 0.3 } : { duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        animate={isOpen ? { scale: 1.05 } : {}}
+        transition={isOpen ? { duration: 0.3 } : {}}
         className="relative mb-10"
       >
-        {/* Ground shadow */}
-        <motion.div
+        {/* Static ground shadow */}
+        <div
           className="absolute -bottom-8 left-1/2"
           style={{
             width: "180px",
@@ -127,10 +124,7 @@ function MailboxScreen({ isOpen, onTap }: { isOpen: boolean; onTap: () => void }
             borderRadius: "50%",
             background: "rgba(136,14,79,0.08)",
             transform: "translateX(-50%)",
-            filter: "blur(6px)",
           }}
-          animate={isOpen ? {} : { scaleX: [1, 0.8, 1], opacity: [0.25, 0.1, 0.25] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
 
         <div className="relative overflow-visible" style={{ width: "220px", height: "160px" }}>
@@ -172,7 +166,7 @@ function MailboxScreen({ isOpen, onTap }: { isOpen: boolean; onTap: () => void }
             transition={{ duration: 0.5, ease: "easeOut" }}
           />
 
-          {/* Wax seal */}
+          {/* Wax seal - animation only on open */}
           <motion.div
             className="absolute left-1/2 flex items-center justify-center"
             style={{
@@ -185,18 +179,10 @@ function MailboxScreen({ isOpen, onTap }: { isOpen: boolean; onTap: () => void }
               boxShadow: "0 4px 14px rgba(127,0,0,0.35), inset 0 -2px 5px rgba(0,0,0,0.25), inset 0 2px 6px rgba(255,255,255,0.12)",
               zIndex: 3,
             }}
-            animate={
-              isOpen
-                ? { scale: 0, opacity: 0, rotate: 45 }
-                : { scale: [1, 1.08, 1] }
-            }
-            transition={
-              isOpen
-                ? { duration: 0.4, ease: "easeIn" }
-                : { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
-            }
+            animate={isOpen ? { scale: 0, opacity: 0, rotate: 45 } : {}}
+            transition={isOpen ? { duration: 0.4, ease: "easeIn" } : {}}
           >
-            <span style={{ fontSize: "22px", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))", color: "#ffcdd2" }}>♥</span>
+            <span style={{ fontSize: "22px", color: "#ffcdd2" }}>♥</span>
           </motion.div>
 
           {/* Peeking letter when opening - positioned outside envelope to avoid clipping */}
@@ -231,19 +217,17 @@ function MailboxScreen({ isOpen, onTap }: { isOpen: boolean; onTap: () => void }
           </div>
         </div>
 
-        {/* Pulse ring when not opened */}
+        {/* Static subtle highlight when not opened */}
         {!isOpen && (
-          <motion.div
+          <div
             className="absolute inset-0 rounded-xl"
-            style={{ top: "0", left: "0", width: "220px", height: "160px" }}
-            animate={{
-              boxShadow: [
-                "0 0 0 0px rgba(233,30,99,0)",
-                "0 0 0 15px rgba(233,30,99,0.08)",
-                "0 0 0 0px rgba(233,30,99,0)",
-              ],
+            style={{
+              top: "0",
+              left: "0",
+              width: "220px",
+              height: "160px",
+              boxShadow: "0 0 0 8px rgba(233,30,99,0.06)",
             }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
           />
         )}
       </motion.div>
@@ -282,28 +266,19 @@ function MailboxScreen({ isOpen, onTap }: { isOpen: boolean; onTap: () => void }
       )}
 
       {!isOpen && (
-        <motion.div
-          className="mt-5"
-          animate={{ y: [0, 5, 0] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <motion.div
-            animate={{ opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+        <div className="mt-5 opacity-50">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#c2185b"
+            strokeWidth="1.5"
+            strokeLinecap="round"
           >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#c2185b"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            >
-              <path d="M12 5v14M5 12l7 7 7-7" />
-            </svg>
-          </motion.div>
-        </motion.div>
+            <path d="M12 5v14M5 12l7 7 7-7" />
+          </svg>
+        </div>
       )}
     </motion.div>
   );
@@ -342,63 +317,35 @@ function RevealScreen({
     if (slug) {
       saveResponse(slug, "Yes");
     }
-    // Rose petals falling - soft romantic pinks like flower petals
-    const petalColors = ["#f8bbd0", "#f48fb1", "#f06292", "#ec407a", "#fff0f5"];
+    // Simplified confetti - fewer particles for performance
+    const petalColors = ["#f8bbd0", "#f48fb1", "#f06292"];
 
-    // Initial soft burst (like petals scattering)
+    // Single burst instead of multiple
     confetti({
-      particleCount: 60,
-      spread: 80,
+      particleCount: 40,
+      spread: 70,
       origin: { y: 0.5 },
       colors: petalColors,
       shapes: ["circle"],
-      scalar: 1.8,
-      gravity: 0.4,
-      drift: 1,
-      ticks: 200,
+      scalar: 1.5,
+      gravity: 0.5,
+      ticks: 150,
     });
 
-    // Rose petals falling from top
+    // One follow-up burst
     setTimeout(() => {
       confetti({
-        particleCount: 40,
+        particleCount: 25,
         angle: 270,
-        spread: 120,
-        origin: { y: 0, x: 0.3 },
+        spread: 100,
+        origin: { y: 0, x: 0.5 },
         colors: petalColors,
         shapes: ["circle"],
-        scalar: 1.5,
-        gravity: 0.5,
-        drift: 0.5,
-        ticks: 250,
-      });
-      confetti({
-        particleCount: 40,
-        angle: 270,
-        spread: 120,
-        origin: { y: 0, x: 0.7 },
-        colors: petalColors,
-        shapes: ["circle"],
-        scalar: 1.5,
-        gravity: 0.5,
-        drift: -0.5,
-        ticks: 250,
+        scalar: 1.3,
+        gravity: 0.6,
+        ticks: 120,
       });
     }, 200);
-
-    // Final gentle shimmer
-    setTimeout(() => {
-      confetti({
-        particleCount: 50,
-        spread: 160,
-        origin: { y: 0.3 },
-        colors: ["#fff0f5", "#fce4ec", "#f8bbd0"],
-        shapes: ["circle"],
-        scalar: 1.2,
-        gravity: 0.35,
-        ticks: 180,
-      });
-    }, 450);
   };
 
   if (showSuccess) {
@@ -406,16 +353,13 @@ function RevealScreen({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
         className="min-h-screen flex items-center justify-center px-6 relative z-10"
       >
         <div className="text-center">
-          <motion.div
-            animate={{ scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="text-5xl md:text-7xl mb-6"
-          >
+          <div className="text-5xl md:text-7xl mb-6">
             💕
-          </motion.div>
+          </div>
           <h2
             className="text-3xl font-bold text-rose-800 mb-3"
             style={{ fontFamily: "Georgia, serif" }}
@@ -430,75 +374,44 @@ function RevealScreen({
     );
   }
 
-  // Card 1: Drops in from above with a bounce
+  // Simplified card animations - no blur filters, simpler easing
   const cardDramaticDrop = {
-    hidden: { opacity: 0, y: -150, scale: 0.5, rotate: 12, filter: "blur(12px)" },
+    hidden: { opacity: 0, y: -80, scale: 0.9 },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
-      rotate: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: 1.3,
-        ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-        scale: { type: "spring", stiffness: 180, damping: 14, delay: 0.05 },
-        rotate: { type: "spring", stiffness: 120, damping: 10 },
-      },
+      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
     },
   };
 
-  // Card 2: Sweeps in from the right with spin
   const cardDramaticSweep = {
-    hidden: { opacity: 0, x: 200, scale: 0.5, rotate: 15, filter: "blur(10px)" },
+    hidden: { opacity: 0, x: 60, scale: 0.95 },
     visible: {
       opacity: 1,
       x: 0,
       scale: 1,
-      rotate: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: 1.2,
-        ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-        scale: { type: "spring", stiffness: 200, damping: 15, delay: 0.1 },
-        rotate: { type: "spring", stiffness: 140, damping: 11 },
-      },
+      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
     },
   };
 
-  // Card 4: Scales up from tiny with dramatic blur-to-sharp
   const cardDramaticReveal = {
-    hidden: { opacity: 0, y: 120, scale: 0.6, rotate: -8, filter: "blur(10px)" },
+    hidden: { opacity: 0, y: 60, scale: 0.95 },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
-      rotate: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: 1.2,
-        ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-        scale: { type: "spring", stiffness: 200, damping: 15, delay: 0.1 },
-        rotate: { type: "spring", stiffness: 150, damping: 12 },
-      },
+      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
     },
   };
 
-  // Card 5: Flips in from below with 3D rotation
   const cardDramaticFlip = {
-    hidden: { opacity: 0, y: 160, scale: 0.4, rotateX: 40, filter: "blur(8px)" },
+    hidden: { opacity: 0, y: 80, scale: 0.9 },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
-      rotateX: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: 1.4,
-        ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-        scale: { type: "spring", stiffness: 160, damping: 13, delay: 0.1 },
-        rotateX: { type: "spring", stiffness: 100, damping: 12 },
-      },
+      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
     },
   };
 
@@ -529,22 +442,9 @@ function RevealScreen({
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            className="rounded-2xl overflow-hidden w-full relative"
+            className="rounded-2xl overflow-hidden w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
-            <motion.div
-              className="absolute inset-0 rounded-2xl pointer-events-none z-10"
-              initial={{ opacity: 0 }}
-              animate={{
-                opacity: [0, 0.6, 0],
-                boxShadow: [
-                  "0 0 0px rgba(233,30,99,0)",
-                  "0 0 40px rgba(233,30,99,0.4), 0 0 80px rgba(233,30,99,0.2)",
-                  "0 0 0px rgba(233,30,99,0)",
-                ],
-              }}
-              transition={{ duration: 1.8, delay: 1.0, ease: "easeOut" }}
-            />
             <img
               src="/images/valentine-header.png"
               alt="Happy Valentine's Day"
@@ -554,20 +454,15 @@ function RevealScreen({
 
           {/* Scroll hint - appears after card animation */}
           <motion.div
-            className="mt-6 sm:mt-8"
+            className="mt-6 sm:mt-8 opacity-50"
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            whileInView={{ opacity: 0.5 }}
             viewport={{ once: true }}
-            transition={{ delay: 1.3, duration: 0.5 }}
+            transition={{ delay: 0.5, duration: 0.3 }}
           >
-            <motion.div
-              animate={{ y: [0, 8, 0], opacity: [0.3, 0.7, 0.3] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c2185b" strokeWidth="1.5" strokeLinecap="round" className="sm:w-7 sm:h-7">
-                <path d="M7 10l5 5 5-5" />
-              </svg>
-            </motion.div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c2185b" strokeWidth="1.5" strokeLinecap="round" className="sm:w-7 sm:h-7">
+              <path d="M7 10l5 5 5-5" />
+            </svg>
           </motion.div>
         </div>
 
@@ -593,20 +488,6 @@ function RevealScreen({
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
-            <motion.div
-              className="absolute inset-0 rounded-2xl pointer-events-none z-10"
-              initial={{ opacity: 0 }}
-              whileInView={{
-                opacity: [0, 0.6, 0],
-                boxShadow: [
-                  "0 0 0px rgba(233,30,99,0)",
-                  "0 0 40px rgba(233,30,99,0.4), 0 0 80px rgba(233,30,99,0.2)",
-                  "0 0 0px rgba(233,30,99,0)",
-                ],
-              }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.8, delay: 0.4, ease: "easeOut" }}
-            />
             <img
               src="/images/valentine-card2.png"
               alt="Valentine's Card"
@@ -667,21 +548,6 @@ function RevealScreen({
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
-            {/* Glow pulse after reveal */}
-            <motion.div
-              className="absolute inset-0 rounded-2xl pointer-events-none z-10"
-              initial={{ opacity: 0 }}
-              whileInView={{
-                opacity: [0, 0.6, 0],
-                boxShadow: [
-                  "0 0 0px rgba(233,30,99,0)",
-                  "0 0 40px rgba(233,30,99,0.4), 0 0 80px rgba(233,30,99,0.2)",
-                  "0 0 0px rgba(233,30,99,0)",
-                ],
-              }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.8, delay: 0.4, ease: "easeOut" }}
-            />
             <img
               src="/images/fourth-card.png"
               alt="Personal Message Card"
@@ -738,20 +604,6 @@ function RevealScreen({
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.15)" }}
           >
-            <motion.div
-              className="absolute inset-0 rounded-2xl pointer-events-none z-10"
-              initial={{ opacity: 0 }}
-              whileInView={{
-                opacity: [0, 0.6, 0],
-                boxShadow: [
-                  "0 0 0px rgba(233,30,99,0)",
-                  "0 0 40px rgba(233,30,99,0.4), 0 0 80px rgba(233,30,99,0.2)",
-                  "0 0 0px rgba(233,30,99,0)",
-                ],
-              }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.8, delay: 0.5, ease: "easeOut" }}
-            />
             {/* Decorative background */}
             <div
               className="absolute inset-0"
@@ -1086,45 +938,50 @@ function RSVPDeclineButton() {
 // ============================================
 
 function FallingPetals() {
-  const petals = Array.from({ length: 12 }).map((_, i) => ({
-    id: i,
-    left: `${5 + (i * 8) % 90}%`,
-    delay: i * 0.4,
-    duration: 6 + (i % 4) * 1.5,
-    size: 8 + (i % 3) * 4,
-    drift: (i % 2 === 0 ? 1 : -1) * (20 + (i % 5) * 10),
-  }));
+  // Reduced to 5 petals with CSS animation for performance
+  const petals = [
+    { left: "10%", delay: 0, duration: 8 },
+    { left: "30%", delay: 2, duration: 10 },
+    { left: "50%", delay: 1, duration: 9 },
+    { left: "70%", delay: 3, duration: 11 },
+    { left: "90%", delay: 1.5, duration: 8 },
+  ];
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      {petals.map((p) => (
-        <motion.div
-          key={p.id}
-          className="absolute"
-          style={{
-            left: p.left,
-            top: "-20px",
-            width: `${p.size}px`,
-            height: `${p.size}px`,
-            borderRadius: "50% 0 50% 50%",
-            background: `linear-gradient(135deg, rgba(244,143,177,${0.3 + (p.id % 3) * 0.1}) 0%, rgba(233,30,99,${0.15 + (p.id % 3) * 0.08}) 100%)`,
-            filter: "blur(0.5px)",
-          }}
-          animate={{
-            y: ["0vh", "105vh"],
-            x: [0, p.drift, -p.drift / 2, p.drift / 3],
-            rotate: [0, 180, 360],
-            opacity: [0, 0.6, 0.5, 0],
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        />
-      ))}
-    </div>
+    <>
+      <style jsx>{`
+        @keyframes fallPetal {
+          0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.5; }
+          90% { opacity: 0.4; }
+          100% { transform: translateY(100vh) translateX(20px) rotate(360deg); opacity: 0; }
+        }
+        .falling-petal {
+          animation-name: fallPetal;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+          will-change: transform, opacity;
+        }
+      `}</style>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        {petals.map((p, i) => (
+          <div
+            key={i}
+            className="absolute falling-petal"
+            style={{
+              left: p.left,
+              top: "-20px",
+              width: "10px",
+              height: "10px",
+              borderRadius: "50% 0 50% 50%",
+              background: "linear-gradient(135deg, rgba(244,143,177,0.4) 0%, rgba(233,30,99,0.2) 100%)",
+              animationDuration: `${p.duration}s`,
+              animationDelay: `${p.delay}s`,
+            }}
+          />
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -1137,30 +994,29 @@ function RibbonDot() {
 }
 
 function ScatteredHearts() {
+  // Static hearts - no animation for performance
+  const hearts = [
+    { left: "12%", top: "15%", size: 16 },
+    { left: "85%", top: "25%", size: 18 },
+    { left: "25%", top: "70%", size: 14 },
+    { left: "78%", top: "80%", size: 20 },
+    { left: "50%", top: "45%", size: 16 },
+  ];
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      {Array.from({ length: 10 }).map((_, i) => (
-        <motion.div
+      {hearts.map((heart, i) => (
+        <div
           key={i}
-          className="absolute text-rose-200/30"
+          className="absolute text-rose-200/25"
           style={{
-            left: `${8 + Math.random() * 84}%`,
-            top: `${5 + Math.random() * 90}%`,
-            fontSize: `${14 + Math.random() * 16}px`,
-          }}
-          animate={{
-            y: [0, -10, 0],
-            rotate: [0, 8, -8, 0],
-            opacity: [0.2, 0.35, 0.2],
-          }}
-          transition={{
-            duration: 5 + Math.random() * 3,
-            repeat: Infinity,
-            delay: Math.random() * 3,
+            left: heart.left,
+            top: heart.top,
+            fontSize: `${heart.size}px`,
           }}
         >
           ♥
-        </motion.div>
+        </div>
       ))}
     </div>
   );
