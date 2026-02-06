@@ -1048,12 +1048,12 @@ function RSVPSection({
           <motion.div
             animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="mb-6"
+            className="mb-8 flex justify-center"
           >
             <img
               src="/heart.png"
               alt="Heart"
-              style={{ width: 80, height: 80, objectFit: "contain" }}
+              style={{ width: 240, height: 240, objectFit: "contain" }}
             />
           </motion.div>
 
