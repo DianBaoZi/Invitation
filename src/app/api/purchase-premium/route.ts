@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServiceClient } from "@/lib/supabase/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient, createServerSupabaseClient } from "@/lib/supabase/server";
 
 // ============================================
 // POST /api/purchase-premium - Process premium purchase
@@ -9,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function POST(request: NextRequest) {
   try {
     // Get the authenticated user
-    const supabase = await createClient();
+    const supabase = createServerSupabaseClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {

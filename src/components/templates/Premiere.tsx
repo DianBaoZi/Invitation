@@ -351,10 +351,18 @@ function CurtainScene({
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     if (revealed) return;
+    e.preventDefault();
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
     dragStartX.current = e.clientX;
     setIsDragging(true);
     setShowHint(false);
   }, [revealed]);
+
+  // Tap to open fallback (for accessibility and devices where drag doesn't work)
+  const handleTap = useCallback(() => {
+    if (revealed || isDragging) return;
+    setRevealed(true);
+  }, [revealed, isDragging]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
     if (!isDragging || dragStartX.current === null || revealed) return;
@@ -441,6 +449,8 @@ function CurtainScene({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
+      onPointerLeave={handlePointerUp}
+      onClick={handleTap}
       exit={{ opacity: 0, filter: "blur(8px)" }}
       transition={{ duration: 0.6 }}
     >
@@ -614,7 +624,7 @@ function CurtainScene({
                 opacity: 0.6,
               }}
             >
-              drag to open curtains
+              tap or drag to open
             </p>
           </motion.div>
         )}
