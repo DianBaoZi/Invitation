@@ -152,7 +152,7 @@ export default function DashboardPage() {
     setIsSelectionMode(false);
 
     if (!error && user) {
-      loadInvites(user.id);
+      loadInvites();
     }
   };
 
