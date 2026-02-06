@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 import { Heart, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -68,11 +68,9 @@ export function Footer() {
             {/* Brand */}
             <div className="col-span-2">
               <Link href="/" className="flex items-center gap-3 mb-6 group">
-                <Image
+                <img
                   src="/logo.svg"
                   alt="YoursInvite"
-                  width={180}
-                  height={72}
                   className="h-16 w-auto brightness-0 invert group-hover:scale-105 transition-transform duration-300"
                 />
               </Link>
@@ -132,6 +130,7 @@ export function Footer() {
                 {[
                   { label: "Privacy Policy", href: "/privacy" },
                   { label: "Terms of Use", href: "/terms" },
+                  { label: "Refund Policy", href: "/refund-policy" },
                   { label: "Disclaimer", href: "/disclaimer" },
                 ].map((link) => (
                   <li key={link.label}>

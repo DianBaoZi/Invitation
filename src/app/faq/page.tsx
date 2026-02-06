@@ -49,7 +49,7 @@ const faqs = [
   {
     question: "Do you offer refunds?",
     answer:
-      "Due to the digital nature of our products, all purchases are final. However, if you experience technical issues that prevent you from using the Service, please contact us and we'll do our best to help resolve the problem.",
+      "Due to the digital nature of our products, all purchases are generally final. However, we offer refunds for technical issues, duplicate purchases, or payment errors. Please see our full Refund Policy page for details, or contact us at hello@invitely.app within 7 days of purchase.",
   },
   {
     question: "Will there be more templates in the future?",

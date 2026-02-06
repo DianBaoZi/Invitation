@@ -86,7 +86,7 @@ function LoginContent() {
             Welcome to Invitely
           </h1>
           <p className="text-gray-600">
-            Sign in to create and manage your Valentine&apos;s invites
+            Sign in or create an account to get started
           </p>
         </div>
 
