@@ -76,10 +76,10 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/40 backdrop-blur-xl border-b border-white/30 shadow-[0_4px_30px_rgba(0,0,0,0.05)]">
       <div className="w-full px-4 sm:px-6 py-2 flex items-center justify-between">
-        {/* Logo */}
+        {/* Logo - centered on desktop, left-aligned on mobile */}
         <button
           onClick={() => router.push("/")}
-          className="flex items-center gap-1 hover:opacity-80 transition select-none caret-transparent focus:outline-none ml-[130px]"
+          className="flex items-center gap-1 hover:opacity-80 transition select-none caret-transparent focus:outline-none sm:ml-[130px]"
         >
           <img
             src="/logo.svg"
