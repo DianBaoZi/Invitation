@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Sparkles, AlertCircle, ArrowLeft, ArrowRight, Calendar, Clock, MapPin, PenLine, Eye, MessageSquare, ImagePlus, X, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -1893,6 +1893,13 @@ function FullPreview({
   onGenerate: () => void;
   accentGradient: string;
 }) {
+  const pathname = usePathname();
+
+  // Only render on customize page to prevent toolbar from persisting during navigation
+  if (!pathname?.startsWith("/customize")) {
+    return null;
+  }
+
   return (
     <div className="fixed inset-0 z-40 bg-black" style={{ top: 0 }}>
       <iframe
@@ -1959,6 +1966,12 @@ function CozyScrapbookFullPreview({
   accentGradient: string;
 }) {
   const [showSplash, setShowSplash] = useState(true);
+  const pathname = usePathname();
+
+  // Only render on customize page to prevent toolbar from persisting during navigation
+  if (!pathname?.startsWith("/customize")) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 z-40" style={{ top: 0 }}>
@@ -2048,6 +2061,13 @@ function ElegantInvitationFullPreview({
   onGenerate: () => void;
   accentGradient: string;
 }) {
+  const pathname = usePathname();
+
+  // Only render on customize page to prevent toolbar from persisting during navigation
+  if (!pathname?.startsWith("/customize")) {
+    return null;
+  }
+
   return (
     <div className="fixed inset-0 z-40 overflow-y-auto" style={{ top: 0 }}>
       {/* Render actual ElegantInvitation with photos */}
