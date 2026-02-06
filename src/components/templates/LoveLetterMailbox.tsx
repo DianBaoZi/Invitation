@@ -365,7 +365,7 @@ function RevealScreen({
             <img
               src="/stamp-heart.png"
               alt="Heart"
-              style={{ width: 180, height: 180, objectFit: "contain" }}
+              style={{ width: 360, height: 360, objectFit: "contain" }}
             />
           </motion.div>
           <h2
