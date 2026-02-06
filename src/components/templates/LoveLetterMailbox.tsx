@@ -584,7 +584,7 @@ function RevealScreen({
             variants={cardDramaticSweep}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.4, margin: "-100px" }}
+            viewport={{ once: true, amount: 0.1 }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
@@ -614,9 +614,9 @@ function RevealScreen({
                 style={{
                   fontFamily: "'Poppins', sans-serif",
                   fontWeight: 600,
-                  fontSize: "clamp(7px, 2vw, 11px)",
+                  fontSize: "clamp(17px, 4vw, 21px)",
                   color: "#c62828",
-                  bottom: "31%",
+                  bottom: "calc(31% + 5px)",
                   left: "35%",
                   right: "10%",
                   overflow: "hidden",
@@ -631,9 +631,9 @@ function RevealScreen({
                 style={{
                   fontFamily: "'Poppins', sans-serif",
                   fontWeight: 600,
-                  fontSize: "clamp(7px, 2vw, 11px)",
+                  fontSize: "clamp(17px, 4vw, 21px)",
                   color: "#c62828",
-                  bottom: "calc(18% + 5px)",
+                  bottom: "calc(18% + 10px)",
                   left: "30%",
                   right: "10%",
                   overflow: "hidden",
@@ -664,7 +664,7 @@ function RevealScreen({
             variants={cardDramaticReveal}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.4, margin: "-100px" }}
+            viewport={{ once: true, amount: 0.1 }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
@@ -735,7 +735,7 @@ function RevealScreen({
             variants={cardDramaticFlip}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.4, margin: "-100px" }}
+            viewport={{ once: true, amount: 0.1 }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.15)" }}
           >

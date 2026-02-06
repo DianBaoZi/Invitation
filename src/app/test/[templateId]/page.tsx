@@ -13,6 +13,7 @@ import { Premiere } from "@/components/templates/Premiere";
 import { ForestAdventure } from "@/components/templates/ForestAdventure";
 import { ElegantInvitation } from "@/components/templates/ElegantInvitation";
 import { SplashScreen } from "@/components/invite/SplashScreen";
+import { formatDate, formatTime } from "@/lib/utils";
 /* eslint-disable @next/next/no-img-element */
 
 // Templates that manage their own full-screen layout
@@ -87,6 +88,12 @@ export default function TestTemplatePage() {
 function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; overrides?: Record<string, string> }) {
   const message = "Will you be my Valentine?";
 
+  // Format date and time from overrides
+  const formattedDate = overrides.date ? formatDate(overrides.date) : undefined;
+  const formattedTime = overrides.time ? formatTime(overrides.time) : undefined;
+  const formattedEventDate = overrides.eventDate ? formatDate(overrides.eventDate) : undefined;
+  const formattedEventTime = overrides.eventTime ? formatTime(overrides.eventTime) : undefined;
+
   switch (templateId) {
     case "runaway-button":
       return <RunawayButtonTemplate message={message} />;
@@ -96,8 +103,8 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
           message={overrides.message || message}
           senderName="Daniel"
           personalMessage={overrides.personalMessage || "You've always been my favorite error message 💾"}
-          date={overrides.date || "February 14th"}
-          time={overrides.time || "7:00 PM"}
+          date={formattedDate || "14-Feb-2026"}
+          time={formattedTime || "7:00 PM"}
           location={overrides.location || "Our favorite spot"}
         />
       );
@@ -106,8 +113,8 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
         <CozyScrapbook
           message={overrides.message || message}
           senderName={overrides.name || "Daniel"}
-          {...(overrides.eventDate && { eventDate: overrides.eventDate })}
-          {...(overrides.eventTime && { eventTime: overrides.eventTime })}
+          {...(formattedEventDate && { eventDate: formattedEventDate })}
+          {...(formattedEventTime && { eventTime: formattedEventTime })}
           {...(overrides.eventLocation && { eventLocation: overrides.eventLocation })}
           {...(overrides.photoUrl1 && { photoUrl1: overrides.photoUrl1 })}
           {...(overrides.photoUrl2 && { photoUrl2: overrides.photoUrl2 })}
@@ -117,7 +124,7 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
       return (
         <LoveLetterMailbox
           senderName="Daniel"
-          {...(overrides.date && { date: overrides.date })}
+          {...(formattedDate && { date: formattedDate })}
           {...(overrides.location && { location: overrides.location })}
           {...(overrides.personalMessage && { personalMessage: overrides.personalMessage })}
         />
@@ -128,8 +135,8 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
           senderName={overrides.name || "Daniel"}
           {...(overrides.message && { message: overrides.message })}
           {...(overrides.personalMessage && { personalMessage: overrides.personalMessage })}
-          {...(overrides.date && { date: overrides.date })}
-          {...(overrides.time && { time: overrides.time })}
+          {...(formattedDate && { date: formattedDate })}
+          {...(formattedTime && { time: formattedTime })}
           {...(overrides.location && { location: overrides.location })}
         />
       );
@@ -139,8 +146,8 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
           senderName={overrides.name || "Daniel"}
           {...(overrides.message && { message: overrides.message })}
           {...(overrides.personalMessage && { personalMessage: overrides.personalMessage })}
-          {...(overrides.date && { date: overrides.date })}
-          {...(overrides.time && { time: overrides.time })}
+          {...(formattedDate && { date: formattedDate })}
+          {...(formattedTime && { time: formattedTime })}
           {...(overrides.location && { location: overrides.location })}
         />
       );
@@ -150,8 +157,8 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
           senderName={overrides.name || "Daniel"}
           {...(overrides.message && { message: overrides.message })}
           {...(overrides.personalMessage && { personalMessage: overrides.personalMessage })}
-          {...(overrides.date && { date: overrides.date })}
-          {...(overrides.time && { time: overrides.time })}
+          {...(formattedDate && { date: formattedDate })}
+          {...(formattedTime && { time: formattedTime })}
           {...(overrides.location && { location: overrides.location })}
         />
       );
@@ -161,8 +168,8 @@ function TemplateRenderer({ templateId, overrides = {} }: { templateId: string; 
           senderName={overrides.name || "Daniel"}
           {...(overrides.message && { message: overrides.message })}
           {...(overrides.personalMessage && { personalMessage: overrides.personalMessage })}
-          {...(overrides.date && { date: overrides.date })}
-          {...(overrides.time && { time: overrides.time })}
+          {...(formattedDate && { date: formattedDate })}
+          {...(formattedTime && { time: formattedTime })}
           {...(overrides.location && { location: overrides.location })}
           {...(overrides.photo1Url && { photo1Url: overrides.photo1Url })}
           {...(overrides.photo2Url && { photo2Url: overrides.photo2Url })}

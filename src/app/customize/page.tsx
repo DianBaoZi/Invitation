@@ -15,11 +15,17 @@ import { ElegantInvitation } from "@/components/templates/ElegantInvitation";
 import { SplashScreen } from "@/components/invite/SplashScreen";
 import { useToast } from "@/components/ui/toast";
 
-// Format date from YYYY-MM-DD to readable format
+// Format date from YYYY-MM-DD to DD-MMM-YYYY format
 function formatDate(dateStr: string): string {
   if (!dateStr) return "";
-  const date = new Date(dateStr + "T00:00:00");
-  return date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const parts = dateStr.split("-");
+  if (parts.length !== 3) return dateStr;
+  const year = parts[0];
+  const monthIndex = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  if (isNaN(monthIndex) || monthIndex < 0 || monthIndex > 11) return dateStr;
+  return `${day}-${months[monthIndex]}-${year}`;
 }
 
 // Format time from HH:MM to readable format
@@ -1895,10 +1901,10 @@ function FullPreview({
 
       {/* Floating toolbar */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="fixed bottom-2 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
+        className="fixed top-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
       >
         <Button
           onClick={onBack}
@@ -1980,10 +1986,10 @@ function CozyScrapbookFullPreview({
       {/* Floating toolbar - only show after splash */}
       {!showSplash && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="fixed bottom-2 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
+          className="fixed top-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
         >
           <Button
             onClick={onBack}
@@ -2056,10 +2062,10 @@ function ElegantInvitationFullPreview({
 
       {/* Floating toolbar */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="fixed bottom-2 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
+        className="fixed top-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 flex items-center justify-center gap-2 sm:gap-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl px-3 sm:px-4 py-3 border border-gray-200"
       >
         <Button
           onClick={onBack}

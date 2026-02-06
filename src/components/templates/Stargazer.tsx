@@ -1128,51 +1128,25 @@ function FinaleScene({
                 <span className="relative z-10">Yes, among the stars ✨</span>
               </motion.button>
 
-              {/* No button — draws constellation lines */}
-              <AnimatePresence>
-                {!noHidden && (
-                  <motion.button
-                    key={`no-${noCount}`}
-                    onClick={handleNo}
-                    className="relative overflow-hidden rounded-full px-4 md:px-8 py-4"
-                    style={{
-                      background: noCount > 0 ? `rgba(251,191,36,${0.05 + noCount * 0.03})` : "rgba(255,255,255,0.06)",
-                      border: noCount > 0 ? `1px solid ${PALETTE.gold}40` : "1px solid rgba(255,255,255,0.15)",
-                      fontFamily: "'Space Mono', monospace",
-                      fontSize: "0.9rem",
-                      fontWeight: 400,
-                      color: noCount > 0 ? PALETTE.gold : "rgba(255,255,255,0.4)",
-                      letterSpacing: "0.05em",
-                      cursor: "pointer",
-                    }}
-                    initial={noCount > 0 ? { scale: 0.9, opacity: 0.5 } : { opacity: 0, y: 20 }}
-                    animate={{
-                      scale: 1,
-                      opacity: 1,
-                      y: 0,
-                    }}
-                    exit={{
-                      scale: 1.2,
-                      opacity: 0,
-                      filter: "blur(8px)",
-                    }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 300,
-                      damping: 20,
-                    }}
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow: `0 0 15px ${PALETTE.gold}40`,
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="relative z-10">
-                      {noCount >= 4 ? "✦" : "No"}
-                    </span>
-                  </motion.button>
-                )}
-              </AnimatePresence>
+              {/* No button — static, draws constellation lines on click */}
+              {!noHidden && (
+                <button
+                  onClick={handleNo}
+                  className="relative overflow-hidden rounded-full px-4 md:px-8 py-4 transition-colors"
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    fontFamily: "'Space Mono', monospace",
+                    fontSize: "0.9rem",
+                    fontWeight: 400,
+                    color: "rgba(255,255,255,0.4)",
+                    letterSpacing: "0.05em",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span className="relative z-10">No</span>
+                </button>
+              )}
             </div>
 
             {/* Constellation progress message */}

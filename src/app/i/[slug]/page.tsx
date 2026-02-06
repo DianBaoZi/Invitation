@@ -10,6 +10,7 @@ import confetti from "canvas-confetti";
 import { Invite, TemplateConfig } from "@/lib/supabase/types";
 import { saveResponse } from "@/lib/api/saveResponse";
 import { SplashScreen } from "@/components/invite/SplashScreen";
+import { formatDate, formatTime } from "@/lib/utils";
 
 // Dynamic imports for templates - reduces initial bundle size
 const Y2KDigitalCrush = lazy(() => import("@/components/templates/Y2KDigitalCrush").then(m => ({ default: m.Y2KDigitalCrush })));
@@ -380,8 +381,10 @@ function InteractiveTemplate({
   const configAny = config as unknown as Record<string, unknown>;
   const message = (configAny.questionText || configAny.message || "Will you be my Valentine?") as string;
   const personalMessage = (configAny.personalMessage || configAny.plan || "") as string;
-  const date = (configAny.date || configAny.eventDate || "") as string;
-  const time = (configAny.time || configAny.eventTime || "") as string;
+  const rawDate = (configAny.date || configAny.eventDate || "") as string;
+  const rawTime = (configAny.time || configAny.eventTime || "") as string;
+  const date = formatDate(rawDate);
+  const time = formatTime(rawTime);
   const location = (configAny.location || configAny.eventLocation || "") as string;
 
   // Wrap lazy-loaded templates in Suspense
@@ -426,6 +429,7 @@ function InteractiveTemplate({
         return (
           <Stargazer
             senderName={senderName}
+            message={message}
             personalMessage={personalMessage}
             date={date}
             time={time}
@@ -437,6 +441,7 @@ function InteractiveTemplate({
         return (
           <Premiere
             senderName={senderName}
+            message={message}
             personalMessage={personalMessage}
             date={date}
             time={time}
@@ -448,6 +453,7 @@ function InteractiveTemplate({
         return (
           <ForestAdventure
             senderName={senderName}
+            message={message}
             personalMessage={personalMessage}
             date={date}
             time={time}
@@ -459,6 +465,7 @@ function InteractiveTemplate({
         return (
           <ElegantInvitation
             senderName={senderName}
+            message={message}
             personalMessage={personalMessage}
             date={date}
             time={time}

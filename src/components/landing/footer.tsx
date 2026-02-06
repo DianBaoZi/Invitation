@@ -8,59 +8,6 @@ import { Button } from "@/components/ui/button";
 export function Footer() {
   return (
     <footer className="relative overflow-hidden">
-      {/* CTA Section */}
-      <div className="relative py-24 px-4 sm:px-6 lg:px-8">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-pink-500 to-rose-500" />
-
-        {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
-
-        {/* Floating hearts */}
-        <div className="absolute top-10 left-[10%] opacity-20 animate-float-slow">
-          <Heart className="w-12 h-12 text-white fill-white" />
-        </div>
-        <div className="absolute bottom-10 right-[15%] opacity-20 animate-float delay-500">
-          <Heart className="w-8 h-8 text-white fill-white" />
-        </div>
-        <div className="absolute top-1/2 right-[5%] opacity-15 animate-float-reverse">
-          <Sparkles className="w-10 h-10 text-yellow-300" />
-        </div>
-
-        <div className="relative max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-8">
-            <Heart className="w-4 h-4 text-white fill-white" />
-            <span className="text-sm font-medium text-white font-sans">
-              Spread the Love
-            </span>
-          </div>
-
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
-            Ready to Create
-            <br />
-            Something Beautiful?
-          </h2>
-
-          <p className="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto mb-10 font-sans leading-relaxed">
-            Join thousands of people who&apos;ve made their loved ones smile with
-            our playful, interactive invitations. Start creating yours today!
-          </p>
-
-          <Button
-            size="lg"
-            asChild
-            className="group bg-white text-primary hover:bg-white/90 shadow-2xl shadow-black/20 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 text-base h-14 px-10 rounded-full font-semibold"
-          >
-            <Link href="/create" className="flex items-center gap-3">
-              <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-              <span>Create Your Invitation</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </Button>
-        </div>
-      </div>
-
       {/* Footer Content */}
       <div className="bg-gray-900 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -145,14 +92,9 @@ export function Footer() {
 
           {/* Bottom bar */}
           <div className="mt-16 pt-8 border-t border-gray-800">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="flex justify-center items-center">
               <p className="text-sm text-gray-500 font-sans">
                 © {new Date().getFullYear()} YoursInvite. All rights reserved.
-              </p>
-              <p className="text-sm text-gray-500 font-sans flex items-center gap-2">
-                Made with
-                <Heart className="w-4 h-4 text-primary fill-primary animate-pulse" />
-                for lovers everywhere
               </p>
             </div>
           </div>
