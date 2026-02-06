@@ -19,7 +19,7 @@ interface CozyScrapbookProps {
 export function CozyScrapbook({
   message,
   senderName = "Someone Special",
-  eventDate = "Valentine's Day",
+  eventDate = "14-Feb-2026",
   eventTime = "7:30 PM",
   eventLocation = "Somewhere romantic",
   photoUrl1,
@@ -105,6 +105,7 @@ export function CozyScrapbook({
             currentPage={currentPage}
             flippingPage={flippingPage}
             flippedPages={flippedPages}
+            flipDirection={flipDirection}
             onFlipPage={handleFlipPage}
             onFlipBack={handleFlipBack}
             message={message}
@@ -375,6 +376,7 @@ function MobileScrapbook({
   currentPage,
   flippingPage,
   flippedPages,
+  flipDirection,
   onFlipPage,
   onFlipBack,
   message,
@@ -392,6 +394,7 @@ function MobileScrapbook({
   currentPage: number;
   flippingPage: number | null;
   flippedPages: number[];
+  flipDirection: "forward" | "backward";
   onFlipPage: (page: number) => void;
   onFlipBack: () => void;
   message: string;
@@ -449,10 +452,11 @@ function MobileScrapbook({
           )}
         </AnimatePresence>
 
-        {/* Flipped message page (shows when page 1 flipped) */}
+        {/* Flipped message page (shows when page 1 flipped) - tap to go back */}
         <AnimatePresence>
           {currentPage >= 2 && (
             <motion.div
+              onClick={flippingPage === null && currentPage === 2 ? onFlipBack : undefined}
               initial={{ height: 0, opacity: 0, marginBottom: 0 }}
               animate={{ height: 80, opacity: 1, marginBottom: 12 }}
               exit={{ height: 0, opacity: 0, marginBottom: 0 }}
@@ -462,18 +466,26 @@ function MobileScrapbook({
                 borderRadius: 12,
                 overflow: "hidden",
                 boxShadow: "0 4px 12px rgba(92,58,33,0.12)",
+                cursor: flippingPage === null && currentPage === 2 ? "pointer" : "default",
               }}
             >
-              <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontSize: 24 }}>💝</span>
-                <div>
-                  <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 14, color: "#5c3a21" }}>
-                    A Little Something
-                  </p>
-                  <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 11, color: "#8b7355", fontStyle: "italic" }}>
-                    from {senderName}
-                  </p>
+              <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 12, justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 24 }}>💝</span>
+                  <div>
+                    <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 14, color: "#5c3a21" }}>
+                      A Little Something
+                    </p>
+                    <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 11, color: "#8b7355", fontStyle: "italic" }}>
+                      from {senderName}
+                    </p>
+                  </div>
                 </div>
+                {currentPage === 2 && flippingPage === null && (
+                  <span style={{ fontSize: 11, color: "#8b6914", fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic" }}>
+                    ← tap to go back
+                  </span>
+                )}
               </div>
             </motion.div>
           )}
@@ -509,6 +521,7 @@ function MobileScrapbook({
           {(currentPage < 2 || flippingPage === 1) && (
             <FlippablePageMobile
               isFlipping={flippingPage === 1}
+              flipDirection={flipDirection}
               onClick={currentPage === 1 && flippingPage === null ? () => onFlipPage(1) : undefined}
               zIndex={5}
             >
@@ -520,6 +533,7 @@ function MobileScrapbook({
           {(currentPage < 1 || flippingPage === 0) && (
             <FlippablePageMobile
               isFlipping={flippingPage === 0}
+              flipDirection={flipDirection}
               onClick={currentPage === 0 && flippingPage === null ? () => onFlipPage(0) : undefined}
               zIndex={10}
               isCover
@@ -642,24 +656,30 @@ function FlippablePageDesktop({
 function FlippablePageMobile({
   children,
   isFlipping,
+  flipDirection = "forward",
   onClick,
   zIndex,
   isCover = false,
 }: {
   children: React.ReactNode;
   isFlipping: boolean;
+  flipDirection?: "forward" | "backward";
   onClick?: () => void;
   zIndex: number;
   isCover?: boolean;
 }) {
+  // For forward: flip up and out (rotateX: -90)
+  // For backward: flip down and in (start at rotateX: -90, end at 0)
+  const isBackward = flipDirection === "backward";
+
   return (
     <motion.div
       onClick={onClick}
-      initial={{ rotateX: 0, y: 0 }}
+      initial={isBackward && isFlipping ? { rotateX: -90, y: -40, opacity: 0 } : { rotateX: 0, y: 0, opacity: 1 }}
       animate={{
-        rotateX: isFlipping ? -90 : 0,
-        y: isFlipping ? -40 : 0,
-        opacity: isFlipping ? 0 : 1,
+        rotateX: isFlipping && !isBackward ? -90 : 0,
+        y: isFlipping && !isBackward ? -40 : 0,
+        opacity: isFlipping && !isBackward ? 0 : 1,
       }}
       transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
       style={{

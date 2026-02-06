@@ -773,11 +773,13 @@ function ScrollContent({
                 transition={{ delay: 0.3, duration: 0.8 }}
                 style={{
                   fontFamily: "'Playfair Display', Georgia, serif",
-                  fontSize: "clamp(1.3rem, 4vw, 1.8rem)",
-                  letterSpacing: "0.25em",
+                  fontSize: "clamp(0.65rem, 2vw, 0.85rem)",
+                  letterSpacing: "0.35em",
                   textTransform: "uppercase",
                   color: P.gold,
-                  textShadow: `0 0 20px rgba(212,160,23,0.3)`,
+                  fontWeight: 400,
+                  opacity: 0.9,
+                  textShadow: `0 0 15px rgba(212,160,23,0.2)`,
                 }}
               >
                 Admission of One
