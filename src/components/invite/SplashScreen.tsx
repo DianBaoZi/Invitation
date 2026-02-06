@@ -18,7 +18,7 @@ export function SplashScreen({ creatorName, isPaid, onComplete, templateId, phot
   const appName = getAppName();
 
   // Templates that require a tap to continue (no auto-dismiss)
-  const requiresTapToContinue = templateId === "cozy-scrapbook" || templateId === "love-letter-mailbox" || templateId === "premiere" || templateId === "elegant-invitation";
+  const requiresTapToContinue = templateId === "cozy-scrapbook" || templateId === "love-letter-mailbox" || templateId === "premiere" || templateId === "elegant-invitation" || templateId === "stargazer";
 
   useEffect(() => {
     // Skip auto-dismiss for templates that require tap to continue
