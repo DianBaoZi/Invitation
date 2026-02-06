@@ -511,9 +511,14 @@ function TemplateCard({
         }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Background with preview art (static preview) */}
+        {/* Background with splash screen iframe preview */}
         <div className="absolute inset-0">
-          <TemplatePreviewScene templateId={template.id} isHovered={isHovered} />
+          <iframe
+            src={`/splash-preview/${template.id}`}
+            className="w-full h-full border-0 pointer-events-none"
+            title={`${template.name} preview`}
+            loading="lazy"
+          />
         </div>
 
         {/* Blur overlay on hover */}
@@ -650,9 +655,14 @@ function MobileCard({
       className="relative rounded-xl overflow-hidden active:scale-[0.97] transition-transform"
       style={{ height: 480 }}
     >
-      {/* Background with preview art */}
+      {/* Background with splash screen iframe preview */}
       <div className="absolute inset-0">
-        <TemplatePreviewScene templateId={template.id} isHovered={false} />
+        <iframe
+          src={`/splash-preview/${template.id}`}
+          className="w-full h-full border-0 pointer-events-none"
+          title={`${template.name} preview`}
+          loading="lazy"
+        />
       </div>
 
       {/* Gradient overlay */}
