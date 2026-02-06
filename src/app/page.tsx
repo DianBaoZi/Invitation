@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Monitor, Play, ArrowRight, Clock, Heart, Users, Zap } from "lucide-react";
 import { PreviewModal } from "@/components/landing/PreviewModal";
 import { Navbar } from "@/components/Navbar";
+import { HeartFilled, HeartDouble, HeartMini } from "@/components/ui/hearts";
 import { Footer } from "@/components/landing/footer";
 import { TEMPLATES, PRICING, formatPrice } from "@/lib/supabase/templates";
 import { Template } from "@/lib/supabase/types";
@@ -199,11 +200,10 @@ export default function Home() {
           {[...Array(6)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute text-rose-200/30"
+              className="absolute"
               style={{
                 left: `${10 + i * 15}%`,
                 top: `${20 + (i % 3) * 20}%`,
-                fontSize: 12 + (i % 4) * 6,
               }}
               initial={{ opacity: 0, y: 20 }}
               animate={{
@@ -219,7 +219,7 @@ export default function Home() {
                 ease: "easeOut",
               }}
             >
-              ♥
+              <HeartMini size={12 + (i % 4) * 6} color="rose" />
             </motion.div>
           ))}
         </div>
@@ -485,22 +485,24 @@ function TemplatePreviewBg({ templateId }: { templateId: string }) {
           {[...Array(10)].map((_, i) => (
             <div
               key={i}
-              className="absolute text-pink-300/40 animate-pulse"
+              className="absolute animate-pulse"
               style={{
                 left: `${8 + (i * 9) % 85}%`,
                 top: `${10 + (i * 11) % 75}%`,
-                fontSize: 10 + (i % 4) * 6,
                 animationDelay: `${i * 0.3}s`,
                 animationDuration: `${2 + (i % 3)}s`,
+                opacity: 0.4,
               }}
             >
-              ♥
+              <HeartMini size={10 + (i % 4) * 6} color="pink" />
             </div>
           ))}
           {/* Center heart glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             <div className="w-20 h-20 rounded-full bg-rose-300/30 blur-xl" />
-            <div className="absolute inset-0 flex items-center justify-center text-rose-400 text-4xl">♥</div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <HeartFilled size={36} color="rose" />
+            </div>
           </div>
         </div>
       );
@@ -1102,11 +1104,11 @@ function TemplatePreviewScene({ templateId, isHovered = false }: { templateId: s
           {[...Array(5)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute text-rose-300/40"
+              className="absolute"
               style={{
                 left: `${15 + i * 18}%`,
                 top: `${20 + (i % 3) * 25}%`,
-                fontSize: 12 + (i % 3) * 4,
+                opacity: 0.4,
               }}
               animate={isHovered ? {
                 y: [-5, 5, -5],
@@ -1115,7 +1117,7 @@ function TemplatePreviewScene({ templateId, isHovered = false }: { templateId: s
               } : {}}
               transition={{ duration: 2 + i * 0.3, repeat: Infinity, delay: i * 0.2 }}
             >
-              ♥
+              <HeartMini size={12 + (i % 3) * 4} color="rose" />
             </motion.div>
           ))}
           {/* Interactive buttons preview */}
@@ -1295,15 +1297,15 @@ function TemplatePreviewScene({ templateId, isHovered = false }: { templateId: s
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="absolute text-rose-200/30"
+              className="absolute"
               style={{
                 left: `${10 + i * 25}%`,
                 top: `${15 + (i % 2) * 50}%`,
-                fontSize: 16 + i * 4,
                 transform: `rotate(${-15 + i * 10}deg)`,
+                opacity: 0.3,
               }}
             >
-              ♥
+              <HeartMini size={16 + i * 4} color="rose" />
             </div>
           ))}
           {/* Envelope */}
