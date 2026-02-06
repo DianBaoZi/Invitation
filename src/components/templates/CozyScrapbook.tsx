@@ -1282,7 +1282,7 @@ function SuccessState({ senderName }: { senderName: string }) {
         <WashiTape style={{ position: "absolute", top: -7, left: 28, width: 65, transform: "rotate(-4deg)" }} color="#c27256" />
         <WashiTape style={{ position: "absolute", top: -7, right: 28, width: 65, transform: "rotate(4deg)" }} color="#8b9e6b" />
         <motion.div animate={{ rotate: [0, 8, -8, 0], scale: [1, 1.05, 1] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} style={{ marginBottom: 16 }}>
-          <ScrapbookSuccessFlower />
+          <img src="/flower.png" alt="Flower" style={{ width: 80, height: 80, objectFit: "contain" }} />
         </motion.div>
         <h2 style={{ fontFamily: "'Dancing Script', cursive", fontSize: 34, color: "#5c3a21", marginBottom: 10, fontWeight: 700 }}>You said yes!</h2>
         <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 17, color: "#8b7355", fontStyle: "italic", lineHeight: 1.65 }}>This is the beginning of<br />something beautiful...</p>

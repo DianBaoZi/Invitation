@@ -984,6 +984,7 @@ function RSVPSection({
   senderName: string;
 }) {
   const [noCount, setNoCount] = useState(0);
+  const [showCutScene, setShowCutScene] = useState(false);
   const noHidden = noCount >= 4;
 
   const CUT_EMOJIS = ["😐", "😠", "😤", "🤬"];
@@ -995,7 +996,14 @@ function RSVPSection({
   ];
 
   const handleNo = () => {
-    if (noCount < 4) setNoCount((c) => c + 1);
+    if (noCount < 4) {
+      setNoCount((c) => c + 1);
+      setShowCutScene(true);
+    }
+  };
+
+  const handleRetake = () => {
+    setShowCutScene(false);
   };
 
   return (
@@ -1137,7 +1145,7 @@ function RSVPSection({
 
             {/* CUT! action board */}
             <AnimatePresence mode="wait">
-              {noCount > 0 && noCount <= 4 && (
+              {showCutScene && noCount > 0 && noCount <= 4 && (
                 <motion.div
                   key={`cut-${noCount}`}
                   className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
@@ -1204,6 +1212,31 @@ function RSVPSection({
                     >
                       {CUT_SUBTEXTS[noCount - 1]}
                     </motion.p>
+
+                    {/* Re-take button */}
+                    <motion.button
+                      onClick={handleRetake}
+                      className="mt-6 px-6 py-3 rounded-full pointer-events-auto"
+                      style={{
+                        background: `linear-gradient(135deg, ${P.gold}, ${P.goldLight})`,
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: P.theater,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        cursor: "pointer",
+                        border: "none",
+                        boxShadow: `0 4px 20px rgba(212,160,23,0.4)`,
+                      }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      whileHover={{ scale: 1.05, boxShadow: `0 6px 30px rgba(212,160,23,0.6)` }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      🎬 Re-take
+                    </motion.button>
                   </motion.div>
                 </motion.div>
               )}
