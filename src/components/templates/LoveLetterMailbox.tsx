@@ -32,15 +32,6 @@ export function LoveLetterMailbox({
 }: LoveLetterMailboxProps) {
   const [screen, setScreen] = useState<Screen>("mailbox");
   const [mailboxOpen, setMailboxOpen] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-
-  // Brief loading state to ensure animations are ready
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsReady(true);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Prevent double scrollbar by hiding body overflow
   useEffect(() => {
@@ -69,36 +60,10 @@ export function LoveLetterMailbox({
       <ScatteredHearts />
 
       <AnimatePresence mode="wait">
-        {!isReady ? (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="min-h-screen flex flex-col items-center justify-center"
-          >
-            <motion.div
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
-              className="text-5xl"
-            >
-              💌
-            </motion.div>
-            <p
-              className="mt-4 text-sm"
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontStyle: "italic",
-                color: "#ad1457",
-              }}
-            >
-              Preparing your letter...
-            </p>
-          </motion.div>
-        ) : screen === "mailbox" ? (
+        {screen === "mailbox" && (
           <MailboxScreen key="mailbox" isOpen={mailboxOpen} onTap={handleMailboxTap} />
-        ) : (
+        )}
+        {screen === "reveal" && (
           <RevealScreen
             key="reveal"
             message={message}
@@ -478,13 +443,9 @@ function RevealScreen({
         {/* Spacer to require scroll for first card */}
         <div className="h-[20vh]" />
 
-        {/* Card 1: Valentine Header */}
+        {/* Card 1: Valentine Header - Static, no animation */}
         <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 sm:px-5 py-8 sm:py-12">
-          <motion.div
-            variants={cardDramaticDrop}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
+          <div
             className="rounded-2xl overflow-hidden w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.12)" }}
           >
@@ -493,20 +454,14 @@ function RevealScreen({
               alt="Happy Valentine's Day"
               className="w-full h-auto object-cover"
             />
-          </motion.div>
+          </div>
 
-          {/* Scroll hint - appears after card animation */}
-          <motion.div
-            className="mt-6 sm:mt-8 opacity-50"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 0.5 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5, duration: 0.3 }}
-          >
+          {/* Scroll hint */}
+          <div className="mt-6 sm:mt-8 opacity-50">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c2185b" strokeWidth="1.5" strokeLinecap="round" className="sm:w-7 sm:h-7">
               <path d="M7 10l5 5 5-5" />
             </svg>
-          </motion.div>
+          </div>
         </div>
 
         {/* Ribbon connector */}
