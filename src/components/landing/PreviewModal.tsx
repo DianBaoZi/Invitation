@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Copy, Check, X, Link } from "lucide-react";
 import { Template } from "@/lib/supabase/types";
 import { formatPrice } from "@/lib/supabase/templates";
 
@@ -13,10 +14,22 @@ interface PreviewModalProps {
 
 export function PreviewModal({ template, onClose }: PreviewModalProps) {
   const router = useRouter();
+  const [showFreeShareModal, setShowFreeShareModal] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const freeInviteUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/free`
+    : "/free";
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(freeInviteUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleUseTemplate = () => {
     if (template.is_free) {
-      router.push("/free");
+      setShowFreeShareModal(true);
     } else {
       router.push(`/customize?template=${template.id}`);
     }
@@ -102,6 +115,98 @@ export function PreviewModal({ template, onClose }: PreviewModalProps) {
           </div>
         </div>
       </div>
+
+      {/* Free Template Share Modal */}
+      <AnimatePresence>
+        {showFreeShareModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            onClick={() => setShowFreeShareModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl"
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowFreeShareModal(false)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+              >
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
+
+              {/* Header */}
+              <div className="text-center mb-6">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.1, type: "spring" }}
+                  className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-400 to-green-500 rounded-full flex items-center justify-center mb-4"
+                >
+                  <Link className="w-8 h-8 text-white" />
+                </motion.div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Your invite is ready! 🎉
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Share this link with your special someone
+                </p>
+              </div>
+
+              {/* Copy link section */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Invite Link
+                </label>
+                <div className="flex gap-2">
+                  <div className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 text-sm font-mono truncate">
+                    {freeInviteUrl}
+                  </div>
+                  <button
+                    onClick={handleCopyLink}
+                    className={`px-4 py-3 rounded-xl font-medium text-sm flex items-center gap-2 transition-all ${
+                      copied
+                        ? "bg-emerald-500 text-white"
+                        : "bg-gradient-to-r from-emerald-500 to-green-500 text-white hover:from-emerald-600 hover:to-green-600"
+                    }`}
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Preview link */}
+              <div className="text-center">
+                <a
+                  href="/free"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                >
+                  Preview your invite →
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
