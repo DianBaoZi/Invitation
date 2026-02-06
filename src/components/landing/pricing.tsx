@@ -13,7 +13,7 @@ const plans = [
     features: [
       "1 premium interactive template",
       "Full customization options",
-      "Runaway button & animations",
+      "Interactive buttons & animations",
       "Confetti explosions",
       "Custom music upload",
       "No watermark",

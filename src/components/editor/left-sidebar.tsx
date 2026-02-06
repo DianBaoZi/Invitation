@@ -139,8 +139,8 @@ export function LeftSidebar() {
               element={<YesButtonElement />}
             />
             <ElementItem
-              name="Runaway No"
-              preview={<span className="text-muted-foreground">🏃 No</span>}
+              name="Playful No"
+              preview={<span className="text-muted-foreground">💌 No</span>}
               element={<RunawayNoButtonElement />}
             />
             <ElementItem

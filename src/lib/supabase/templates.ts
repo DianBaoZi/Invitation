@@ -91,10 +91,10 @@ export const DEFAULT_ELEGANT_INVITATION_CONFIG: ElegantInvitationConfig = {
 export const TEMPLATES: Template[] = [
   {
     id: "runaway-button",
-    name: "Runaway 'No' Button",
+    name: "Standard Invite",
     description:
-      "The classic! Ask a question where the 'No' button playfully runs away. They can only say Yes!",
-    emoji: "🏃",
+      "A simple, elegant invitation with a playful twist — the 'No' button runs away so they can only say Yes!",
+    emoji: "💌",
     is_free: true,
     price_cents: 0,
     default_config: DEFAULT_RUNAWAY_CONFIG,

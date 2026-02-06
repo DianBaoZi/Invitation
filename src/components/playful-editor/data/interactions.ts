@@ -64,11 +64,11 @@ export const INTERACTIONS: InteractionDefinition[] = [
   // ========== BUTTON INTERACTIONS ==========
   {
     type: "yes-no-runaway",
-    name: "Runaway No Button",
+    name: "Playful No Button",
     description:
       "The classic! Ask a question where the 'No' button playfully runs away when they try to click it. Perfect for proposals and invitations!",
     shortDescription: "No button escapes your cursor",
-    emoji: "🏃",
+    emoji: "💌",
     category: "buttons",
     isAvailable: true,
     isPremium: false,

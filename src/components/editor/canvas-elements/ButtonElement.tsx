@@ -556,7 +556,7 @@ export function RunawayNoButtonElement({
 }
 
 RunawayNoButtonElement.craft = {
-  displayName: "Runaway No",
+  displayName: "Playful No",
   props: {
     label: "No",
     backgroundColor: "#e5e5e5",

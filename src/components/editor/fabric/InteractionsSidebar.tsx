@@ -445,7 +445,7 @@ export function InteractionsSidebar({
         >
           <div className="space-y-3">
             <InteractionCard
-              name="Runaway Button"
+              name="Playful Button"
               description="No button escapes on hover"
               icon={<MousePointer2 className="w-5 h-5" />}
               onClick={() => onAddInteraction("yes-no-runaway")}

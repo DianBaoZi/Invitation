@@ -271,7 +271,7 @@ export function Hero() {
                 <div>
                   <p className="text-xs text-slate-500 font-sans">Fun Feature</p>
                   <p className="text-sm font-semibold text-slate-800 font-sans">
-                    Runaway Buttons
+                    Interactive Buttons
                   </p>
                 </div>
               </div>
