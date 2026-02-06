@@ -48,50 +48,40 @@ export default function DashboardPage() {
         return;
       }
       setUser(user);
-      loadInvites(user.id);
-
-      // Check premium status
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: purchases } = await (supabase as any)
-        .from("purchases")
-        .select("id")
-        .eq("email", user.email)
-        .eq("product_type", "premium")
-        .limit(1);
-
-      if (purchases && purchases.length > 0) {
-        setIsPremium(true);
-      }
+      loadInvites();
+      checkPremiumStatus();
     });
   }, [router]);
 
-  const loadInvites = async (userId: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
+  // Check premium status via API (bypasses RLS)
+  const checkPremiumStatus = async () => {
+    try {
+      const response = await fetch("/api/premium-status");
+      const data = await response.json();
+      setIsPremium(data.isPremium);
+    } catch (error) {
+      console.error("Premium check failed:", error);
+    }
+  };
 
-    const { data: invitesData, error } = await supabase
-      .from("invites")
-      .select(`
-        id,
-        slug,
-        template_id,
-        creator_name,
-        recipient_name,
-        is_paid,
-        created_at,
-        expires_at
-      `)
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+  // Load invites via API (bypasses RLS)
+  const loadInvites = async () => {
+    try {
+      const response = await fetch("/api/my-invites");
+      const data = await response.json();
 
-    if (error) {
+      if (data.error) {
+        console.error("Error loading invites:", data.error);
+        setLoading(false);
+        return;
+      }
+
+      setInvites(data.invites || []);
+      setLoading(false);
+    } catch (error) {
       console.error("Error loading invites:", error);
       setLoading(false);
-      return;
     }
-
-    setInvites((invitesData || []) as InviteData[]);
-    setLoading(false);
   };
 
   const handleCopyLink = (slug: string) => {
