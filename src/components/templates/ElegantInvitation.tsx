@@ -883,16 +883,108 @@ function DetailsCard({
 // RSVP SECTION
 // ─────────────────────────────────────────────
 
-// Rainbow trail colors - more visible
-const RAINBOW_COLORS = [
-  "#ff6b6b", // red
-  "#ffa94d", // orange
-  "#ffd43b", // yellow
-  "#69db7c", // green
-  "#74c0fc", // blue
-  "#b197fc", // indigo
-  "#f783ac", // pink
+// Elegant petal colors matching the rose gold theme
+const PETAL_COLORS = [
+  PALETTE.roseGold,
+  PALETTE.roseGoldLight,
+  PALETTE.blushDark,
+  PALETTE.gold,
+  "#e8b4b8", // soft pink
+  "#d4a5a5", // dusty rose
 ];
+
+// Playful messages that appear as the button escapes
+const ESCAPE_MESSAGES = [
+  "Oh, you almost got me!",
+  "Not so fast, darling...",
+  "Catch me if you can!",
+  "I'm rather elusive today...",
+  "Perhaps try the other button?",
+  "You're persistent, I like that!",
+  "The heart wants what it wants...",
+];
+
+// Floating Petal Component
+function FloatingPetal({ x, y, color, delay = 0 }: { x: number; y: number; color: string; delay?: number }) {
+  return (
+    <motion.div
+      className="absolute pointer-events-none"
+      style={{
+        left: "50%",
+        top: "50%",
+        zIndex: 15,
+      }}
+      initial={{
+        x: x - 8,
+        y: y - 8,
+        opacity: 0,
+        scale: 0,
+        rotate: Math.random() * 360
+      }}
+      animate={{
+        opacity: [0, 1, 1, 0],
+        scale: [0, 1.2, 1, 0.5],
+        y: [y - 8, y - 60 - Math.random() * 40],
+        x: [x - 8, x - 8 + (Math.random() - 0.5) * 80],
+        rotate: [Math.random() * 360, Math.random() * 720],
+      }}
+      transition={{
+        duration: 1.5,
+        delay,
+        ease: "easeOut"
+      }}
+    >
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <ellipse
+          cx="8"
+          cy="8"
+          rx="6"
+          ry="3"
+          fill={color}
+          opacity="0.8"
+          transform="rotate(-30 8 8)"
+        />
+        <ellipse
+          cx="8"
+          cy="8"
+          rx="3"
+          ry="6"
+          fill={color}
+          opacity="0.6"
+          transform="rotate(15 8 8)"
+        />
+      </svg>
+    </motion.div>
+  );
+}
+
+// Sparkle Star Component
+function SparkleStarEffect({ x, y, color }: { x: number; y: number; color: string }) {
+  return (
+    <motion.div
+      className="absolute pointer-events-none"
+      style={{
+        left: "50%",
+        top: "50%",
+        zIndex: 20,
+      }}
+      initial={{ x: x - 6, y: y - 6, opacity: 0, scale: 0 }}
+      animate={{
+        opacity: [0, 1, 0],
+        scale: [0, 1.5, 0],
+        rotate: [0, 180],
+      }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+    >
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path
+          d="M6 0L7 4.5L12 6L7 7.5L6 12L5 7.5L0 6L5 4.5L6 0Z"
+          fill={color}
+        />
+      </svg>
+    </motion.div>
+  );
+}
 
 function RSVPSection({
   accepted,
@@ -906,75 +998,94 @@ function RSVPSection({
   const [noHoverCount, setNoHoverCount] = useState(0);
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
   const [showNoMessage, setShowNoMessage] = useState(false);
+  const [currentMessage, setCurrentMessage] = useState("");
+  const [petals, setPetals] = useState<Array<{ id: number; x: number; y: number; color: string; delay: number }>>([]);
   const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number; color: string }>>([]);
-  const [trail, setTrail] = useState<Array<{ id: number; x: number; y: number; color: string }>>([]);
-  const sparkleIdRef = useRef(0);
-  const trailIdRef = useRef(0);
+  const [glowTrail, setGlowTrail] = useState<Array<{ id: number; x: number; y: number }>>([]);
+  const [buttonShrinking, setButtonShrinking] = useState(false);
+  const effectIdRef = useRef(0);
 
   const handleNoHover = () => {
     const count = noHoverCount + 1;
     setNoHoverCount(count);
 
-    if (count >= 5) {
-      // After 5 hovers, show gentle message instead
-      setShowNoMessage(true);
+    // Show a playful message
+    setCurrentMessage(ESCAPE_MESSAGES[Math.min(count - 1, ESCAPE_MESSAGES.length - 1)]);
+
+    if (count >= 7) {
+      // After 7 hovers, show elegant surrender message
+      setButtonShrinking(true);
+      setTimeout(() => {
+        setShowNoMessage(true);
+      }, 500);
     } else {
-      // Store old position for trail
+      // Store old position for effects
       const oldX = noPosition.x;
       const oldY = noPosition.y;
 
-      // Generate new escape position - much larger range!
-      const maxX = 300;
-      const maxY = 200;
-      const newX = (Math.random() - 0.5) * maxX * 2;
-      const newY = (Math.random() - 0.5) * maxY * 2;
+      // Calculate escape - getting more dramatic with each attempt
+      const escapeMultiplier = 1 + count * 0.3;
+      const baseRange = 120 * escapeMultiplier;
 
-      // Add rainbow trail segments between old and new position
-      const trailCount = 12;
-      const newTrailItems: Array<{ id: number; x: number; y: number; color: string }> = [];
-      for (let i = 0; i <= trailCount; i++) {
-        const progress = i / trailCount;
-        const trailX = oldX + (newX - oldX) * progress;
-        const trailY = oldY + (newY - oldY) * progress;
-        newTrailItems.push({
-          id: trailIdRef.current++,
-          x: trailX,
-          y: trailY,
-          color: RAINBOW_COLORS[i % RAINBOW_COLORS.length],
+      // Calculate new position with some intelligence - try to stay somewhat visible
+      let newX = (Math.random() - 0.5) * baseRange * 2;
+      let newY = (Math.random() - 0.5) * baseRange;
+
+      // Constrain to reasonable bounds but allow some adventure
+      const maxX = 250;
+      const maxY = 150;
+      newX = Math.max(-maxX, Math.min(maxX, newX));
+      newY = Math.max(-maxY, Math.min(maxY, newY));
+
+      // Create elegant petal burst at old position
+      const newPetals: Array<{ id: number; x: number; y: number; color: string; delay: number }> = [];
+      const petalCount = 8 + count * 2;
+      for (let i = 0; i < petalCount; i++) {
+        const angle = (i / petalCount) * Math.PI * 2;
+        const distance = 20 + Math.random() * 40;
+        newPetals.push({
+          id: effectIdRef.current++,
+          x: oldX + Math.cos(angle) * distance,
+          y: oldY + Math.sin(angle) * distance,
+          color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
+          delay: i * 0.03,
         });
       }
-      setTrail(prev => [...prev, ...newTrailItems].slice(-40)); // Keep last 40 trail items
+      setPetals(prev => [...prev, ...newPetals].slice(-50));
 
-      // Create sparkles at both old and new position for more drama
-      const newSparkles = [
-        // Sparkles at old position (where button left)
-        ...Array.from({ length: 5 }, () => ({
-          id: sparkleIdRef.current++,
-          x: oldX + (Math.random() - 0.5) * 60,
-          y: oldY + (Math.random() - 0.5) * 60,
-          color: RAINBOW_COLORS[Math.floor(Math.random() * RAINBOW_COLORS.length)],
-        })),
-        // Sparkles at new position (where button arrived)
-        ...Array.from({ length: 8 }, () => ({
-          id: sparkleIdRef.current++,
-          x: newX + (Math.random() - 0.5) * 80,
-          y: newY + (Math.random() - 0.5) * 80,
-          color: RAINBOW_COLORS[Math.floor(Math.random() * RAINBOW_COLORS.length)],
-        })),
-      ];
-      setSparkles(prev => [...prev, ...newSparkles].slice(-30)); // Keep last 30 sparkles
+      // Add sparkle stars at the landing position
+      const newSparkles: Array<{ id: number; x: number; y: number; color: string }> = [];
+      for (let i = 0; i < 5; i++) {
+        newSparkles.push({
+          id: effectIdRef.current++,
+          x: newX + (Math.random() - 0.5) * 60,
+          y: newY + (Math.random() - 0.5) * 60,
+          color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
+        });
+      }
+      setSparkles(prev => [...prev, ...newSparkles].slice(-20));
+
+      // Create a subtle glow trail between positions
+      const trailPoints = 6;
+      const newTrail: Array<{ id: number; x: number; y: number }> = [];
+      for (let i = 0; i <= trailPoints; i++) {
+        const progress = i / trailPoints;
+        newTrail.push({
+          id: effectIdRef.current++,
+          x: oldX + (newX - oldX) * progress,
+          y: oldY + (newY - oldY) * progress,
+        });
+      }
+      setGlowTrail(prev => [...prev, ...newTrail].slice(-30));
 
       setNoPosition({ x: newX, y: newY });
 
-      // Clean up old sparkles
+      // Clean up effects after animation
       setTimeout(() => {
-        setSparkles(prev => prev.slice(13));
-      }, 1000);
-
-      // Fade out old trail
-      setTimeout(() => {
-        setTrail(prev => prev.slice(13));
-      }, 800);
+        setPetals(prev => prev.slice(petalCount));
+        setSparkles(prev => prev.slice(5));
+        setGlowTrail(prev => prev.slice(trailPoints + 1));
+      }, 1500);
     }
   };
 
@@ -1060,139 +1171,209 @@ function RSVPSection({
           </motion.span>
         </motion.h2>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 min-h-[200px]" style={{ overflow: "visible" }}>
-          {/* Yes Button */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 min-h-[220px]" style={{ overflow: "visible" }}>
+          {/* Yes Button - Enhanced elegance */}
           <motion.button
             onClick={onAccept}
-            className="px-10 py-4 relative overflow-hidden"
+            className="px-12 py-5 relative overflow-hidden"
             style={{
-              background: PALETTE.roseGold,
+              background: `linear-gradient(135deg, ${PALETTE.roseGold} 0%, ${PALETTE.roseGoldLight} 100%)`,
               color: PALETTE.white,
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "16px",
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
-              borderRadius: 4,
+              fontFamily: "'Playfair Display', serif",
+              fontSize: "18px",
+              fontStyle: "italic",
+              letterSpacing: "0.1em",
+              borderRadius: 50,
               border: "none",
               cursor: "pointer",
-              boxShadow: "0 4px 20px rgba(183, 110, 121, 0.3)",
+              boxShadow: `0 8px 32px rgba(183, 110, 121, 0.35), inset 0 1px 0 rgba(255,255,255,0.2)`,
             }}
             whileHover={{
-              scale: 1.02,
-              boxShadow: "0 6px 30px rgba(183, 110, 121, 0.4)",
+              scale: 1.05,
+              boxShadow: `0 12px 40px rgba(183, 110, 121, 0.5), inset 0 1px 0 rgba(255,255,255,0.3)`,
             }}
             whileTap={{ scale: 0.98 }}
           >
             Yes, I&apos;ll Be There
 
-            {/* Shimmer effect */}
+            {/* Elegant shimmer effect */}
             <motion.div
               className="absolute inset-0"
               animate={{ x: ["-100%", "100%"] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
               style={{
-                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
               }}
             />
           </motion.button>
 
-          {/* No Button - escapes with sparkles and rainbow trail */}
+          {/* No Button - Elegant escape with petals */}
           {!showNoMessage ? (
-            <div className="relative" style={{ overflow: "visible" }}>
-              {/* Rainbow trail */}
-              {trail.map((t) => (
+            <div className="relative" style={{ overflow: "visible", minWidth: 140, minHeight: 50 }}>
+              {/* Glow trail */}
+              {glowTrail.map((t, i) => (
                 <motion.div
                   key={t.id}
                   className="absolute rounded-full pointer-events-none"
                   style={{
-                    width: 30,
-                    height: 30,
-                    background: t.color,
+                    width: 24,
+                    height: 24,
+                    background: `radial-gradient(circle, ${PALETTE.roseGoldLight} 0%, transparent 70%)`,
                     left: "50%",
                     top: "50%",
-                    filter: "blur(10px)",
-                    zIndex: 10,
+                    filter: "blur(8px)",
+                    zIndex: 5,
                   }}
-                  initial={{ x: t.x - 15, y: t.y - 15, opacity: 0.5, scale: 1.2 }}
-                  animate={{ opacity: 0, scale: 0.5 }}
-                  transition={{ duration: 1 }}
+                  initial={{ x: t.x - 12, y: t.y - 12, opacity: 0.6 }}
+                  animate={{ opacity: 0 }}
+                  transition={{ duration: 0.8, delay: i * 0.05 }}
                 />
               ))}
 
-              {/* Sparkles */}
+              {/* Floating petals */}
+              {petals.map((p) => (
+                <FloatingPetal key={p.id} x={p.x} y={p.y} color={p.color} delay={p.delay} />
+              ))}
+
+              {/* Sparkle stars */}
               {sparkles.map((s) => (
-                <motion.div
-                  key={s.id}
-                  className="absolute pointer-events-none"
-                  style={{
-                    left: "50%",
-                    top: "50%",
-                    fontSize: 20,
-                    zIndex: 20,
-                    textShadow: `0 0 10px ${s.color}`,
-                  }}
-                  initial={{ x: s.x - 10, y: s.y - 10, opacity: 1, scale: 1.5, rotate: 0 }}
-                  animate={{ opacity: 0, scale: 0, rotate: 360, y: s.y - 50 }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                >
-                  ✨
-                </motion.div>
+                <SparkleStarEffect key={s.id} x={s.x} y={s.y} color={s.color} />
               ))}
 
               <motion.button
                 className="px-8 py-3 relative"
                 style={{
-                  background: "transparent",
+                  background: PALETTE.cream,
                   color: PALETTE.textMuted,
                   fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "14px",
-                  letterSpacing: "0.1em",
-                  borderRadius: 4,
+                  fontSize: "15px",
+                  fontStyle: "italic",
+                  letterSpacing: "0.08em",
+                  borderRadius: 50,
                   border: `1px solid ${PALETTE.blushDark}`,
-                cursor: "pointer",
-              }}
-              animate={{ x: noPosition.x, y: noPosition.y }}
-              transition={{ type: "spring", stiffness: 80, damping: 25 }}
-              onMouseEnter={handleNoHover}
-              onTouchStart={handleNoHover}
-              whileHover={{ opacity: 0.7 }}
-            >
-              Perhaps Not
-            </motion.button>
+                  cursor: "pointer",
+                  boxShadow: "0 4px 16px rgba(183, 110, 121, 0.15)",
+                }}
+                animate={{
+                  x: noPosition.x,
+                  y: noPosition.y,
+                  scale: buttonShrinking ? 0 : 1,
+                  opacity: buttonShrinking ? 0 : 1,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 120,
+                  damping: 20,
+                  scale: { duration: 0.5 },
+                  opacity: { duration: 0.5 },
+                }}
+                onMouseEnter={handleNoHover}
+                onTouchStart={handleNoHover}
+                whileHover={{
+                  borderColor: PALETTE.roseGoldLight,
+                  boxShadow: "0 6px 24px rgba(183, 110, 121, 0.25)",
+                }}
+              >
+                Perhaps Not
+
+                {/* Subtle inner glow on hover attempt */}
+                <motion.div
+                  className="absolute inset-0 rounded-full pointer-events-none"
+                  style={{
+                    background: `radial-gradient(circle at center, ${PALETTE.roseGoldLight}20 0%, transparent 70%)`,
+                  }}
+                  animate={{ opacity: noHoverCount > 0 ? [0, 0.5, 0] : 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.button>
             </div>
           ) : (
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "14px",
-                fontStyle: "italic",
-                color: PALETTE.roseGoldLight,
-              }}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="text-center"
             >
-              &ldquo;No&rdquo; isn&apos;t an option today
-            </motion.p>
+              <motion.p
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: "16px",
+                  fontStyle: "italic",
+                  color: PALETTE.roseGold,
+                  marginBottom: 8,
+                }}
+                animate={{
+                  textShadow: [
+                    "0 0 0px rgba(183, 110, 121, 0)",
+                    "0 0 12px rgba(183, 110, 121, 0.3)",
+                    "0 0 0px rgba(183, 110, 121, 0)",
+                  ],
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                &ldquo;No&rdquo; seems to have fluttered away...
+              </motion.p>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.7 }}
+                transition={{ delay: 0.5 }}
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "14px",
+                  color: PALETTE.textMuted,
+                }}
+              >
+                Some things are simply meant to be ✨
+              </motion.p>
+            </motion.div>
           )}
         </div>
 
-        {noHoverCount > 0 && noHoverCount < 5 && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.6 }}
-            className="mt-6"
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "13px",
-              fontStyle: "italic",
-              color: PALETTE.textMuted,
-            }}
+        {/* Elegant playful messages */}
+        {noHoverCount > 0 && noHoverCount < 7 && currentMessage && (
+          <motion.div
+            key={currentMessage}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="mt-8"
           >
-            {noHoverCount === 1 && "The button seems shy..."}
-            {noHoverCount === 2 && "It really doesn't want to be clicked..."}
-            {noHoverCount === 3 && "It's getting faster!"}
-            {noHoverCount === 4 && "Almost gave up? ✨"}
-          </motion.p>
+            <motion.p
+              style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "15px",
+                fontStyle: "italic",
+                color: PALETTE.roseGoldLight,
+              }}
+              animate={{
+                opacity: [0.7, 1, 0.7],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              {currentMessage}
+            </motion.p>
+
+            {/* Progress dots showing how close to giving up */}
+            <motion.div
+              className="flex justify-center gap-2 mt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+            >
+              {Array.from({ length: 7 }, (_, i) => (
+                <motion.div
+                  key={i}
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: i < noHoverCount ? PALETTE.roseGold : PALETTE.blush,
+                  }}
+                  animate={i < noHoverCount ? { scale: [1, 1.3, 1] } : {}}
+                  transition={{ duration: 0.3 }}
+                />
+              ))}
+            </motion.div>
+          </motion.div>
         )}
       </motion.div>
     </section>
