@@ -110,17 +110,18 @@ export const TEMPLATES: Template[] = [
     default_config: DEFAULT_LOVE_LETTER_CONFIG,
     badge: "Most Popular",
   },
-  {
-    id: "forest-adventure",
-    name: "Forest Adventure",
-    description:
-      "Embark on a pixelated quest through the Enchanted Forest — make choices, befriend a bear, and discover a magical invitation!",
-    emoji: "🌲",
-    is_free: false,
-    price_cents: 199, // $1.99
-    default_config: DEFAULT_FOREST_ADVENTURE_CONFIG,
-    badge: "New",
-  },
+  // Hidden: Forest Adventure template removed from public listing
+  // {
+  //   id: "forest-adventure",
+  //   name: "Forest Adventure",
+  //   description:
+  //     "Embark on a pixelated quest through the Enchanted Forest — make choices, befriend a bear, and discover a magical invitation!",
+  //   emoji: "🌲",
+  //   is_free: false,
+  //   price_cents: 199, // $1.99
+  //   default_config: DEFAULT_FOREST_ADVENTURE_CONFIG,
+  //   badge: "New",
+  // },
   {
     id: "stargazer",
     name: "Stargazer",

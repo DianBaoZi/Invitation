@@ -145,10 +145,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Start counter at 1024 as a base offset
+    const BASE_COUNT = 1024;
     return NextResponse.json(
       {
         success: true,
-        count: count || 0,
+        count: (count || 0) + BASE_COUNT,
       },
       {
         headers: {

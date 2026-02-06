@@ -32,13 +32,13 @@ export default function AboutPage() {
             className="text-4xl sm:text-5xl text-stone-900 mb-4"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            About Invitely
+            About YoursInvite
           </h1>
           <p
             className="text-stone-500 text-lg"
             style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
           >
-            Making love declarations unforgettable since 2024
+            Making invitations memorable and interactive
           </p>
         </div>
 
@@ -55,9 +55,9 @@ export default function AboutPage() {
               className="text-stone-600 leading-relaxed"
               style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "17px" }}
             >
-              We believe that asking someone to be your Valentine should be as special as the
-              relationship itself. That&apos;s why we created Invitely — a platform that transforms
-              simple invitations into memorable, interactive experiences that make saying
+              We believe that invitations should be more than just a message — they should be
+              an experience. That&apos;s why we created YoursInvite — a platform that transforms
+              simple invitations into memorable, interactive moments that make saying
               &quot;yes&quot; irresistible.
             </p>
           </section>
@@ -73,8 +73,9 @@ export default function AboutPage() {
               className="text-stone-600 leading-relaxed mb-6"
               style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "17px" }}
             >
-              We craft beautiful, interactive digital invitations that go beyond the ordinary.
-              Each template is designed with care to create moments of joy, surprise, and delight.
+              We craft beautiful, interactive digital invitations for any occasion — dates,
+              proposals, parties, or just because. Each template is designed with care to
+              create moments of joy, surprise, and delight.
             </p>
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="text-center p-4 rounded-xl bg-rose-50">
@@ -121,10 +122,10 @@ export default function AboutPage() {
               Have questions, feedback, or just want to say hello? We&apos;d love to hear from you.
               Reach out to us at{" "}
               <a
-                href="mailto:hello@invitely.app"
+                href="mailto:hello@yoursinvite.com"
                 className="text-rose-500 hover:text-rose-600 underline"
               >
-                hello@invitely.app
+                hello@yoursinvite.com
               </a>
             </p>
           </section>

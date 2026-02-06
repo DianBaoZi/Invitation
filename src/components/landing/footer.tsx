@@ -101,10 +101,6 @@ export function Footer() {
               </h3>
               <ul className="space-y-4">
                 {[
-                  { label: "Features", href: "#features" },
-                  { label: "How It Works", href: "#how-it-works" },
-                  { label: "Pricing", href: "#pricing" },
-                  { label: "Create Invite", href: "/create" },
                   { label: "About", href: "/about" },
                   { label: "FAQ", href: "/faq" },
                 ].map((link) => (
