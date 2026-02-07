@@ -2733,13 +2733,13 @@ function ConfirmModal({
           </p>
           {isLoading && (
             <div className="mt-4">
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden relative">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 rounded-full"
-                  initial={{ width: "0%" }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: 2.5, ease: "easeInOut" }}
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-500 to-transparent"
+                  animate={{ x: ["-100%", "100%"] }}
+                  transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
                 />
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 via-pink-500/50 to-rose-500/30" />
               </div>
               <p className="text-xs text-gray-400 mt-2">Generating your unique link...</p>
             </div>
