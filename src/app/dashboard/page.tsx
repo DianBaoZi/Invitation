@@ -322,7 +322,23 @@ function DashboardContent() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  onClick={() => router.push(`/status/${invite.slug}`)}
+                  onClick={() => {
+                    if (isSelectionMode) {
+                      // In selection mode, toggle selection
+                      setSelectedIds((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(invite.id)) {
+                          next.delete(invite.id);
+                        } else {
+                          next.add(invite.id);
+                        }
+                        return next;
+                      });
+                    } else {
+                      // Not in selection mode, navigate to status
+                      router.push(`/status/${invite.slug}`);
+                    }
+                  }}
                   className={`bg-white rounded-2xl shadow-sm border p-5 cursor-pointer hover:shadow-md transition-all ${
                     selectedIds.has(invite.id) ? "border-pink-400 ring-2 ring-pink-100" : "hover:border-pink-200"
                   } ${expired ? "opacity-60" : ""}`}
