@@ -7,20 +7,44 @@ import { ToastProvider } from "@/components/ui/toast";
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-ZRXCKB6TZC";
 
 export const metadata: Metadata = {
-  title: "YoursInvite - Create Valentine's Invites They Can't Say No To",
+  metadataBase: new URL("https://yoursinvite.com"),
+  title: "Yours Invite - Create Beautiful Interactive Invitations",
   description:
-    "Design fun, interactive Valentine's Day invitations with drag-and-drop editor. Add runaway buttons, confetti explosions, and more!",
-  keywords: ["valentine", "invitation", "love", "romantic", "date", "interactive"],
-  authors: [{ name: "YoursInvite" }],
-  robots: "index, follow",
+    "Create and share cute, interactive invitations for dates, hangouts, and special moments. Fun templates that make saying no impossible!",
+  keywords: ["invitation", "love", "romantic", "date", "interactive", "valentine", "hangout", "special moments"],
+  authors: [{ name: "Yours Invite" }],
+  robots: {
+    index: true,
+    follow: true,
+  },
   icons: {
     icon: "/logo.svg",
     apple: "/logo.svg",
   },
+  alternates: {
+    canonical: "https://yoursinvite.com",
+  },
   openGraph: {
-    title: "YoursInvite - Create Valentine's Invites They Can't Say No To",
-    description: "Design fun, interactive Valentine's Day invitations",
+    title: "Yours Invite - Create Beautiful Interactive Invitations",
+    description: "Create cute, interactive invitations for dates and special moments",
+    url: "https://yoursinvite.com",
+    siteName: "Yours Invite",
+    images: [
+      {
+        url: "https://yoursinvite.com/preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Yours Invite - Create Beautiful Interactive Invitations",
+      },
+    ],
     type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Yours Invite - Create Beautiful Interactive Invitations",
+    description: "Create cute, interactive invitations for dates and special moments",
+    images: ["https://yoursinvite.com/preview.png"],
   },
 };
 

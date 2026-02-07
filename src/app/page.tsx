@@ -1409,8 +1409,8 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
         return;
       }
 
-      // Call the API endpoint to process premium purchase (test mode - bypasses Stripe)
-      const response = await fetch("/api/purchase-premium", {
+      // Call the Stripe checkout API endpoint
+      const response = await fetch("/api/checkout-premium", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -1424,8 +1424,10 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
         return;
       }
 
-      // Success! Redirect to dashboard
-      router.push("/dashboard?premium=true");
+      // Redirect to Stripe checkout
+      if (data.url) {
+        window.location.href = data.url;
+      }
     } catch (err) {
       console.error("Purchase error:", err);
       alert("There was an error processing your purchase. Please try again.");

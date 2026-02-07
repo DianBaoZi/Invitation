@@ -416,6 +416,7 @@ function InteractiveTemplate({
             eventLocation={location}
             photoUrl1={(configAny.photo1Url || configAny.photoUrl1 || "") as string}
             photoUrl2={(configAny.photo2Url || configAny.photoUrl2 || "") as string}
+            personalMessage={personalMessage}
             slug={slug}
           />
         );

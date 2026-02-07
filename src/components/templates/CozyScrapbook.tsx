@@ -13,6 +13,7 @@ interface CozyScrapbookProps {
   eventLocation?: string;
   photoUrl1?: string;
   photoUrl2?: string;
+  personalMessage?: string;
   slug?: string;
 }
 
@@ -24,6 +25,7 @@ export function CozyScrapbook({
   eventLocation = "Somewhere romantic",
   photoUrl1,
   photoUrl2,
+  personalMessage,
   slug,
 }: CozyScrapbookProps) {
   const [currentPage, setCurrentPage] = useState(0);
@@ -112,6 +114,7 @@ export function CozyScrapbook({
             senderName={senderName}
             photoUrl1={photoUrl1}
             photoUrl2={photoUrl2}
+            personalMessage={personalMessage}
             eventDate={eventDate}
             eventTime={eventTime}
             eventLocation={eventLocation}
@@ -132,6 +135,7 @@ export function CozyScrapbook({
             senderName={senderName}
             photoUrl1={photoUrl1}
             photoUrl2={photoUrl2}
+            personalMessage={personalMessage}
             eventDate={eventDate}
             eventTime={eventTime}
             eventLocation={eventLocation}
@@ -161,6 +165,7 @@ function DesktopScrapbook({
   senderName,
   photoUrl1,
   photoUrl2,
+  personalMessage,
   eventDate,
   eventTime,
   eventLocation,
@@ -179,6 +184,7 @@ function DesktopScrapbook({
   senderName: string;
   photoUrl1?: string;
   photoUrl2?: string;
+  personalMessage?: string;
   eventDate: string;
   eventTime: string;
   eventLocation: string;
@@ -301,6 +307,28 @@ function DesktopScrapbook({
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Back of personal message page (visible when page 2 is flipped, only if personalMessage exists) */}
+          <AnimatePresence>
+            {personalMessage && personalMessage.trim().length > 0 && (flippedPages.includes(2) || currentPage >= 3) && !(flippingPage === 2 && flipDirection === "backward") && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3, delay: flippingPage === 2 ? 0.35 : 0 }}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(145deg, #fdf8f0 0%, #f8f0e5 100%)",
+                  borderRadius: "12px 4px 4px 12px",
+                  boxShadow: "inset -4px 0 12px rgba(92,58,33,0.08)",
+                  zIndex: 3,
+                }}
+              >
+                <PageBack pattern="lines" />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* === RIGHT SIDE: Current pages flip from here === */}
@@ -312,56 +340,81 @@ function DesktopScrapbook({
             transformStyle: "preserve-3d",
           }}
         >
-          {/* Base: RSVP page (always visible underneath) */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: "linear-gradient(145deg, #fdf8f0 0%, #f8f0e5 100%)",
-              borderRadius: "4px 12px 12px 4px",
-              boxShadow: "4px 4px 20px rgba(92,58,33,0.15)",
-              overflow: "hidden",
-            }}
-          >
-            <PageTexture />
-            <RSVPPage
-              eventDate={eventDate}
-              eventTime={eventTime}
-              eventLocation={eventLocation}
-              photoUrl1={photoUrl1}
-              onYes={onYes}
-              onNoInteract={onNoInteract}
-              noClicks={noClicks}
-              noGone={noGone}
-            />
-          </div>
+          {/* Determine if we have personal message page */}
+          {(() => {
+            const hasPersonalMessage = personalMessage && personalMessage.trim().length > 0;
+            const rsvpPageIndex = hasPersonalMessage ? 3 : 2;
+            const personalPageIndex = hasPersonalMessage ? 2 : -1;
+            const messagePageIndex = 1;
 
-          {/* Message page - flips to left (keep visible during flip animation) */}
-          {(currentPage < 2 || flippingPage === 1) && (
-            <FlippablePageDesktop
-              isFlipping={flippingPage === 1}
-              isFlipped={currentPage >= 2}
-              flipDirection={flipDirection}
-              onClick={currentPage === 1 && flippingPage === null ? () => onFlipPage(1) : undefined}
-              zIndex={5}
-            >
-              <MessagePage message={message} senderName={senderName} photoUrl2={photoUrl2} showHint={currentPage === 1 && flippingPage === null} />
-            </FlippablePageDesktop>
-          )}
+            return (
+              <>
+                {/* Base: RSVP page (always visible underneath) */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "linear-gradient(145deg, #fdf8f0 0%, #f8f0e5 100%)",
+                    borderRadius: "4px 12px 12px 4px",
+                    boxShadow: "4px 4px 20px rgba(92,58,33,0.15)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <PageTexture />
+                  <RSVPPage
+                    eventDate={eventDate}
+                    eventTime={eventTime}
+                    eventLocation={eventLocation}
+                    photoUrl1={photoUrl1}
+                    onYes={onYes}
+                    onNoInteract={onNoInteract}
+                    noClicks={noClicks}
+                    noGone={noGone}
+                  />
+                </div>
 
-          {/* Cover - flips to left (keep visible during flip animation) */}
-          {(currentPage < 1 || flippingPage === 0) && (
-            <FlippablePageDesktop
-              isFlipping={flippingPage === 0}
-              isFlipped={currentPage >= 1}
-              flipDirection={flipDirection}
-              onClick={currentPage === 0 && flippingPage === null ? () => onFlipPage(0) : undefined}
-              zIndex={10}
-              isCover
-            >
-              <CoverPage />
-            </FlippablePageDesktop>
-          )}
+                {/* Personal Message page - flips to left (only if personalMessage exists) */}
+                {hasPersonalMessage && (currentPage < rsvpPageIndex || flippingPage === personalPageIndex) && (
+                  <FlippablePageDesktop
+                    isFlipping={flippingPage === personalPageIndex}
+                    isFlipped={currentPage >= rsvpPageIndex}
+                    flipDirection={flipDirection}
+                    onClick={currentPage === personalPageIndex && flippingPage === null ? () => onFlipPage(personalPageIndex) : undefined}
+                    zIndex={3}
+                  >
+                    <PersonalMessagePage personalMessage={personalMessage} senderName={senderName} showHint={currentPage === personalPageIndex && flippingPage === null} />
+                  </FlippablePageDesktop>
+                )}
+
+                {/* Message page - flips to left (keep visible during flip animation) */}
+                {(currentPage < (hasPersonalMessage ? personalPageIndex : rsvpPageIndex) || flippingPage === messagePageIndex) && (
+                  <FlippablePageDesktop
+                    isFlipping={flippingPage === messagePageIndex}
+                    isFlipped={currentPage >= (hasPersonalMessage ? personalPageIndex : rsvpPageIndex)}
+                    flipDirection={flipDirection}
+                    onClick={currentPage === messagePageIndex && flippingPage === null ? () => onFlipPage(messagePageIndex) : undefined}
+                    zIndex={5}
+                  >
+                    <MessagePage message={message} senderName={senderName} photoUrl2={photoUrl2} showHint={currentPage === messagePageIndex && flippingPage === null} />
+                  </FlippablePageDesktop>
+                )}
+
+                {/* Cover - flips to left (keep visible during flip animation) */}
+                {(currentPage < 1 || flippingPage === 0) && (
+                  <FlippablePageDesktop
+                    isFlipping={flippingPage === 0}
+                    isFlipped={currentPage >= 1}
+                    flipDirection={flipDirection}
+                    onClick={currentPage === 0 && flippingPage === null ? () => onFlipPage(0) : undefined}
+                    zIndex={10}
+                    isCover
+                  >
+                    <CoverPage />
+                  </FlippablePageDesktop>
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
     </div>
@@ -383,6 +436,7 @@ function MobileScrapbook({
   senderName,
   photoUrl1,
   photoUrl2,
+  personalMessage,
   eventDate,
   eventTime,
   eventLocation,
@@ -401,6 +455,7 @@ function MobileScrapbook({
   senderName: string;
   photoUrl1?: string;
   photoUrl2?: string;
+  personalMessage?: string;
   eventDate: string;
   eventTime: string;
   eventLocation: string;
@@ -491,56 +546,119 @@ function MobileScrapbook({
           )}
         </AnimatePresence>
 
+        {/* Flipped personal message page (shows when page 2 flipped, only if personalMessage exists) - tap to go back */}
+        <AnimatePresence>
+          {personalMessage && personalMessage.trim().length > 0 && currentPage >= 3 && (
+            <motion.div
+              onClick={flippingPage === null && currentPage === 3 ? onFlipBack : undefined}
+              initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+              animate={{ height: 80, opacity: 1, marginBottom: 12 }}
+              exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+              transition={{ duration: 0.4 }}
+              style={{
+                background: "linear-gradient(145deg, #fdf8f0 0%, #f8f0e5 100%)",
+                borderRadius: 12,
+                overflow: "hidden",
+                boxShadow: "0 4px 12px rgba(92,58,33,0.12)",
+                cursor: flippingPage === null && currentPage === 3 ? "pointer" : "default",
+              }}
+            >
+              <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 12, justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 24 }}>💌</span>
+                  <div>
+                    <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: 14, color: "#5c3a21" }}>
+                      A Personal Note
+                    </p>
+                    <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 11, color: "#8b7355", fontStyle: "italic" }}>
+                      just for you
+                    </p>
+                  </div>
+                </div>
+                {currentPage === 3 && flippingPage === null && (
+                  <span style={{ fontSize: 11, color: "#8b6914", fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic" }}>
+                    ← tap to go back
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Current page stack */}
         <div style={{ position: "relative", height: "min(560px, 75vh)" }}>
-          {/* Base: RSVP page */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: "linear-gradient(145deg, #fdf8f0 0%, #f8f0e5 100%)",
-              borderRadius: 16,
-              boxShadow: "0 8px 24px rgba(92,58,33,0.15)",
-              overflow: "hidden",
-            }}
-          >
-            <PageTexture />
-            <RSVPPage
-              eventDate={eventDate}
-              eventTime={eventTime}
-              eventLocation={eventLocation}
-              photoUrl1={photoUrl1}
-              onYes={onYes}
-              onNoInteract={onNoInteract}
-              noClicks={noClicks}
-              noGone={noGone}
-            />
-          </div>
+          {/* Determine if we have personal message page */}
+          {(() => {
+            const hasPersonalMessage = personalMessage && personalMessage.trim().length > 0;
+            const rsvpPageIndex = hasPersonalMessage ? 3 : 2;
+            const personalPageIndex = hasPersonalMessage ? 2 : -1;
+            const messagePageIndex = 1;
 
-          {/* Message page (keep visible during flip) */}
-          {(currentPage < 2 || flippingPage === 1) && (
-            <FlippablePageMobile
-              isFlipping={flippingPage === 1}
-              flipDirection={flipDirection}
-              onClick={currentPage === 1 && flippingPage === null ? () => onFlipPage(1) : undefined}
-              zIndex={5}
-            >
-              <MessagePage message={message} senderName={senderName} photoUrl2={photoUrl2} showHint={currentPage === 1 && flippingPage === null} />
-            </FlippablePageMobile>
-          )}
+            return (
+              <>
+                {/* Base: RSVP page */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "linear-gradient(145deg, #fdf8f0 0%, #f8f0e5 100%)",
+                    borderRadius: 16,
+                    boxShadow: "0 8px 24px rgba(92,58,33,0.15)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <PageTexture />
+                  <RSVPPage
+                    eventDate={eventDate}
+                    eventTime={eventTime}
+                    eventLocation={eventLocation}
+                    photoUrl1={photoUrl1}
+                    onYes={onYes}
+                    onNoInteract={onNoInteract}
+                    noClicks={noClicks}
+                    noGone={noGone}
+                  />
+                </div>
 
-          {/* Cover (keep visible during flip) */}
-          {(currentPage < 1 || flippingPage === 0) && (
-            <FlippablePageMobile
-              isFlipping={flippingPage === 0}
-              flipDirection={flipDirection}
-              onClick={currentPage === 0 && flippingPage === null ? () => onFlipPage(0) : undefined}
-              zIndex={10}
-              isCover
-            >
-              <CoverPage />
-            </FlippablePageMobile>
-          )}
+                {/* Personal Message page (only if personalMessage exists) */}
+                {hasPersonalMessage && (currentPage < rsvpPageIndex || flippingPage === personalPageIndex) && (
+                  <FlippablePageMobile
+                    isFlipping={flippingPage === personalPageIndex}
+                    flipDirection={flipDirection}
+                    onClick={currentPage === personalPageIndex && flippingPage === null ? () => onFlipPage(personalPageIndex) : undefined}
+                    zIndex={3}
+                  >
+                    <PersonalMessagePage personalMessage={personalMessage} senderName={senderName} showHint={currentPage === personalPageIndex && flippingPage === null} />
+                  </FlippablePageMobile>
+                )}
+
+                {/* Message page (keep visible during flip) */}
+                {(currentPage < (hasPersonalMessage ? personalPageIndex : rsvpPageIndex) || flippingPage === messagePageIndex) && (
+                  <FlippablePageMobile
+                    isFlipping={flippingPage === messagePageIndex}
+                    flipDirection={flipDirection}
+                    onClick={currentPage === messagePageIndex && flippingPage === null ? () => onFlipPage(messagePageIndex) : undefined}
+                    zIndex={5}
+                  >
+                    <MessagePage message={message} senderName={senderName} photoUrl2={photoUrl2} showHint={currentPage === messagePageIndex && flippingPage === null} />
+                  </FlippablePageMobile>
+                )}
+
+                {/* Cover (keep visible during flip) */}
+                {(currentPage < 1 || flippingPage === 0) && (
+                  <FlippablePageMobile
+                    isFlipping={flippingPage === 0}
+                    flipDirection={flipDirection}
+                    onClick={currentPage === 0 && flippingPage === null ? () => onFlipPage(0) : undefined}
+                    zIndex={10}
+                    isCover
+                  >
+                    <CoverPage />
+                  </FlippablePageMobile>
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
     </div>
@@ -1146,6 +1264,131 @@ function MessagePage({ message, senderName, photoUrl2, showHint }: { message: st
 
       {showHint && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: [0.4, 0.8, 0.4], y: [0, 3, 0] }} transition={{ duration: 2, repeat: Infinity }} style={{ position: "absolute", bottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 12, color: "#b09878", fontStyle: "italic" }}>tap to continue</span>
+          <span style={{ fontSize: 12, color: "#b09878" }}>→</span>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+function PersonalMessagePage({ personalMessage, senderName, showHint }: { personalMessage: string; senderName: string; showHint: boolean }) {
+  return (
+    <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <div style={{ position: "absolute", inset: 0, background: `repeating-linear-gradient(transparent, transparent 26px, rgba(212,196,176,0.18) 26px, rgba(212,196,176,0.18) 27px)`, backgroundPositionY: 20, pointerEvents: "none" }} />
+      <WashiTape style={{ position: "absolute", top: -6, left: 20, width: 70, transform: "rotate(-5deg)" }} color="#8b9e6b" />
+      <WashiTape style={{ position: "absolute", top: -6, right: 24, width: 60, transform: "rotate(4deg)" }} color="#d4a574" />
+
+      {/* Decorative note paper */}
+      <motion.div
+        initial={{ opacity: 0, y: 20, rotate: -2 }}
+        animate={{ opacity: 1, y: 0, rotate: 1 }}
+        transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+        style={{
+          background: "linear-gradient(145deg, #fffef8 0%, #fff9ed 100%)",
+          padding: "28px 24px",
+          borderRadius: 4,
+          boxShadow: "0 6px 24px rgba(107,82,64,0.15), inset 0 0 0 1px rgba(212,196,176,0.3)",
+          maxWidth: 280,
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        {/* Tape on top of note */}
+        <div
+          style={{
+            position: "absolute",
+            top: -10,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 55,
+            height: 18,
+            background: "linear-gradient(90deg, #f0d4c4aa, #e8c4b4aa)",
+            borderRadius: 2,
+          }}
+        />
+
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: 16 }}>
+          <motion.span
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            style={{ fontSize: 28, display: "inline-block" }}
+          >
+            💌
+          </motion.span>
+          <h3 style={{
+            fontFamily: "'Dancing Script', cursive",
+            fontSize: 24,
+            color: "#5c3a21",
+            marginTop: 8,
+          }}>
+            A Personal Note
+          </h3>
+          <p style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: 13,
+            color: "#a08060",
+            fontStyle: "italic",
+            marginTop: 4,
+          }}>
+            just for you...
+          </p>
+        </div>
+
+        {/* Divider */}
+        <div style={{
+          width: 50,
+          height: 2,
+          background: "linear-gradient(90deg, transparent, #c27256, transparent)",
+          margin: "0 auto 16px",
+        }} />
+
+        {/* Personal message text */}
+        <p style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: 16,
+          color: "#6b5240",
+          fontStyle: "italic",
+          textAlign: "center",
+          lineHeight: 1.8,
+          wordBreak: "break-word",
+          overflowWrap: "break-word",
+          maxHeight: 200,
+          overflow: "auto",
+        }}>
+          "{personalMessage}"
+        </p>
+
+        {/* Signature */}
+        <div style={{
+          textAlign: "right",
+          marginTop: 20,
+          paddingRight: 8,
+        }}>
+          <p style={{
+            fontFamily: "'Dancing Script', cursive",
+            fontSize: 16,
+            color: "#8b7355",
+          }}>
+            — {senderName} 💕
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Decorative elements */}
+      <div style={{ position: "absolute", bottom: 50, left: 18, opacity: 0.12 }}><SketchyHeart size={14} color="#c27256" /></div>
+      <div style={{ position: "absolute", bottom: 40, right: 24, opacity: 0.12 }}><SketchyHeart size={10} color="#8b9e6b" /></div>
+      <div style={{ position: "absolute", top: 80, right: 16, opacity: 0.08, fontSize: 20 }}>🌿</div>
+      <div style={{ position: "absolute", bottom: 70, left: 24, opacity: 0.08, fontSize: 18 }}>🌸</div>
+
+      {showHint && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.4, 0.8, 0.4], y: [0, 3, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          style={{ position: "absolute", bottom: 16, display: "flex", alignItems: "center", gap: 6 }}
+        >
           <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 12, color: "#b09878", fontStyle: "italic" }}>tap to continue</span>
           <span style={{ fontSize: 12, color: "#b09878" }}>→</span>
         </motion.div>
