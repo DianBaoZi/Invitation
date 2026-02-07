@@ -54,7 +54,11 @@
       "Bash(vercel link:*)",
       "Bash(npm audit:*)",
       "Bash(git checkout:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git fetch:*)",
+      "Bash(git hash-object:*)",
+      "Bash(dir:*)",
+      "Bash(git reset:*)"
     ]
   }
 }

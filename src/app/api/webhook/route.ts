@@ -38,41 +38,65 @@ export async function POST(request: NextRequest) {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const supabase = createServiceClient() as any;
 
-      // Get invite slug from metadata
-      const inviteSlug = session.metadata?.inviteSlug;
+      // Check if this is a premium purchase
+      const productType = session.metadata?.productType;
 
-      if (inviteSlug) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const supabase = createServiceClient() as any;
+      if (productType === "premium") {
+        // Handle premium/lifetime access purchase
+        const userEmail = session.metadata?.userEmail || session.customer_details?.email || "";
 
-        // Update invite to mark as paid and extend expiration
-        const { error } = await supabase
-          .from("invites")
-          .update({
-            is_paid: true,
-            stripe_payment_id: session.payment_intent as string,
-            // Reset expiration to 30 days from now
-            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          })
-          .eq("slug", inviteSlug);
-
-        if (error) {
-          console.error("Failed to update invite:", error);
-        } else {
-          console.log(`Payment successful for invite: ${inviteSlug}`);
-        }
-
-        // Record purchase
-        await supabase.from("purchases").insert({
-          email: session.customer_details?.email || "",
-          name: session.customer_details?.name || "",
-          product_type: "single",
-          template_id: session.metadata?.templateId,
-          amount_cents: session.amount_total || 99,
+        // Record premium purchase
+        const { error } = await supabase.from("purchases").insert({
+          email: userEmail,
+          name: session.customer_details?.name || userEmail.split("@")[0] || "User",
+          product_type: "premium",
+          template_id: null,
+          amount_cents: session.amount_total || 399,
           stripe_session_id: session.id,
           stripe_payment_id: session.payment_intent as string,
         });
+
+        if (error) {
+          console.error("Failed to record premium purchase:", error);
+        } else {
+          console.log(`Premium purchase successful for: ${userEmail}`);
+        }
+      } else {
+        // Handle single invite purchase
+        const inviteSlug = session.metadata?.inviteSlug;
+
+        if (inviteSlug) {
+          // Update invite to mark as paid and extend expiration
+          const { error } = await supabase
+            .from("invites")
+            .update({
+              is_paid: true,
+              stripe_payment_id: session.payment_intent as string,
+              // Reset expiration to 30 days from now
+              expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            })
+            .eq("slug", inviteSlug);
+
+          if (error) {
+            console.error("Failed to update invite:", error);
+          } else {
+            console.log(`Payment successful for invite: ${inviteSlug}`);
+          }
+
+          // Record purchase
+          await supabase.from("purchases").insert({
+            email: session.customer_details?.email || "",
+            name: session.customer_details?.name || "",
+            product_type: "single",
+            template_id: session.metadata?.templateId,
+            amount_cents: session.amount_total || 199,
+            stripe_session_id: session.id,
+            stripe_payment_id: session.payment_intent as string,
+          });
+        }
       }
       break;
     }

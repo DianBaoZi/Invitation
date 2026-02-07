@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe, INVITE_PRICE_CENTS, PRODUCT_NAME, PRODUCT_DESCRIPTION } from "@/lib/stripe/client";
+import { stripe, LIFETIME_PRICE_CENTS, LIFETIME_PRODUCT_NAME, LIFETIME_PRODUCT_DESCRIPTION } from "@/lib/stripe/client";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { checkRateLimit, getClientIp, rateLimitConfigs } from "@/lib/security/rate-limiter";
 
 // ============================================
-// POST /api/checkout - Create Stripe checkout session
+// POST /api/checkout-premium - Create Stripe checkout for premium
 // ============================================
 
 export async function POST(request: NextRequest) {
   // Rate limiting
   const clientIp = getClientIp(request);
-  const rateLimit = checkRateLimit(`checkout:${clientIp}`, rateLimitConfigs.createInvite);
+  const rateLimit = checkRateLimit(`checkout-premium:${clientIp}`, rateLimitConfigs.createInvite);
 
   if (!rateLimit.allowed) {
     return NextResponse.json(
@@ -19,42 +20,43 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json();
-    const { inviteSlug, templateId, templateName } = body;
+    // Get the authenticated user
+    const supabase = createServerSupabaseClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!inviteSlug || !templateId) {
+    if (authError || !user) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields" },
-        { status: 400 }
+        { success: false, error: "Not authenticated" },
+        { status: 401 }
       );
     }
 
     // Get the base URL for redirects
     const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_BASE_URL || "https://yoursinvite.com";
 
-    // Create Stripe checkout session
-    // Note: Not specifying payment_method_types allows Stripe to automatically
-    // enable Apple Pay, Google Pay, and other methods based on Dashboard settings
+    // Create Stripe checkout session for premium
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
           price_data: {
             currency: "usd",
             product_data: {
-              name: templateName ? `${templateName} Invite` : PRODUCT_NAME,
-              description: PRODUCT_DESCRIPTION,
+              name: LIFETIME_PRODUCT_NAME,
+              description: LIFETIME_PRODUCT_DESCRIPTION,
             },
-            unit_amount: INVITE_PRICE_CENTS,
+            unit_amount: LIFETIME_PRICE_CENTS,
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}&slug=${inviteSlug}`,
-      cancel_url: `${origin}/payment/cancel?slug=${inviteSlug}`,
+      success_url: `${origin}/dashboard?premium=true`,
+      cancel_url: `${origin}/?cancelled=true`,
+      customer_email: user.email,
       metadata: {
-        inviteSlug,
-        templateId,
+        userId: user.id,
+        userEmail: user.email || "",
+        productType: "premium",
       },
     });
 
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
       url: session.url,
     });
   } catch (error) {
-    console.error("Stripe checkout error:", error);
+    console.error("Stripe premium checkout error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create checkout session" },
       { status: 500 }
