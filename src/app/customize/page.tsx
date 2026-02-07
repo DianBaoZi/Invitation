@@ -253,6 +253,14 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             maxLength: CHAR_LIMITS.message,
           },
           {
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "Every page of my heart has your name written on it.",
+            icon: "heart",
+            type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
+          },
+          {
             key: "date",
             label: "Event Date",
             placeholder: "",
@@ -823,6 +831,7 @@ function CustomizePageContent() {
           questionText: fieldValues.message.trim() || "Will you be my Valentine?",
           yesButtonText: "Yes!",
           successMessage: "You made my day! 💕",
+          personalMessage: fieldValues.personalMessage?.trim() || "",
           eventDate: fieldValues.date.trim() || "",
           eventTime: fieldValues.time.trim() || "",
           eventLocation: fieldValues.location.trim() || "",

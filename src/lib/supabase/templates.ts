@@ -37,6 +37,7 @@ export const DEFAULT_COZY_SCRAPBOOK_CONFIG: CozyScrapbookConfig = {
   questionText: "Will you be my Valentine?",
   yesButtonText: "Absolutely ♥",
   successMessage: "This is the beginning of something beautiful...",
+  personalMessage: "Every page of my heart has your name written on it.",
   eventDate: "Valentine's Day",
   eventTime: "7:30 PM",
   eventLocation: "Somewhere romantic",

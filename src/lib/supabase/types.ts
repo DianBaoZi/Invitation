@@ -51,9 +51,12 @@ export interface CozyScrapbookConfig {
   questionText: string;
   yesButtonText: string;
   successMessage: string;
+  personalMessage?: string;
   eventDate: string;
   eventTime: string;
   eventLocation: string;
+  photoUrl1?: string;
+  photoUrl2?: string;
 }
 
 export interface LoveLetterMailboxConfig {
