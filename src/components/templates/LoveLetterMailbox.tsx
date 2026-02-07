@@ -382,44 +382,64 @@ function RevealScreen({
     );
   }
 
-  // Simplified card animations - no blur filters, simpler easing
+  // Dramatic card animations - fancy entrances that trigger on scroll
   const cardDramaticDrop = {
-    hidden: { opacity: 0, y: -80, scale: 0.9 },
+    hidden: { opacity: 0, y: -120, scale: 0.8, rotateX: 15 },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+      rotateX: 0,
+      transition: {
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+        opacity: { duration: 0.4 }
+      },
     },
   };
 
   const cardDramaticSweep = {
-    hidden: { opacity: 0, x: 60, scale: 0.95 },
+    hidden: { opacity: 0, x: 100, scale: 0.85, rotate: 8 },
     visible: {
       opacity: 1,
       x: 0,
       scale: 1,
-      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+      rotate: 0,
+      transition: {
+        duration: 0.9,
+        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+        opacity: { duration: 0.5 }
+      },
     },
   };
 
   const cardDramaticReveal = {
-    hidden: { opacity: 0, y: 60, scale: 0.95 },
+    hidden: { opacity: 0, y: 100, scale: 0.85, rotate: -5 },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+      rotate: 0,
+      transition: {
+        duration: 0.9,
+        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+        opacity: { duration: 0.5 }
+      },
     },
   };
 
   const cardDramaticFlip = {
-    hidden: { opacity: 0, y: 80, scale: 0.9 },
+    hidden: { opacity: 0, y: 120, scale: 0.8, rotateY: -20 },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+      rotateY: 0,
+      transition: {
+        duration: 0.9,
+        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+        opacity: { duration: 0.5 }
+      },
     },
   };
 
@@ -482,7 +502,7 @@ function RevealScreen({
             variants={cardDramaticSweep}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
+            viewport={{ once: true, amount: 0.4 }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 20px 50px rgba(136,14,79,0.25), 0 8px 20px rgba(233,30,99,0.15)" }}
           >
@@ -542,7 +562,7 @@ function RevealScreen({
             variants={cardDramaticReveal}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
+            viewport={{ once: true, amount: 0.4 }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 20px 50px rgba(136,14,79,0.25), 0 8px 20px rgba(233,30,99,0.15)" }}
           >
@@ -598,7 +618,7 @@ function RevealScreen({
             variants={cardDramaticFlip}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
+            viewport={{ once: true, amount: 0.4 }}
             className="rounded-2xl overflow-hidden relative w-full"
             style={{ boxShadow: "0 8px 30px rgba(233,30,99,0.15)" }}
           >
