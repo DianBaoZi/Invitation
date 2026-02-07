@@ -145,7 +145,7 @@ export const TEMPLATES: Template[] = [
     default_config: DEFAULT_PREMIERE_CONFIG,
   },
   // Hidden: Y2K Digital Crush template removed from public listing
-    {
+  {
     id: "cozy-scrapbook",
     name: "Cozy Scrapbook",
     description:
