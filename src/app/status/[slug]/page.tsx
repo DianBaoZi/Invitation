@@ -101,8 +101,15 @@ function StatusPageContent() {
   };
 
   const formatDateTime = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleString("en-US", {
+    // Parse as UTC if no timezone info, then display in viewer's local timezone
+    let date = new Date(dateStr);
+
+    // If the date string doesn't end with Z or timezone offset, treat as UTC
+    if (!dateStr.endsWith('Z') && !dateStr.match(/[+-]\d{2}:\d{2}$/)) {
+      date = new Date(dateStr + 'Z');
+    }
+
+    return date.toLocaleString(undefined, {
       month: "short",
       day: "numeric",
       year: "numeric",
