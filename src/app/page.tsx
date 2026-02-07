@@ -1409,23 +1409,23 @@ function MembershipModal({ onClose }: { onClose: () => void }) {
         return;
       }
 
-      // Call the API endpoint to create Stripe checkout session
-      const response = await fetch("/api/checkout-premium", {
+      // Call the API endpoint to process premium purchase (test mode - bypasses Stripe)
+      const response = await fetch("/api/purchase-premium", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
 
       const data = await response.json();
 
-      if (!response.ok || !data.success || !data.url) {
-        console.error("Checkout error:", data.error);
-        alert(data.error || "There was an error creating checkout. Please try again.");
+      if (!response.ok || !data.success) {
+        console.error("Purchase error:", data.error);
+        alert(data.error || "There was an error processing your purchase. Please try again.");
         setIsLoading(false);
         return;
       }
 
-      // Redirect to Stripe checkout
-      window.location.href = data.url;
+      // Success! Redirect to dashboard
+      router.push("/dashboard?premium=true");
     } catch (err) {
       console.error("Purchase error:", err);
       alert("There was an error processing your purchase. Please try again.");

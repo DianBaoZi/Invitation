@@ -32,37 +32,46 @@ export async function POST(request: NextRequest) {
     // Get the base URL for redirects
     const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_BASE_URL || "https://yoursinvite.com";
 
+    // TESTING MODE: Bypass Stripe payment
+    // TODO: Remove this bypass and uncomment the Stripe code below for production
+    const mockSessionId = `test_session_${Date.now()}`;
+    return NextResponse.json({
+      success: true,
+      sessionId: mockSessionId,
+      url: `${origin}/payment/success?session_id=${mockSessionId}&slug=${inviteSlug}`,
+    });
+
     // Create Stripe checkout session
     // Note: Not specifying payment_method_types allows Stripe to automatically
     // enable Apple Pay, Google Pay, and other methods based on Dashboard settings
-    const session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: templateName ? `${templateName} Invite` : PRODUCT_NAME,
-              description: PRODUCT_DESCRIPTION,
-            },
-            unit_amount: INVITE_PRICE_CENTS,
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}&slug=${inviteSlug}`,
-      cancel_url: `${origin}/payment/cancel?slug=${inviteSlug}`,
-      metadata: {
-        inviteSlug,
-        templateId,
-      },
-    });
+    // const session = await stripe.checkout.sessions.create({
+    //   line_items: [
+    //     {
+    //       price_data: {
+    //         currency: "usd",
+    //         product_data: {
+    //           name: templateName ? `${templateName} Invite` : PRODUCT_NAME,
+    //           description: PRODUCT_DESCRIPTION,
+    //         },
+    //         unit_amount: INVITE_PRICE_CENTS,
+    //       },
+    //       quantity: 1,
+    //     },
+    //   ],
+    //   mode: "payment",
+    //   success_url: `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}&slug=${inviteSlug}`,
+    //   cancel_url: `${origin}/payment/cancel?slug=${inviteSlug}`,
+    //   metadata: {
+    //     inviteSlug,
+    //     templateId,
+    //   },
+    // });
 
-    return NextResponse.json({
-      success: true,
-      sessionId: session.id,
-      url: session.url,
-    });
+    // return NextResponse.json({
+    //   success: true,
+    //   sessionId: session.id,
+    //   url: session.url,
+    // });
   } catch (error) {
     console.error("Stripe checkout error:", error);
     return NextResponse.json(
