@@ -811,40 +811,40 @@ function CustomizePageContent() {
 
       if (templateId === "runaway-button" || templateId === "y2k-digital-crush") {
         configuration = {
-          questionText: fieldValues.message.trim() || "Will you be my Valentine?",
+          questionText: fieldValues.message?.trim() || "Will you be my Valentine?",
           yesButtonText: "Yes!",
           noButtonText: "No",
           successMessage: "You made my day! 💕",
         };
       } else if (templateId === "love-letter-mailbox") {
         configuration = {
-          message: fieldValues.message.trim() || getDefaultMessage(templateId),
-          plan: fieldValues.personalMessage.trim() || "",
-          date: fieldValues.date.trim() || "",
-          time: fieldValues.time.trim() || "",
-          location: fieldValues.location.trim() || "",
+          message: fieldValues.message?.trim() || getDefaultMessage(templateId),
+          plan: fieldValues.personalMessage?.trim() || "",
+          date: fieldValues.date?.trim() || "",
+          time: fieldValues.time?.trim() || "",
+          location: fieldValues.location?.trim() || "",
           yesButtonText: "Yes!",
           declineButtonText: "Maybe later",
         };
       } else if (templateId === "cozy-scrapbook") {
         configuration = {
-          questionText: fieldValues.message.trim() || "Will you be my Valentine?",
+          questionText: fieldValues.message?.trim() || "Will you be my Valentine?",
           yesButtonText: "Yes!",
           successMessage: "You made my day! 💕",
           personalMessage: fieldValues.personalMessage?.trim() || "",
-          eventDate: fieldValues.date.trim() || "",
-          eventTime: fieldValues.time.trim() || "",
-          eventLocation: fieldValues.location.trim() || "",
+          eventDate: fieldValues.date?.trim() || "",
+          eventTime: fieldValues.time?.trim() || "",
+          eventLocation: fieldValues.location?.trim() || "",
           photoUrl1: photoUrl1 || "",
           photoUrl2: photoUrl2 || "",
         };
       } else if (templateId === "elegant-invitation") {
         configuration = {
           message: fieldValues.message.trim() || "Will you be my Valentine?",
-          personalMessage: fieldValues.personalMessage.trim() || "",
-          date: fieldValues.date.trim() || "",
-          time: fieldValues.time.trim() || "",
-          location: fieldValues.location.trim() || "",
+          personalMessage: fieldValues.personalMessage?.trim() || "",
+          date: fieldValues.date?.trim() || "",
+          time: fieldValues.time?.trim() || "",
+          location: fieldValues.location?.trim() || "",
           photo1Url: photoUrl1 || "",
           photo2Url: photoUrl2 || "",
           photo3Url: photoUrl3 || "",
@@ -852,11 +852,11 @@ function CustomizePageContent() {
       } else {
         // stargazer, premiere, forest-adventure
         configuration = {
-          message: fieldValues.message.trim() || "Will you be my Valentine?",
-          personalMessage: fieldValues.personalMessage.trim() || "",
-          date: fieldValues.date.trim() || "",
-          time: fieldValues.time.trim() || "",
-          location: fieldValues.location.trim() || "",
+          message: fieldValues.message?.trim() || "Will you be my Valentine?",
+          personalMessage: fieldValues.personalMessage?.trim() || "",
+          date: fieldValues.date?.trim() || "",
+          time: fieldValues.time?.trim() || "",
+          location: fieldValues.location?.trim() || "",
         };
       }
 
