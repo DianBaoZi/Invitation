@@ -586,7 +586,7 @@ function MobileScrapbook({
         </AnimatePresence>
 
         {/* Current page stack */}
-        <div style={{ position: "relative", height: "min(560px, 75vh)" }}>
+        <div style={{ position: "relative", height: "min(560px, 80vh)" }}>
           {/* Determine if we have personal message page */}
           {(() => {
             const hasPersonalMessage = personalMessage && personalMessage.trim().length > 0;
@@ -604,7 +604,8 @@ function MobileScrapbook({
                     background: "linear-gradient(145deg, #fdf8f0 0%, #f8f0e5 100%)",
                     borderRadius: 16,
                     boxShadow: "0 8px 24px rgba(92,58,33,0.15)",
-                    overflow: "hidden",
+                    overflowY: "auto",
+                    overflowX: "hidden",
                   }}
                 >
                   <PageTexture />
@@ -1399,7 +1400,7 @@ function PersonalMessagePage({ personalMessage, senderName, showHint }: { person
 
 function RSVPPage({ eventDate, eventTime, eventLocation, photoUrl1, onYes, onNoInteract, noClicks, noGone }: { eventDate: string; eventTime: string; eventLocation: string; photoUrl1?: string; onYes: () => void; onNoInteract: () => void; noClicks: number; noGone: boolean }) {
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "16px 16px 20px", boxSizing: "border-box", overflow: "visible" }}>
+    <div style={{ position: "relative", width: "100%", minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "12px 16px 24px", boxSizing: "border-box", overflow: "visible" }}>
       <div style={{ position: "absolute", inset: 0, background: `repeating-linear-gradient(transparent, transparent 26px, rgba(212,196,176,0.18) 26px, rgba(212,196,176,0.18) 27px)`, backgroundPositionY: 20, pointerEvents: "none" }} />
       <WashiTape style={{ position: "absolute", top: -6, right: 20, width: 65, transform: "rotate(5deg)" }} color="#8b9e6b" />
 
