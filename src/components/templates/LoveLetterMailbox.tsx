@@ -20,7 +20,7 @@ interface LoveLetterMailboxProps {
 type Screen = "mailbox" | "reveal";
 
 export function LoveLetterMailbox({
-  message = "I've been wanting to ask you this...",
+  message = "",
   plan = "Valentine's Dinner",
   date = "Feb 14th",
   time = "7:30 PM",
@@ -477,23 +477,25 @@ function RevealScreen({
           </div>
 
           {/* Main message/question */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="mt-6 sm:mt-8 text-center px-4"
-          >
-            <h2
-              className="text-xl sm:text-2xl font-bold"
-              style={{
-                fontFamily: "'Dancing Script', cursive",
-                color: "#880e4f",
-                textShadow: "0 1px 8px rgba(136,14,79,0.1)",
-              }}
+          {message && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="mt-6 sm:mt-8 text-center px-4"
             >
-              {message}
-            </h2>
-          </motion.div>
+              <h2
+                className="text-xl sm:text-2xl font-bold"
+                style={{
+                  fontFamily: "'Dancing Script', cursive",
+                  color: "#880e4f",
+                  textShadow: "0 1px 8px rgba(136,14,79,0.1)",
+                }}
+              >
+                {message}
+              </h2>
+            </motion.div>
+          )}
 
           {/* Scroll hint */}
           <div className="mt-6 sm:mt-8 opacity-50">
@@ -695,7 +697,7 @@ function RevealScreen({
               <HoldToConfirmButton onConfirm={handleRSVP} />
 
               {/* Shy decline */}
-              <RSVPDeclineButton />
+              <RSVPDeclineButton slug={slug} />
 
               {/* Decorative divider bottom */}
               <div className="flex items-center justify-center gap-3 mt-6">
@@ -857,13 +859,13 @@ function HoldToConfirmButton({ onConfirm }: { onConfirm: () => void }) {
   );
 }
 
-function RSVPDeclineButton() {
+function RSVPDeclineButton({ slug, onDecline }: { slug?: string; onDecline?: () => void }) {
   const [attempts, setAttempts] = useState(0);
   const [fallingHearts, setFallingHearts] = useState<{ id: number; x: number; delay: number }[]>([]);
-  const [sealed, setSealed] = useState(false);
+  const [declined, setDeclined] = useState(false);
 
-  const handleDeclineApproach = () => {
-    if (sealed) return;
+  const handleClick = () => {
+    if (declined) return;
 
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
@@ -871,14 +873,20 @@ function RSVPDeclineButton() {
     // Add falling hearts each attempt
     const newHearts = Array.from({ length: 3 }, (_, i) => ({
       id: Date.now() + i,
-      x: -30 + Math.random() * 60, // spread around center
+      x: -30 + Math.random() * 60,
       delay: i * 0.1,
     }));
     setFallingHearts((prev) => [...prev, ...newHearts]);
 
-    // After 4 attempts, seal it with a kiss
-    if (newAttempts >= 4) {
-      setSealed(true);
+    // After 3 attempts, allow the decline
+    if (newAttempts >= 3) {
+      setDeclined(true);
+      if (slug) {
+        saveResponse(slug, "No");
+      }
+      if (onDecline) {
+        onDecline();
+      }
     }
   };
 
@@ -886,6 +894,7 @@ function RSVPDeclineButton() {
     <div className="relative h-12 mt-4 flex items-center justify-center">
       {/* The button */}
       <motion.button
+        onClick={handleClick}
         className="relative px-5 py-2 rounded-full text-xs whitespace-nowrap z-10"
         style={{
           fontFamily: "'Cormorant Garamond', serif",
@@ -896,13 +905,11 @@ function RSVPDeclineButton() {
           border: "1px dashed rgba(233,30,99,0.2)",
         }}
         animate={{
-          opacity: sealed ? 0 : Math.max(0.4, 1 - attempts * 0.15),
-          scale: sealed ? 0.8 : 1,
-          y: sealed ? 10 : 0,
+          opacity: declined ? 0 : Math.max(0.4, 1 - attempts * 0.15),
+          scale: declined ? 0.8 : 1,
+          y: declined ? 10 : 0,
         }}
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
-        onMouseEnter={handleDeclineApproach}
-        onTouchStart={handleDeclineApproach}
       >
         Can&apos;t make it...
       </motion.button>
@@ -931,38 +938,20 @@ function RSVPDeclineButton() {
         ))}
       </div>
 
-      {/* Lipstick kiss seal */}
+      {/* Sad message after declined */}
       <AnimatePresence>
-        {sealed && (
-          <motion.div
-            initial={{ scale: 0, rotate: -30, opacity: 0 }}
-            animate={{ scale: 1, rotate: -8, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
-            className="absolute z-20"
-            style={{
-              fontSize: 32,
-              filter: "drop-shadow(0 2px 4px rgba(233,30,99,0.3))",
-            }}
-          >
-            💋
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Message after sealed */}
-      <AnimatePresence>
-        {sealed && (
+        {declined && (
           <motion.p
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.2 }}
             className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap"
             style={{
               fontFamily: "'Dancing Script', cursive",
-              color: "#e91e63",
+              color: "#9ca3af",
             }}
           >
-            sealed with love 💕
+            Maybe next time... 💔
           </motion.p>
         )}
       </AnimatePresence>

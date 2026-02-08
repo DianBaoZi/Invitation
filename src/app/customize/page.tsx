@@ -80,15 +80,6 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
         accentColor: "pink",
         fields: [
           {
-            key: "message",
-            label: "Main Message",
-            placeholder: "Will you be my Valentine?",
-            icon: "message",
-            type: "input",
-            maxLength: CHAR_LIMITS.message,
-            hint: "The main question displayed on the card",
-          },
-          {
             key: "date",
             label: "Date",
             placeholder: "",
@@ -147,22 +138,6 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             hint: "The typewriter text in the night sky",
           },
           {
-            key: "personalMessage",
-            label: "Personal Message",
-            placeholder: "Every moment with you feels like stargazing...",
-            icon: "penline",
-            type: "textarea",
-            maxLength: CHAR_LIMITS.personalMessage,
-            hint: "Appears as a stardust letter in the night sky",
-            textareaStyle: {
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontStyle: "italic",
-              fontSize: "15px",
-              lineHeight: 1.7,
-              color: "#312e81",
-            },
-          },
-          {
             key: "date",
             label: "Date",
             placeholder: "",
@@ -186,6 +161,22 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             type: "input",
             maxLength: CHAR_LIMITS.location,
           },
+          {
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "Every moment with you feels like stargazing...",
+            icon: "penline",
+            type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
+            hint: "Appears as a stardust letter in the night sky",
+            textareaStyle: {
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontStyle: "italic",
+              fontSize: "15px",
+              lineHeight: 1.7,
+              color: "#312e81",
+            },
+          },
         ],
       };
 
@@ -203,22 +194,6 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             type: "input",
             maxLength: CHAR_LIMITS.message,
             hint: "The marquee text on the big screen",
-          },
-          {
-            key: "personalMessage",
-            label: "Personal Message",
-            placeholder: "Every scene of my life is better with you in it.",
-            icon: "penline",
-            type: "textarea",
-            maxLength: CHAR_LIMITS.personalMessage,
-            hint: "Scrolls like film credits on the big screen",
-            textareaStyle: {
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontStyle: "italic",
-              fontSize: "15px",
-              lineHeight: 1.7,
-              color: "#78350f",
-            },
           },
           {
             key: "date",
@@ -244,6 +219,22 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             type: "input",
             maxLength: CHAR_LIMITS.location,
           },
+          {
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "Every scene of my life is better with you in it.",
+            icon: "penline",
+            type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
+            hint: "Scrolls like film credits on the big screen",
+            textareaStyle: {
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontStyle: "italic",
+              fontSize: "15px",
+              lineHeight: 1.7,
+              color: "#78350f",
+            },
+          },
         ],
       };
 
@@ -260,14 +251,6 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             icon: "message",
             type: "input",
             maxLength: CHAR_LIMITS.message,
-          },
-          {
-            key: "personalMessage",
-            label: "Personal Message",
-            placeholder: "Every page of my heart has your name written on it.",
-            icon: "heart",
-            type: "textarea",
-            maxLength: CHAR_LIMITS.personalMessage,
           },
           {
             key: "date",
@@ -293,6 +276,14 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             type: "input",
             maxLength: CHAR_LIMITS.location,
           },
+          {
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "Every page of my heart has your name written on it.",
+            icon: "heart",
+            type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
+          },
         ],
       };
 
@@ -310,15 +301,6 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             type: "input",
             maxLength: CHAR_LIMITS.message,
             hint: "Shown after beating the rhythm game",
-          },
-          {
-            key: "personalMessage",
-            label: "Personal Message",
-            placeholder: "Ready Player 2? Let's start a co-op adventure!",
-            icon: "heart",
-            type: "textarea",
-            maxLength: CHAR_LIMITS.personalMessage,
-            hint: "Your reward message revealed after winning",
           },
           {
             key: "date",
@@ -343,6 +325,15 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             icon: "mappin",
             type: "input",
             maxLength: CHAR_LIMITS.location,
+          },
+          {
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "Ready Player 2? Let's start a co-op adventure!",
+            icon: "heart",
+            type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
+            hint: "Your reward message revealed after winning",
           },
         ],
       };
@@ -363,15 +354,6 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             hint: "Displayed in the love.exe dialog",
           },
           {
-            key: "personalMessage",
-            label: "Personal Message",
-            placeholder: "You've captured my heart like a rare Pokémon.",
-            icon: "heart",
-            type: "textarea",
-            maxLength: CHAR_LIMITS.personalMessage,
-            hint: "A sweet note shown in the invitation",
-          },
-          {
             key: "date",
             label: "Event Date",
             placeholder: "",
@@ -395,6 +377,15 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             type: "input",
             maxLength: CHAR_LIMITS.location,
           },
+          {
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "You've captured my heart like a rare Pokémon.",
+            icon: "heart",
+            type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
+            hint: "A sweet note shown in the invitation",
+          },
         ],
       };
 
@@ -412,21 +403,6 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             type: "input",
             maxLength: CHAR_LIMITS.message,
             hint: "Revealed in the magical letter at the end of the quest",
-          },
-          {
-            key: "personalMessage",
-            label: "Personal Message",
-            placeholder: "I planned this whole adventure just for you!",
-            icon: "penline",
-            type: "textarea",
-            maxLength: CHAR_LIMITS.personalMessage,
-            hint: "A sweet note on the invitation scroll",
-            textareaStyle: {
-              fontFamily: "'Press Start 2P', monospace",
-              fontSize: "12px",
-              lineHeight: 1.8,
-              color: "#166534",
-            },
           },
           {
             key: "date",
@@ -452,6 +428,21 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             type: "input",
             maxLength: CHAR_LIMITS.location,
           },
+          {
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "I planned this whole adventure just for you!",
+            icon: "penline",
+            type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
+            hint: "A sweet note on the invitation scroll",
+            textareaStyle: {
+              fontFamily: "'Press Start 2P', monospace",
+              fontSize: "12px",
+              lineHeight: 1.8,
+              color: "#166534",
+            },
+          },
         ],
       };
 
@@ -469,22 +460,6 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             type: "input",
             maxLength: CHAR_LIMITS.message,
             hint: "The elegant question displayed in the invitation",
-          },
-          {
-            key: "personalMessage",
-            label: "Personal Message",
-            placeholder: "Every moment with you feels like a beautiful story unfolding.",
-            icon: "penline",
-            type: "textarea",
-            maxLength: CHAR_LIMITS.personalMessage,
-            hint: "A heartfelt note in the message card",
-            textareaStyle: {
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontStyle: "italic",
-              fontSize: "15px",
-              lineHeight: 1.7,
-              color: "#b76e79",
-            },
           },
           {
             key: "date",
@@ -509,6 +484,22 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
             icon: "mappin",
             type: "input",
             maxLength: CHAR_LIMITS.location,
+          },
+          {
+            key: "personalMessage",
+            label: "Personal Message",
+            placeholder: "Every moment with you feels like a beautiful story unfolding.",
+            icon: "penline",
+            type: "textarea",
+            maxLength: CHAR_LIMITS.personalMessage,
+            hint: "A heartfelt note in the message card",
+            textareaStyle: {
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontStyle: "italic",
+              fontSize: "15px",
+              lineHeight: 1.7,
+              color: "#b76e79",
+            },
           },
         ],
       };
@@ -843,7 +834,7 @@ function CustomizePageContent() {
   const getDefaultMessage = (tid: string) => {
     switch (tid) {
       case "love-letter-mailbox":
-        return "I've been wanting to ask you this...";
+        return "";
       default:
         return "Will you be my Valentine?";
     }
@@ -858,7 +849,8 @@ function CustomizePageContent() {
   };
 
   const handlePreview = () => {
-    if (!fieldValues.message.trim()) {
+    // Message is required for all templates except love-letter-mailbox
+    if (templateId !== "love-letter-mailbox" && !fieldValues.message.trim()) {
       showToast("Please enter a main message/question", "error");
       return;
     }
@@ -894,7 +886,8 @@ function CustomizePageContent() {
       showToast("Please enter your name", "error");
       return;
     }
-    if (!fieldValues.message.trim()) {
+    // Message is required for all templates except love-letter-mailbox
+    if (templateId !== "love-letter-mailbox" && !fieldValues.message.trim()) {
       showToast("Please enter a main message/question", "error");
       return;
     }
@@ -1128,21 +1121,6 @@ function CustomizePageContent() {
             </svg>
             Continue with Google
           </Button>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400 uppercase tracking-wide">or</span>
-            <div className="flex-1 h-px bg-gray-200" />
-          </div>
-
-          {/* Free template link */}
-          <button
-            onClick={() => router.push("/customize?template=runaway-button")}
-            className="text-sm text-gray-500 hover:text-pink-600 transition-colors"
-          >
-            Try our <span className="font-medium">free template</span> instead
-          </button>
 
           {/* Back button */}
           <button

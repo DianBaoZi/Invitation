@@ -45,7 +45,7 @@ export const DEFAULT_COZY_SCRAPBOOK_CONFIG: CozyScrapbookConfig = {
 
 
 export const DEFAULT_LOVE_LETTER_CONFIG: LoveLetterMailboxConfig = {
-  message: "I've been wanting to ask you this...",
+  message: "",
   plan: "Valentine's Dinner",
   date: "Feb 14th @ 7:30 PM",
   location: "The Little Italian Place",
