@@ -251,7 +251,7 @@ export default function Home() {
 
         {/* Animated Hero Title */}
         <h1
-          className="text-[2.75rem] sm:text-6xl md:text-7xl lg:text-8xl text-stone-900 tracking-tight leading-[1.05] mb-3 sm:mb-6 overflow-visible"
+          className="text-[2.5rem] sm:text-6xl md:text-7xl lg:text-8xl text-stone-900 tracking-tight leading-[1.05] mb-3 sm:mb-6 overflow-visible whitespace-nowrap"
           style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 600 }}
         >
           {/* Letter-by-letter "Impress" */}
@@ -714,7 +714,7 @@ function MobileCard({
         <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
           <Play className="w-4 h-4 text-stone-700 ml-0.5" fill="currentColor" />
         </div>
-        <span className="text-white text-xs font-medium px-3 py-1 rounded-full bg-black/40 backdrop-blur-sm" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+        <span className="text-white text-xs font-medium px-3 py-1 rounded-full bg-black/40 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
           Tap to preview
         </span>
       </div>

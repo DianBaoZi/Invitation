@@ -289,7 +289,7 @@ function StatusPageContent() {
                   </div>
                   {hasBeenViewed && status.first_viewed_at && (
                     <span className="text-xs text-gray-400 text-right">
-                      First opened<br/>{formatDateTime(status.first_viewed_at)}
+                      First opened on<br/>{formatDateTime(status.first_viewed_at)}
                     </span>
                   )}
                 </div>

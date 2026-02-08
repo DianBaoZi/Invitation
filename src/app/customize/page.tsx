@@ -1499,7 +1499,7 @@ function CustomizePageContent() {
                             onChange={(e) => updateField(field.key, e.target.value.slice(0, field.maxLength || 9999))}
                             rows={3}
                             maxLength={field.maxLength}
-                            className={`w-full px-4 py-3 text-base rounded-xl border border-gray-200 ${accent.border} focus:ring-2 ${accent.ring} focus:outline-none resize-none`}
+                            className={`w-full px-4 py-3 text-base rounded-xl border border-gray-200 ${accent.border} focus:ring-2 ${accent.ring} focus:outline-none resize-none placeholder:text-gray-400 placeholder:italic`}
                             style={field.textareaStyle}
                           />
                           {field.hint && (

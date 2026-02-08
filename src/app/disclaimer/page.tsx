@@ -153,7 +153,7 @@ export default function DisclaimerPage() {
           <strong>YoursInvite Legal</strong>
         </p>
         <p style={{ marginBottom: 0 }}>
-          Email: <a href="mailto:legal@yoursinvite.com">legal@yoursinvite.com</a>
+          Email: <a href="mailto:hello@yoursinvite.com">hello@yoursinvite.com</a>
         </p>
       </div>
       <p>

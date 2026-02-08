@@ -389,7 +389,7 @@ function DashboardContent() {
                   <div className="flex items-center gap-1 mb-4 text-sm text-gray-600">
                     <Calendar className="w-4 h-4" />
                     <span>
-                      Created {new Date(invite.created_at).toLocaleDateString()}
+                      Created on {new Date(invite.created_at).toLocaleDateString()}
                     </span>
                   </div>
 

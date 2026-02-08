@@ -196,7 +196,7 @@ export default function PrivacyPage() {
 
       <p>
         To exercise any of these rights, please contact us at{" "}
-        <a href="mailto:privacy@yoursinvite.com">privacy@yoursinvite.com</a>. We will respond to your
+        <a href="mailto:hello@yoursinvite.com">hello@yoursinvite.com</a>. We will respond to your
         request within 30 days.
       </p>
 
@@ -265,7 +265,7 @@ export default function PrivacyPage() {
           <strong>YoursInvite Privacy Team</strong>
         </p>
         <p style={{ marginBottom: 0 }}>
-          Email: <a href="mailto:privacy@yoursinvite.com">privacy@yoursinvite.com</a>
+          Email: <a href="mailto:hello@yoursinvite.com">hello@yoursinvite.com</a>
         </p>
       </div>
       <p>
