@@ -819,7 +819,7 @@ function ScrollContent({
               {[
                 { label: "date", value: date, delay: 0.4 },
                 { label: "showtime", value: time, delay: 0.6 },
-                { label: "venue", value: location, delay: 0.8 },
+                { label: "location", value: location, delay: 0.8 },
               ].map((item) => (
                 <motion.div
                   key={item.label}

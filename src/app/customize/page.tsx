@@ -229,7 +229,7 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
           },
           {
             key: "location",
-            label: "Venue",
+            label: "Location",
             placeholder: "The usual spot",
             icon: "mappin",
             type: "input",
@@ -679,21 +679,34 @@ function CustomizePageContent() {
   const [photoUrl3, setPhotoUrl3] = useState<string>(""); // Third photo - for elegant-invitation
   const [userId, setUserId] = useState<string | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [isPremium, setIsPremium] = useState(false);
 
   // Check if this is a paid template that requires sign-in
-  const requiresAuth = template && !template.is_free;
+  // Pro users don't need to pay, so they don't require auth for paid templates
+  const requiresAuth = template && !template.is_free && !isPremium;
 
-  // Get current user if logged in
+  // Get current user if logged in and check premium status
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        setUserId(user.id);
+    const fetchUserData = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+          setUserId(user.id);
+
+          // Check premium status
+          const premiumRes = await fetch("/api/premium-status");
+          const premiumData = await premiumRes.json();
+          setIsPremium(premiumData.isPremium === true);
+        }
+        setAuthLoading(false);
+      } catch {
+        setAuthLoading(false);
       }
-      setAuthLoading(false);
-    }).catch(() => {
-      setAuthLoading(false);
-    });
+    };
+
+    fetchUserData();
   }, []);
 
   // Template-specific field values with defaults
@@ -705,8 +718,48 @@ function CustomizePageContent() {
     location: "",
   });
 
+  // Compress and resize image to reduce file size
+  const compressImage = (file: File, maxWidth: number, maxHeight: number, quality: number): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let { width, height } = img;
+
+          // Calculate new dimensions while maintaining aspect ratio
+          if (width > maxWidth || height > maxHeight) {
+            const ratio = Math.min(maxWidth / width, maxHeight / height);
+            width = Math.round(width * ratio);
+            height = Math.round(height * ratio);
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            reject(new Error("Failed to get canvas context"));
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert to JPEG for better compression (unless it's a PNG with transparency)
+          const dataUrl = canvas.toDataURL("image/jpeg", quality);
+          resolve(dataUrl);
+        };
+        img.onerror = () => reject(new Error("Failed to load image"));
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsDataURL(file);
+    });
+  };
+
   // Handle photo upload - can be used for either photo slot
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
@@ -714,16 +767,19 @@ function CustomizePageContent() {
         showToast("Please select an image file", "error");
         return;
       }
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        showToast("Image must be less than 5MB", "error");
+      // Validate file size (max 10MB before compression)
+      if (file.size > 10 * 1024 * 1024) {
+        showToast("Image must be less than 10MB", "error");
         return;
       }
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setter(event.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+
+      try {
+        // Compress and resize image (max 1200px, 80% quality)
+        const compressedDataUrl = await compressImage(file, 1200, 1200, 0.8);
+        setter(compressedDataUrl);
+      } catch {
+        showToast("Failed to process image. Please try again.", "error");
+      }
     }
   };
 
@@ -914,8 +970,8 @@ function CustomizePageContent() {
         throw new Error(result.error || "Failed to create invite");
       }
 
-      // Check if this is a paid template - redirect to Stripe checkout
-      if (template && !template.is_free) {
+      // Check if this is a paid template - redirect to Stripe checkout (skip for pro users)
+      if (template && !template.is_free && !isPremium) {
         // Create Stripe checkout session
         const checkoutResponse = await fetch("/api/checkout", {
           method: "POST",

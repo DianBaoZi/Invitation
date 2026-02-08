@@ -61,22 +61,29 @@ export default function Home() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0 });
   const [inviteCount, setInviteCount] = useState(0);
+  const [isPremium, setIsPremium] = useState(false);
 
-  // Fetch real invite count from database on mount
+  // Fetch premium status and invite count on mount
   useEffect(() => {
-    const fetchInviteCount = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch("/api/invites");
-        const data = await res.json();
-        if (data.success && data.count !== undefined) {
-          setInviteCount(data.count);
+        // Fetch invite count
+        const countRes = await fetch("/api/invites");
+        const countData = await countRes.json();
+        if (countData.success && countData.count !== undefined) {
+          setInviteCount(countData.count);
         }
+
+        // Fetch premium status
+        const premiumRes = await fetch("/api/premium-status");
+        const premiumData = await premiumRes.json();
+        setIsPremium(premiumData.isPremium === true);
       } catch (error) {
-        console.error("Failed to fetch invite count:", error);
+        console.error("Failed to fetch data:", error);
       }
     };
 
-    fetchInviteCount();
+    fetchData();
   }, []);
 
   // Increment counter by 1 every 5 seconds
@@ -398,6 +405,7 @@ export default function Home() {
               onHover={() => setHoveredId(template.id)}
               onLeave={() => setHoveredId(null)}
               onClick={() => handleCardClick(template)}
+              isPremium={isPremium}
             />
           ))}
           {/* Coming Soon Card */}
@@ -412,6 +420,7 @@ export default function Home() {
               template={template}
               index={index}
               onClick={() => handleCardClick(template)}
+              isPremium={isPremium}
             />
           ))}
           {/* Coming Soon Card - Mobile */}
@@ -419,26 +428,28 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Membership Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:w-auto z-40"
-      >
-        <button
-          onClick={() => setShowMembershipModal(true)}
-          className="w-full md:w-auto bg-gradient-to-r from-rose-500 to-pink-500 text-white px-6 py-3.5 rounded-full flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all hover:from-rose-600 hover:to-pink-600 active:scale-[0.98]"
-          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+      {/* Membership Banner - Hidden for premium users */}
+      {!isPremium && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:w-auto z-40"
         >
-          <Sparkles className="w-4 h-4 text-white" />
-          <span className="text-sm tracking-wide">
-            <span className="font-semibold">{formatPrice(PRICING.lifetime)}</span>
-            <span className="hidden sm:inline"> — Lifetime Access to All Templates</span>
-          </span>
-          <ArrowRight className="w-4 h-4 text-white/80" />
-        </button>
-      </motion.div>
+          <button
+            onClick={() => setShowMembershipModal(true)}
+            className="w-full md:w-auto bg-gradient-to-r from-rose-500 to-pink-500 text-white px-6 py-3.5 rounded-full flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all hover:from-rose-600 hover:to-pink-600 active:scale-[0.98]"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+          >
+            <Sparkles className="w-4 h-4 text-white" />
+            <span className="text-sm tracking-wide">
+              <span className="font-semibold">{formatPrice(PRICING.lifetime)}</span>
+              <span className="hidden sm:inline"> — Lifetime Access to All Templates</span>
+            </span>
+            <ArrowRight className="w-4 h-4 text-white/80" />
+          </button>
+        </motion.div>
+      )}
 
       {/* Preview Modal */}
       <AnimatePresence>
@@ -527,6 +538,7 @@ function TemplateCard({
   onHover,
   onLeave,
   onClick,
+  isPremium,
 }: {
   template: Template;
   index: number;
@@ -534,6 +546,7 @@ function TemplateCard({
   onHover: () => void;
   onLeave: () => void;
   onClick: () => void;
+  isPremium: boolean;
 }) {
   // Standardized larger card height (3x original ~200px)
   const getCardHeight = () => {
@@ -639,6 +652,13 @@ function TemplateCard({
             >
               ✨ Free
             </span>
+          ) : isPremium ? (
+            <span
+              className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full text-xs font-bold shadow-xl"
+              style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+            >
+              ✓ Pro
+            </span>
           ) : (
             <span
               className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full text-xs font-bold shadow-xl"
@@ -682,10 +702,12 @@ function MobileCard({
   template,
   index,
   onClick,
+  isPremium,
 }: {
   template: Template;
   index: number;
   onClick: () => void;
+  isPremium: boolean;
 }) {
   const cardHeight = 480;
 
@@ -724,6 +746,10 @@ function MobileCard({
         {template.is_free ? (
           <span className="px-3 py-1.5 bg-emerald-500 text-white rounded-full text-[10px] font-bold uppercase tracking-wide shadow-lg">
             ✨ Free
+          </span>
+        ) : isPremium ? (
+          <span className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-full text-[10px] font-bold shadow-lg">
+            ✓ Pro
           </span>
         ) : (
           <span

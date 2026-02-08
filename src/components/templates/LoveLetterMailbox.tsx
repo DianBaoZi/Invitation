@@ -476,6 +476,25 @@ function RevealScreen({
             />
           </div>
 
+          {/* Main message/question */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="mt-6 sm:mt-8 text-center px-4"
+          >
+            <h2
+              className="text-xl sm:text-2xl font-bold"
+              style={{
+                fontFamily: "'Dancing Script', cursive",
+                color: "#880e4f",
+                textShadow: "0 1px 8px rgba(136,14,79,0.1)",
+              }}
+            >
+              {message}
+            </h2>
+          </motion.div>
+
           {/* Scroll hint */}
           <div className="mt-6 sm:mt-8 opacity-50">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c2185b" strokeWidth="1.5" strokeLinecap="round" className="sm:w-7 sm:h-7">
