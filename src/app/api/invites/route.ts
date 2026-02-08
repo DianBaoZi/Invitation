@@ -70,6 +70,9 @@ export async function POST(request: NextRequest) {
     const sanitizedCreatorName = creator_name ? sanitizeString(creator_name, 100) : null;
     const sanitizedRecipientName = recipient_name ? sanitizeString(recipient_name, 100) : null;
 
+    // Set expiration to 30 days from now
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
     // Insert invite into Supabase
     const { data, error } = await supabase
       .from("invites")
@@ -82,6 +85,7 @@ export async function POST(request: NextRequest) {
         creator_name: sanitizedCreatorName,
         recipient_name: sanitizedRecipientName,
         is_paid: is_paid || false,
+        expires_at: expiresAt,
       })
       .select()
       .single();
