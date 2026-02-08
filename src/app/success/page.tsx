@@ -185,18 +185,25 @@ function SuccessPageContent() {
           We've also sent these links to your email
         </motion.p>
 
-        {/* Create another button */}
+        {/* Action buttons */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
+          className="flex gap-3"
         >
+          <Button
+            onClick={() => router.push(`/status/${slug}`)}
+            className="flex-1 h-12 text-base font-medium rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+          >
+            View Status
+          </Button>
           <Button
             onClick={() => router.push("/")}
             variant="outline"
-            className="w-full h-12 text-base font-medium rounded-xl border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+            className="flex-1 h-12 text-base font-medium rounded-xl border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
           >
-            Create another invite
+            Create Another
           </Button>
         </motion.div>
       </motion.div>

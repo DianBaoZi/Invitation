@@ -92,11 +92,11 @@ function PaymentSuccessContent() {
             View Invite
           </Button>
           <Button
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push(`/status/${slug}`)}
             variant="outline"
             className="flex-1"
           >
-            Go to Dashboard
+            View Status
           </Button>
         </div>
       </motion.div>
