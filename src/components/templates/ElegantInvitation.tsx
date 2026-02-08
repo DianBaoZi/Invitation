@@ -565,7 +565,7 @@ function PhotoFrameCard({ photo, index }: { photo: PhotoFrame; index: number }) 
           }}
         >
           {/* Inner gold border */}
-          <div style={{ border: `1px solid ${PALETTE.gold}`, padding: 8, opacity: 0.6 }}>
+          <div style={{ border: `1px solid ${PALETTE.gold}`, padding: 8, borderColor: `${PALETTE.gold}99` }}>
             <div
               className="relative overflow-hidden"
               style={{
@@ -893,12 +893,10 @@ const PETAL_COLORS = [
   "#d4a5a5", // dusty rose
 ];
 
-// Poetic messages as the button becomes shy
+// Poetic messages as the button becomes shy (3 clicks to disappear)
 const SHY_MESSAGES = [
   "I think I'm feeling a bit shy...",
-  "Getting harder to say no...",
   "My resolve is weakening...",
-  "Your charm is quite persuasive...",
   "I'm almost convinced...",
   "One more try and I might vanish...",
   "Perhaps love always wins?",
@@ -1015,7 +1013,7 @@ function RSVPSection({
     // Show a poetic message
     setCurrentMessage(SHY_MESSAGES[Math.min(count - 1, SHY_MESSAGES.length - 1)]);
 
-    if (count >= 7) {
+    if (count >= 3) {
       // Transform into blooming flower petals and float away
       setIsBloomingAway(true);
 
