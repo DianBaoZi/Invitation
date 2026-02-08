@@ -10,9 +10,10 @@ import { formatPrice } from "@/lib/supabase/templates";
 interface PreviewModalProps {
   template: Template;
   onClose: () => void;
+  isPremium?: boolean;
 }
 
-export function PreviewModal({ template, onClose }: PreviewModalProps) {
+export function PreviewModal({ template, onClose, isPremium = false }: PreviewModalProps) {
   const router = useRouter();
   const [showFreeShareModal, setShowFreeShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -77,17 +78,19 @@ export function PreviewModal({ template, onClose }: PreviewModalProps) {
               whileTap={{ scale: 0.98 }}
               className="w-full py-4 rounded-2xl font-bold text-base transition-all"
               style={{
-                background: template.is_free
+                background: template.is_free || isPremium
                   ? "linear-gradient(135deg, #10b981, #059669)"
                   : "linear-gradient(135deg, #e11d48, #f43f5e, #fb7185)",
                 color: "white",
-                boxShadow: template.is_free
+                boxShadow: template.is_free || isPremium
                   ? "0 4px 20px rgba(16,185,129,0.4)"
                   : "0 4px 20px rgba(225,29,72,0.4)",
               }}
             >
               {template.is_free
                 ? "Create my invite — Free ✨"
+                : isPremium
+                ? "Create my invite — Pro ✓"
                 : `Unlock this template · ${formatPrice(template.price_cents)}`}
             </motion.button>
 
@@ -102,7 +105,18 @@ export function PreviewModal({ template, onClose }: PreviewModalProps) {
               </motion.p>
             )}
 
-            {!template.is_free && (
+            {!template.is_free && isPremium && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="text-center text-white/40 text-xs mt-3 font-medium"
+              >
+                Included with your Pro access
+              </motion.p>
+            )}
+
+            {!template.is_free && !isPremium && (
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

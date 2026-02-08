@@ -457,6 +457,7 @@ export default function Home() {
           <PreviewModal
             template={selectedTemplate}
             onClose={handleCloseModal}
+            isPremium={isPremium}
           />
         )}
       </AnimatePresence>
