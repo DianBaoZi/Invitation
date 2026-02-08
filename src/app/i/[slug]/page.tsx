@@ -424,7 +424,6 @@ function InteractiveTemplate({
         return (
           <LoveLetterMailbox
             senderName={senderName}
-            message={message}
             date={date}
             time={time}
             location={location}
