@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe, INVITE_PRICE_CENTS, PRODUCT_NAME, PRODUCT_DESCRIPTION } from "@/lib/stripe/client";
 import { checkRateLimit, getClientIp, rateLimitConfigs } from "@/lib/security/rate-limiter";
+import { isValidSlug, sanitizeString } from "@/lib/security/sanitize";
+import { getTemplateById } from "@/lib/supabase/templates";
 
 // ============================================
 // POST /api/checkout - Create Stripe checkout session
@@ -29,6 +31,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate inviteSlug format
+    if (!isValidSlug(inviteSlug)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid invite" },
+        { status: 400 }
+      );
+    }
+
+    // Validate templateId exists
+    if (!getTemplateById(templateId)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid template" },
+        { status: 400 }
+      );
+    }
+
+    // Sanitize templateName for display
+    const safeTemplateName = templateName ? sanitizeString(templateName, 50) : null;
+
     // Get the base URL for redirects
     const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_BASE_URL || "https://yoursinvite.com";
 
@@ -41,7 +62,7 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: templateName ? `${templateName} Invite` : PRODUCT_NAME,
+              name: safeTemplateName ? `${safeTemplateName} Invite` : PRODUCT_NAME,
               description: PRODUCT_DESCRIPTION,
             },
             unit_amount: INVITE_PRICE_CENTS,

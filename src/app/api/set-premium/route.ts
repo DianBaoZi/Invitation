@@ -1,24 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient, createServiceClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 
 // ============================================
-// POST /api/set-premium - Manually set premium status (admin only)
+// POST /api/set-premium - Admin-only endpoint to grant premium
+// Requires ADMIN_SECRET_KEY in request body for security
 // ============================================
 
 export async function POST(request: NextRequest) {
   try {
-    // Get the authenticated user
-    const supabase = createServerSupabaseClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const body = await request.json();
+    const { email, adminKey } = body;
 
-    if (authError || !user) {
+    // Verify admin secret key
+    if (!process.env.ADMIN_SECRET_KEY || adminKey !== process.env.ADMIN_SECRET_KEY) {
       return NextResponse.json(
-        { success: false, error: "Not authenticated" },
-        { status: 401 }
+        { success: false, error: "Unauthorized" },
+        { status: 403 }
       );
     }
 
-    // Use service client to bypass RLS
+    if (!email) {
+      return NextResponse.json(
+        { success: false, error: "Email is required" },
+        { status: 400 }
+      );
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const serviceClient = createServiceClient() as any;
 
@@ -26,7 +33,7 @@ export async function POST(request: NextRequest) {
     const { data: existingPurchase } = await serviceClient
       .from("purchases")
       .select("id")
-      .eq("email", user.email)
+      .eq("email", email)
       .eq("product_type", "premium")
       .single();
 
@@ -34,19 +41,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: "User is already premium",
-        isPremium: true,
       });
     }
 
     // Insert premium purchase record
     const { error: insertError } = await serviceClient.from("purchases").insert({
-      email: user.email,
-      name: user.user_metadata?.full_name || user.email?.split("@")[0] || "User",
+      email,
+      name: email.split("@")[0] || "User",
       product_type: "premium",
       template_id: null,
-      amount_cents: 0, // Manual/admin grant
-      stripe_session_id: `manual_${Date.now()}`,
-      stripe_payment_id: `manual_${Date.now()}`,
+      amount_cents: 0,
+      stripe_session_id: `admin_grant_${Date.now()}`,
+      stripe_payment_id: `admin_grant_${Date.now()}`,
     });
 
     if (insertError) {
@@ -59,8 +65,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Premium status granted",
-      isPremium: true,
+      message: `Premium granted to ${email}`,
     });
   } catch (error) {
     console.error("Set premium error:", error);
