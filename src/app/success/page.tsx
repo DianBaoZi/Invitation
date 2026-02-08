@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, Copy, Check, Bookmark } from "lucide-react";
+import { Heart, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
 
@@ -12,12 +12,10 @@ function SuccessPageContent() {
   const searchParams = useSearchParams();
   const slug = searchParams.get("slug") || "invite";
 
-  const [copiedShare, setCopiedShare] = useState(false);
-  const [copiedStatus, setCopiedStatus] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const shareUrl = `${baseUrl}/i/${slug}`;
-  const statusUrl = `${baseUrl}/status/${slug}`;
 
   // Fire confetti on mount
   useEffect(() => {
@@ -44,17 +42,10 @@ function SuccessPageContent() {
   }, []);
 
   // Copy share link
-  const handleCopyShare = async () => {
+  const handleCopy = async () => {
     await navigator.clipboard.writeText(shareUrl);
-    setCopiedShare(true);
-    setTimeout(() => setCopiedShare(false), 2000);
-  };
-
-  // Copy status link
-  const handleCopyStatus = async () => {
-    await navigator.clipboard.writeText(statusUrl);
-    setCopiedStatus(true);
-    setTimeout(() => setCopiedStatus(false), 2000);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -87,15 +78,15 @@ function SuccessPageContent() {
           transition={{ delay: 0.3 }}
           className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 text-center"
         >
-          Your link is ready! 🎉
+          Your invite is ready! 🎉
         </motion.h1>
 
-        {/* Box 1: Share with crush */}
+        {/* Share link box */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mb-4"
+          className="mb-8"
         >
           <div className="p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl border border-pink-100">
             <div className="flex items-center gap-2 mb-3">
@@ -107,15 +98,15 @@ function SuccessPageContent() {
                 <p className="text-sm text-gray-700 truncate">{shareUrl}</p>
               </div>
               <Button
-                onClick={handleCopyShare}
+                onClick={handleCopy}
                 size="sm"
                 className={`shrink-0 h-10 px-4 ${
-                  copiedShare
+                  copied
                     ? "bg-green-500 hover:bg-green-600"
                     : "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 } text-white`}
               >
-                {copiedShare ? (
+                {copied ? (
                   <>
                     <Check className="w-4 h-4 mr-1" />
                     Copied!
@@ -130,80 +121,26 @@ function SuccessPageContent() {
             </div>
           </div>
         </motion.div>
-
-        {/* Box 2: Check if opened */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mb-6"
-        >
-          <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
-            <div className="flex items-center gap-2 mb-3">
-              <Bookmark className="w-5 h-5 text-blue-500" />
-              <h3 className="font-semibold text-gray-800">Check if they opened it</h3>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 p-3 bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <p className="text-sm text-gray-700 truncate">{statusUrl}</p>
-              </div>
-              <Button
-                onClick={handleCopyStatus}
-                size="sm"
-                className={`shrink-0 h-10 px-4 ${
-                  copiedStatus
-                    ? "bg-green-500 hover:bg-green-600"
-                    : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600"
-                } text-white`}
-              >
-                {copiedStatus ? (
-                  <>
-                    <Check className="w-4 h-4 mr-1" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4 mr-1" />
-                    Copy
-                  </>
-                )}
-              </Button>
-            </div>
-            <p className="mt-2 text-xs text-gray-500">
-              Bookmark this to check later
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Email note */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="text-sm text-gray-500 text-center mb-6"
-        >
-          We've also sent these links to your email
-        </motion.p>
 
         {/* Action buttons */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+          transition={{ delay: 0.5 }}
           className="flex gap-3"
         >
           <Button
-            onClick={() => router.push(`/status/${slug}`)}
+            onClick={() => router.push(`/i/${slug}`)}
             className="flex-1 h-12 text-base font-medium rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
           >
-            View Status
+            View Invite
           </Button>
           <Button
-            onClick={() => router.push("/")}
+            onClick={() => router.push(`/status/${slug}`)}
             variant="outline"
             className="flex-1 h-12 text-base font-medium rounded-xl border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
           >
-            Create Another
+            View Status
           </Button>
         </motion.div>
       </motion.div>

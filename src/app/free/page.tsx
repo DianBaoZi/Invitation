@@ -266,9 +266,24 @@ function RunawayButtonTemplate() {
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           Yay! You made my day! 💕
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 mb-6">
           Can't wait to see you!
         </p>
+
+        {/* Create your own invite CTA */}
+        <div className="pt-4 border-t border-gray-100">
+          <a
+            href="https://yoursinvite.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold hover:from-pink-600 hover:to-rose-600 transition-all shadow-md hover:shadow-lg"
+          >
+            Create your own invite
+          </a>
+          <p className="mt-2 text-xs text-gray-400">
+            Made with love at YoursInvite.com
+          </p>
+        </div>
       </motion.div>
     );
   }
