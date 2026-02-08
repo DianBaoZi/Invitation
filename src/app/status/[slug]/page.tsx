@@ -31,6 +31,7 @@ function StatusPageContent() {
 
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<InviteStatus | null>(null);
 
@@ -41,8 +42,12 @@ function StatusPageContent() {
     loadInviteStatus();
   }, [slug]);
 
-  const loadInviteStatus = async () => {
-    setLoading(true);
+  const loadInviteStatus = async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
     setError(null);
 
     try {
@@ -87,7 +92,12 @@ function StatusPageContent() {
       setError("Failed to load invite status");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = () => {
+    loadInviteStatus(true);
   };
 
   // Format date helper
@@ -354,12 +364,13 @@ function StatusPageContent() {
             {/* Actions */}
             <div className="flex gap-3 pt-2">
               <Button
-                onClick={loadInviteStatus}
+                onClick={handleRefresh}
+                disabled={refreshing}
                 variant="outline"
                 className="flex-1 h-12 rounded-xl border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-medium"
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
+                <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? "animate-spin" : ""}`} />
+                {refreshing ? "Refreshing..." : "Refresh"}
               </Button>
               <Button
                 onClick={() => window.open(`/i/${slug}`, "_blank")}
