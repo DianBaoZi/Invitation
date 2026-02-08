@@ -1006,7 +1006,9 @@ function RSVPSection({
   const buttonRotation = noHoverCount * (noHoverCount % 2 === 0 ? 3 : -3);
   const buttonBlur = noHoverCount > 3 ? (noHoverCount - 3) * 0.5 : 0;
 
-  const handleNoHover = () => {
+  const handleNoClick = () => {
+    if (isBloomingAway) return;
+
     const count = noHoverCount + 1;
     setNoHoverCount(count);
 
@@ -1223,12 +1225,12 @@ function RSVPSection({
                   stiffness: 300,
                   damping: 25,
                 }}
-                onMouseEnter={handleNoHover}
-                onTouchStart={handleNoHover}
+                onClick={handleNoClick}
                 whileHover={{
                   borderColor: PALETTE.roseGoldLight,
-                  y: -2,
+                  backgroundColor: PALETTE.blush,
                 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {noHoverCount === 0 ? "Perhaps Not" : noHoverCount < 4 ? "Maybe..." : noHoverCount < 6 ? "Well..." : "..."}
 

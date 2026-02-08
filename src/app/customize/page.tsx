@@ -722,6 +722,8 @@ function CustomizePageContent() {
 
   // Compress and resize image to reduce file size
   const compressImage = (file: File, maxWidth: number, maxHeight: number, quality: number): Promise<string> => {
+    const isPng = file.type === "image/png";
+
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -748,8 +750,10 @@ function CustomizePageContent() {
 
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Convert to JPEG for better compression (unless it's a PNG with transparency)
-          const dataUrl = canvas.toDataURL("image/jpeg", quality);
+          // Preserve PNG transparency, otherwise use JPEG for better compression
+          const dataUrl = isPng
+            ? canvas.toDataURL("image/png")
+            : canvas.toDataURL("image/jpeg", quality);
           resolve(dataUrl);
         };
         img.onerror = () => reject(new Error("Failed to load image"));
@@ -769,16 +773,32 @@ function CustomizePageContent() {
         showToast("Please select an image file", "error");
         return;
       }
-      // Validate file size (max 10MB before compression)
-      if (file.size > 10 * 1024 * 1024) {
-        showToast("Image must be less than 10MB", "error");
+
+      // For GIFs, use stricter size limit since we can't compress them
+      const isGif = file.type === "image/gif";
+      const maxSize = isGif ? 5 * 1024 * 1024 : 10 * 1024 * 1024; // 5MB for GIF, 10MB for others
+
+      if (file.size > maxSize) {
+        showToast(isGif ? "GIF must be less than 5MB" : "Image must be less than 10MB", "error");
         return;
       }
 
       try {
-        // Compress and resize image (max 1200px, 80% quality)
-        const compressedDataUrl = await compressImage(file, 1200, 1200, 0.8);
-        setter(compressedDataUrl);
+        if (isGif) {
+          // For GIFs, read directly without compression to preserve animation
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            setter(event.target?.result as string);
+          };
+          reader.onerror = () => {
+            showToast("Failed to load GIF. Please try again.", "error");
+          };
+          reader.readAsDataURL(file);
+        } else {
+          // Compress and resize other images (max 1200px, 80% quality)
+          const compressedDataUrl = await compressImage(file, 1200, 1200, 0.8);
+          setter(compressedDataUrl);
+        }
       } catch {
         showToast("Failed to process image. Please try again.", "error");
       }
@@ -1332,6 +1352,10 @@ function CustomizePageContent() {
                   {/* Photo uploads for cozy-scrapbook - 2 photos */}
                   {templateId === "cozy-scrapbook" && (
                     <div className="space-y-4">
+                      {/* GIF tip */}
+                      <p className="text-xs text-purple-600 bg-purple-50 px-3 py-2 rounded-lg">
+                        Tip: GIFs make your invite more fun! (max 5MB)
+                      </p>
                       {/* Photo 1 - Splash/Cover */}
                       <div className="space-y-2">
                         <Label className="text-gray-700 font-medium flex items-center gap-1.5">
@@ -1413,6 +1437,10 @@ function CustomizePageContent() {
                   {/* Photo uploads for elegant-invitation (Elegant Invitation) - 3 photos */}
                   {templateId === "elegant-invitation" && (
                     <div className="space-y-4">
+                      {/* GIF tip */}
+                      <p className="text-xs text-purple-600 bg-purple-50 px-3 py-2 rounded-lg">
+                        Tip: GIFs make your invite more fun! (max 5MB)
+                      </p>
                       {/* Photo 1 - First frame */}
                       <div className="space-y-2">
                         <Label className="text-gray-700 font-medium flex items-center gap-1.5">
