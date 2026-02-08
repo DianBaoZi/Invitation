@@ -27,10 +27,10 @@ export const stripe = {
 };
 
 // Price for single template (in cents)
-export const SINGLE_TEMPLATE_PRICE_CENTS = 10; // $0.10 USD (testing)
+export const SINGLE_TEMPLATE_PRICE_CENTS = 50; // $0.50 USD (testing - Stripe minimum)
 
 // Price for lifetime access (in cents)
-export const LIFETIME_PRICE_CENTS = 10; // $0.10 USD (testing)
+export const LIFETIME_PRICE_CENTS = 50; // $0.50 USD (testing - Stripe minimum)
 
 // Legacy export for backwards compatibility
 export const INVITE_PRICE_CENTS = SINGLE_TEMPLATE_PRICE_CENTS; // $1.99
