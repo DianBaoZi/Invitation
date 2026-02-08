@@ -697,7 +697,7 @@ function RevealScreen({
               <HoldToConfirmButton onConfirm={handleRSVP} />
 
               {/* Shy decline */}
-              <RSVPDeclineButton slug={slug} />
+              <RSVPDeclineButton />
 
               {/* Decorative divider bottom */}
               <div className="flex items-center justify-center gap-3 mt-6">
@@ -859,13 +859,13 @@ function HoldToConfirmButton({ onConfirm }: { onConfirm: () => void }) {
   );
 }
 
-function RSVPDeclineButton({ slug, onDecline }: { slug?: string; onDecline?: () => void }) {
+function RSVPDeclineButton() {
   const [attempts, setAttempts] = useState(0);
   const [fallingHearts, setFallingHearts] = useState<{ id: number; x: number; delay: number }[]>([]);
-  const [declined, setDeclined] = useState(false);
+  const [sealed, setSealed] = useState(false);
 
   const handleClick = () => {
-    if (declined) return;
+    if (sealed) return;
 
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
@@ -878,36 +878,30 @@ function RSVPDeclineButton({ slug, onDecline }: { slug?: string; onDecline?: () 
     }));
     setFallingHearts((prev) => [...prev, ...newHearts]);
 
-    // After 3 attempts, allow the decline
+    // After 3 attempts, seal it with a kiss (no is not an option!)
     if (newAttempts >= 3) {
-      setDeclined(true);
-      if (slug) {
-        saveResponse(slug, "No");
-      }
-      if (onDecline) {
-        onDecline();
-      }
+      setSealed(true);
     }
   };
 
   return (
     <div className="relative h-12 mt-4 flex items-center justify-center">
-      {/* The button */}
+      {/* The button - styled to look clickable */}
       <motion.button
         onClick={handleClick}
-        className="relative px-5 py-2 rounded-full text-xs whitespace-nowrap z-10"
+        className="relative px-5 py-2 rounded-full text-xs whitespace-nowrap z-10 cursor-pointer hover:bg-rose-50 active:scale-95 transition-colors"
         style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontStyle: "italic",
-          color: "#e0a0b0",
+          color: "#c2185b",
           letterSpacing: "0.03em",
-          background: "rgba(255,245,247,0.8)",
-          border: "1px dashed rgba(233,30,99,0.2)",
+          background: "rgba(255,245,247,0.9)",
+          border: "1px solid rgba(233,30,99,0.3)",
         }}
         animate={{
-          opacity: declined ? 0 : Math.max(0.4, 1 - attempts * 0.15),
-          scale: declined ? 0.8 : 1,
-          y: declined ? 10 : 0,
+          opacity: sealed ? 0 : 1,
+          scale: sealed ? 0.8 : 1,
+          y: sealed ? 10 : 0,
         }}
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
       >
@@ -938,20 +932,38 @@ function RSVPDeclineButton({ slug, onDecline }: { slug?: string; onDecline?: () 
         ))}
       </div>
 
-      {/* Sad message after declined */}
+      {/* Lipstick kiss seal - No is not an option! */}
       <AnimatePresence>
-        {declined && (
+        {sealed && (
+          <motion.div
+            initial={{ scale: 0, rotate: -30, opacity: 0 }}
+            animate={{ scale: 1, rotate: -8, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            className="absolute z-20"
+            style={{
+              fontSize: 32,
+              filter: "drop-shadow(0 2px 4px rgba(233,30,99,0.3))",
+            }}
+          >
+            💋
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Message after sealed */}
+      <AnimatePresence>
+        {sealed && (
           <motion.p
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.3 }}
             className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap"
             style={{
               fontFamily: "'Dancing Script', cursive",
-              color: "#9ca3af",
+              color: "#e91e63",
             }}
           >
-            Maybe next time... 💔
+            sealed with love 💕
           </motion.p>
         )}
       </AnimatePresence>
