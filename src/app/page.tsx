@@ -786,10 +786,18 @@ function ComingSoonCard({ index }: { index: number }) {
           ))}
         </div>
 
+        {/* Blur overlay */}
+        <div className="absolute inset-0 backdrop-blur-[2px] bg-white/30" />
+
         {/* Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
-          <div className="text-5xl mb-6">
-            ✨
+          <div className="relative mb-6">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center">
+              <span className="text-4xl">💌</span>
+            </div>
+            <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center text-xs">
+              ✨
+            </div>
           </div>
           <h3
             className="text-stone-400 text-xl font-medium mb-3 text-center"
@@ -841,10 +849,18 @@ function MobileComingSoonCard({ index }: { index: number }) {
         ))}
       </div>
 
+      {/* Blur overlay */}
+      <div className="absolute inset-0 backdrop-blur-[2px] bg-white/30" />
+
       {/* Content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-        <div className="text-3xl mb-4">
-          ✨
+        <div className="relative mb-4">
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center">
+            <span className="text-2xl">💌</span>
+          </div>
+          <div className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center text-[8px]">
+            ✨
+          </div>
         </div>
         <h3
           className="text-stone-400 text-sm font-medium mb-2 text-center"

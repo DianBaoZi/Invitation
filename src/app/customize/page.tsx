@@ -700,8 +700,8 @@ function CustomizePageContent() {
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({
     message: "",
     personalMessage: "",
-    date: "2025-02-14", // 14 February
-    time: "19:00", // 7:00 PM
+    date: "",
+    time: "",
     location: "",
   });
 
@@ -790,9 +790,45 @@ function CustomizePageContent() {
     setStep(2);
   };
 
+  const handlePreview = () => {
+    if (!fieldValues.message.trim()) {
+      showToast("Please enter a main message/question", "error");
+      return;
+    }
+    if (!fieldValues.date.trim()) {
+      showToast("Please select a date", "error");
+      return;
+    }
+    if (!fieldValues.time.trim()) {
+      showToast("Please select a time", "error");
+      return;
+    }
+    if (!fieldValues.location.trim()) {
+      showToast("Please enter a location", "error");
+      return;
+    }
+    setStep(3);
+  };
+
   const handleSubmit = () => {
     if (!name.trim()) {
       showToast("Please enter your name", "error");
+      return;
+    }
+    if (!fieldValues.message.trim()) {
+      showToast("Please enter a main message/question", "error");
+      return;
+    }
+    if (!fieldValues.date.trim()) {
+      showToast("Please select a date", "error");
+      return;
+    }
+    if (!fieldValues.time.trim()) {
+      showToast("Please select a time", "error");
+      return;
+    }
+    if (!fieldValues.location.trim()) {
+      showToast("Please enter a location", "error");
       return;
     }
     setShowConfirm(true);
@@ -1562,7 +1598,7 @@ function CustomizePageContent() {
                       Back
                     </Button>
                     <Button
-                      onClick={() => setStep(3)}
+                      onClick={handlePreview}
                       className={`flex-1 h-14 text-lg font-semibold rounded-xl ${accent.bgGradient} text-white shadow-lg`}
                     >
                       <Eye className="w-5 h-5 mr-2" />
