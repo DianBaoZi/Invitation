@@ -80,6 +80,15 @@ function getTemplateFields(templateId: string): TemplateFieldConfig {
         accentColor: "pink",
         fields: [
           {
+            key: "message",
+            label: "Main Message",
+            placeholder: "Will you be my Valentine?",
+            icon: "message",
+            type: "input",
+            maxLength: CHAR_LIMITS.message,
+            hint: "The main question displayed on the card",
+          },
+          {
             key: "date",
             label: "Date",
             placeholder: "",
@@ -685,21 +694,23 @@ function CustomizePageContent() {
   // Pro users don't need to pay, so they don't require auth for paid templates
   const requiresAuth = template && !template.is_free && !isPremium;
 
-  // Get current user if logged in and check premium status
+  // Get current user if logged in and check premium status (in parallel for speed)
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        // Fetch user auth and premium status in parallel
         const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const [{ data: { user } }, premiumRes] = await Promise.all([
+          supabase.auth.getUser(),
+          fetch("/api/premium-status"),
+        ]);
 
         if (user) {
           setUserId(user.id);
-
-          // Check premium status
-          const premiumRes = await fetch("/api/premium-status");
-          const premiumData = await premiumRes.json();
-          setIsPremium(premiumData.isPremium === true);
         }
+
+        const premiumData = await premiumRes.json();
+        setIsPremium(premiumData.isPremium === true);
         setAuthLoading(false);
       } catch {
         setAuthLoading(false);
@@ -855,12 +866,24 @@ function CustomizePageContent() {
       showToast("Please select a date", "error");
       return;
     }
+    // Validate date is not in the past
+    const selectedDate = new Date(fieldValues.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      showToast("Please select a date in the future", "error");
+      return;
+    }
     if (!fieldValues.time.trim()) {
       showToast("Please select a time", "error");
       return;
     }
     if (!fieldValues.location.trim()) {
       showToast("Please enter a location", "error");
+      return;
+    }
+    if (!fieldValues.personalMessage.trim()) {
+      showToast("Please enter a personal message", "error");
       return;
     }
     setStep(3);
@@ -879,12 +902,24 @@ function CustomizePageContent() {
       showToast("Please select a date", "error");
       return;
     }
+    // Validate date is not in the past
+    const selectedDate = new Date(fieldValues.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      showToast("Please select a date in the future", "error");
+      return;
+    }
     if (!fieldValues.time.trim()) {
       showToast("Please select a time", "error");
       return;
     }
     if (!fieldValues.location.trim()) {
       showToast("Please enter a location", "error");
+      return;
+    }
+    if (!fieldValues.personalMessage.trim()) {
+      showToast("Please enter a personal message", "error");
       return;
     }
     setShowConfirm(true);
@@ -1605,6 +1640,8 @@ function CustomizePageContent() {
                             type="date"
                             value={fieldValues[field.key]}
                             onChange={(e) => updateField(field.key, e.target.value)}
+                            min={new Date().toISOString().split("T")[0]}
+                            max={`${new Date().getFullYear() + 2}-12-31`}
                             className={`h-12 text-lg rounded-xl border-gray-200 ${accent.border} ${accent.ring}`}
                           />
                           {field.hint && (

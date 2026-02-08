@@ -63,20 +63,24 @@ export default function Home() {
   const [inviteCount, setInviteCount] = useState(0);
   const [isPremium, setIsPremium] = useState(false);
 
-  // Fetch premium status and invite count on mount
+  // Fetch premium status and invite count on mount (in parallel for speed)
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch invite count
-        const countRes = await fetch("/api/invites");
-        const countData = await countRes.json();
+        // Fetch both in parallel for faster loading
+        const [countRes, premiumRes] = await Promise.all([
+          fetch("/api/invites"),
+          fetch("/api/premium-status"),
+        ]);
+
+        const [countData, premiumData] = await Promise.all([
+          countRes.json(),
+          premiumRes.json(),
+        ]);
+
         if (countData.success && countData.count !== undefined) {
           setInviteCount(countData.count);
         }
-
-        // Fetch premium status
-        const premiumRes = await fetch("/api/premium-status");
-        const premiumData = await premiumRes.json();
         setIsPremium(premiumData.isPremium === true);
       } catch (error) {
         console.error("Failed to fetch data:", error);

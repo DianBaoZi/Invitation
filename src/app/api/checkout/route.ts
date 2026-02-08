@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: "payment",
-      success_url: `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}&slug=${inviteSlug}`,
+      success_url: `${origin}/success?slug=${inviteSlug}`,
       cancel_url: `${origin}/payment/cancel?slug=${inviteSlug}`,
       metadata: {
         inviteSlug,
